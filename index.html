@@ -8,8 +8,37 @@
         body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: #0056b3; margin-bottom: 25px; }
-        .search-container { display: flex; justify-content: center; margin-bottom: 20px; }
-        .search-container input { width: 70%; padding: 12px 18px; font-size: 18px; border: 2px solid #0056b3; border-radius: 6px; outline: none; text-transform: uppercase; }
+        
+        /* Search Box & Suggestions CSS */
+        .search-container { position: relative; width: 70%; margin: 0 auto 20px auto; }
+        .search-container input { width: 100%; padding: 12px 18px; font-size: 18px; border: 2px solid #0056b3; border-radius: 6px; outline: none; text-transform: uppercase; box-sizing: border-box; }
+        
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 15px;
+        }
+        .suggestion-item:hover {
+            background-color: #eef2f7;
+            color: #0056b3;
+            font-weight: bold;
+        }
+
         .result-section { display: none; margin-top: 20px; }
         .details-card { background: #eef2f7; padding: 15px 20px; border-radius: 6px; margin-bottom: 20px; border-left: 5px solid #0056b3; }
         .details-card h3 { margin-top: 0; color: #0056b3; }
@@ -17,7 +46,11 @@
         .pdf-viewer-container { width: 100%; height: 550px; border: 1px solid #ccc; border-radius: 6px; background: #eee; }
         iframe { width: 100%; height: 100%; border: none; border-radius: 6px; }
         .error-msg { color: red; text-align: center; font-weight: bold; margin-top: 15px; display: none; }
-        @media(max-width: 600px) { .details-grid { grid-template-columns: 100%; } .search-container input { width: 100%; } }
+        
+        @media(max-width: 600px) { 
+            .details-grid { grid-template-columns: 100%; } 
+            .search-container { width: 100%; } 
+        }
     </style>
 </head>
 <body>
@@ -26,8 +59,8 @@
     <h2>🔍 SolarSquare Rafter Quick Finder</h2>
     
     <div class="search-container">
-        <!-- oninput lagaya hai taaki type karte hi ya Enter dabate hi search ho jaye -->
-        <input type="text" id="codeInput" placeholder="Enter Item Code or Number (e.g. 0101 or RAFT-0101)..." oninput="handleSearch()" onkeypress="handleSearchEnter(event)">
+        <input type="text" id="codeInput" placeholder="Enter Code or Number (e.g. 0101) & Press Enter..." oninput="showSuggestions()" onkeypress="handleSearchEnter(event)" autocomplete="off">
+        <div id="suggestionsList" class="suggestions-list"></div>
     </div>
     
     <div id="errorMsg" class="error-msg">Item Code not found in database! Please check and try again.</div>
@@ -75,54 +108,87 @@
         "RAFT-1312": { code: "RAFT-1312", desc: "Rafter 3P Top Medium Gen 2 (Topcon 610)", size: "130x55x15 mm", thick: "1.5 / 2.0 mm", length: "3104 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1G9y9vX3ndzabjqJu77bWn9AfeUk2S_rw/view?usp=drive_link") },
         "RAFT-1313": { code: "RAFT-1313", desc: "Rafter 3P Top Heavy Gen 2 (Topcon 610)", size: "180x55x15 mm", thick: "1.5 / 2.0 mm", length: "3104 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1iTlBrkyIb4dEt2DaauAUU83PiI4dmpvr/view?usp=drive_link") },
         "RAFT-1322": { code: "RAFT-1322", desc: "Rafter 3P Bottom Medium Gen 2 (Topcon 610)", size: "130x55x15 mm", thick: "1.5 / 2.0 mm", length: "3304 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1iTlBrkyIb4dEt2DaauAUU83PiI4dmpvr/view?usp=drive_link") },
-        "RAFT-1323": { code: "RAFT-1323", desc: "Rafter `3P Bottom Heavy Gen 2 (Topcon 610)", size: "180x55x15 mm", thick: "1.5 / 2.0 mm", length: "3304 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1cEGfo466Lkitm4XrzUl0UgF5377q52F9/view?usp=drive_link") }
+        "RAFT-1323": { code: "RAFT-1323", desc: "Rafter 3P Bottom Heavy Gen 2 (Topcon 610)", size: "180x55x15 mm", thick: "1.5 / 2.0 mm", length: "3304 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1cEGfo466Lkitm4XrzUl0UgF5377q52F9/view?usp=drive_link") }
     };
 
-    function handleSearch() {
-        let query = document.getElementById("codeInput").value.trim().toUpperCase();
-        const resultSec = document.getElementById("resultSection");
-        const errorMsg = document.getElementById("errorMsg");
+    function showSuggestions() {
+        let inputVal = document.getElementById("codeInput").value.trim().toUpperCase();
+        let listContainer = document.getElementById("suggestionsList");
+        listContainer.innerHTML = "";
 
-        let matchedItem = null;
+        if (!inputVal) return;
 
-        if (query) {
-            // Agar user ne sirf numbers dale hain (jaise 0101), toh RAFT- apne aap jud jayega
-            if (!query.includes("RAFT") && !isNaN(query)) {
-                query = "RAFT-" + query;
-            }
+        let matches = [];
+        let searchKey = (!inputVal.includes("RAFT") && !isNaN(inputVal)) ? "RAFT-" + inputVal : inputVal;
 
-            for (let key in raftersDB) {
-                if (key === query || key.includes(query)) {
-                    matchedItem = raftersDB[key];
-                    break;
-                }
+        for (let key in raftersDB) {
+            if (key.includes(searchKey) || raftersDB[key].desc.toUpperCase().includes(inputVal)) {
+                matches.push(raftersDB[key]);
             }
         }
 
-        if (matchedItem) {
-            errorMsg.style.display = "none";
-            document.getElementById("resCode").innerText = matchedItem.code;
-            document.getElementById("resTitle").innerText = matchedItem.desc;
-            document.getElementById("resLength").innerText = matchedItem.length;
-            document.getElementById("resThick").innerText = matchedItem.thick;
-            document.getElementById("resSize").innerText = matchedItem.size;
-            document.getElementById("pdfFrame").src = matchedItem.pdf || "";
-            resultSec.style.display = "block";
-        } else {
-            resultSec.style.display = "none";
-            if (query.length > 2) {
-                errorMsg.style.display = "block";
-            } else {
-                errorMsg.style.display = "none";
-            }
+        if (matches.length > 0) {
+            matches.forEach(item => {
+                let div = document.createElement("div");
+                div.className = "suggestion-item";
+                div.innerHTML = `<strong>${item.code}</strong> - ${item.desc}`;
+                div.onclick = function() {
+                    document.getElementById("codeInput").value = item.code;
+                    listContainer.innerHTML = "";
+                    displayItem(item.code);
+                };
+                listContainer.appendChild(div);
+            });
         }
     }
 
     function handleSearchEnter(event) {
         if (event.key === "Enter") {
-            handleSearch();
+            let query = document.getElementById("codeInput").value.trim().toUpperCase();
+            document.getElementById("suggestionsList").innerHTML = "";
+
+            if (!query.includes("RAFT") && !isNaN(query)) {
+                query = "RAFT-" + query;
+            }
+
+            if (raftersDB[query]) {
+                displayItem(query);
+            } else {
+                // Agar exact match nahi mila toh pehla matching item utha lo
+                let foundKey = Object.keys(raftersDB).find(k => k.includes(query));
+                if (foundKey) {
+                    displayItem(foundKey);
+                } else {
+                    document.getElementById("resultSection").style.display = "none";
+                    document.getElementById("errorMsg").style.display = "block";
+                }
+            }
         }
     }
+
+    function displayItem(code) {
+        const item = raftersDB[code];
+        const resultSec = document.getElementById("resultSection");
+        const errorMsg = document.getElementById("errorMsg");
+
+        if (item) {
+            errorMsg.style.display = "none";
+            document.getElementById("resCode").innerText = item.code;
+            document.getElementById("resTitle").innerText = item.desc;
+            document.getElementById("resLength").innerText = item.length;
+            document.getElementById("resThick").innerText = item.thick;
+            document.getElementById("resSize").innerText = item.size;
+            document.getElementById("pdfFrame").src = item.pdf || "";
+            resultSec.style.display = "block";
+        }
+    }
+
+    // Hide suggestions when clicking outside
+    document.addEventListener("click", function(e) {
+        if (!e.target.closest(".search-container")) {
+            document.getElementById("suggestionsList").innerHTML = "";
+        }
+    });
 </script>
 
 </body>
