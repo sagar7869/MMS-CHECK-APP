@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SolarSquare Rafter Local Finder</title>
+    <title>SolarSquare Rafter Quick Finder</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,63 +26,46 @@
             margin-bottom: 25px;
         }
         .search-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
+            position: relative;
+            width: 70%;
+            margin: 0 auto 20px auto;
         }
         .search-container input {
-            width: 70%;
+            width: 100%;
             padding: 12px 18px;
             font-size: 18px;
             border: 2px solid #0056b3;
             border-radius: 6px;
             outline: none;
             text-transform: uppercase;
+            box-sizing: border-box;
         }
-        .result-section {
-            display: none;
-            margin-top: 20px;
-        }
-        .details-card {
-            background: #eef2f7;
-            padding: 15px 20px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            border-left: 5px solid #0056b3;
-        }
-        .details-card h3 {
-            margin-top: 0;
-            color: #0056b3;
-        }
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            font-size: 16px;
-        }
-        .pdf-viewer-container {
-            width: 100%;
-            height: 550px;
+        /* Suggestions Dropdown Box */
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
             border: 1px solid #ccc;
-            border-radius: 6px;
-            background: #eee;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 6px;
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 15px;
         }
-        .error-msg {
-            color: red;
-            text-align: center;
+        .suggestion-item:hover {
+            background-color: #eef2f7;
+            color: #0056b3;
             font-weight: bold;
-            margin-top: 15px;
-            display: none;
-        }
-        @media(max-width: 600px) {
-            .details-grid { grid-template-columns: 100%; }
-            .search-container input { width: 100%; }
+            .search-container { width: 100%; }
         }
     </style>
 </head>
@@ -92,7 +75,8 @@
     <h2>🔍 SolarSquare Rafter Quick Finder</h2>
     
     <div class="search-container">
-        <input type="text" id="codeInput" placeholder="Enter Item Code (e.g. RAFT-0101) & Press Enter..." onkeypress="handleSearch(event)">
+        <input type="text" id="codeInput" placeholder="Type code or number (e.g. 0101)..." oninput="showSuggestions()" autocomplete="off">
+        <div id="suggestionsList" class="suggestions-list"></div>
     </div>
     
     <div id="errorMsg" class="error-msg">Item Code not found in database! Please check and try again.</div>
@@ -116,7 +100,6 @@
 </div>
 
 <script>
-    // Helper function to convert Google Drive link to embed/preview format
     function getDrivePreviewUrl(url) {
         if (!url) return "";
         return url.replace(/\/view\?.*$/, "/preview");
@@ -144,30 +127,64 @@
         "RAFT-1323": { code: "RAFT-1323", desc: "Rafter 3P Bottom Heavy Gen 2 (Topcon 610)", size: "180x55x15 mm", thick: "1.5 / 2.0 mm", length: "3304 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1cEGfo466Lkitm4XrzUl0UgF5377q52F9/view?usp=drive_link") }
     };
 
-    function handleSearch(event) {
-        if (event.key === "Enter") {
-            const query = document.getElementById("codeInput").value.trim().toUpperCase();
-            const resultSec = document.getElementById("resultSection");
-            const errorMsg = document.getElementById("errorMsg");
+    function showSuggestions() {
+        let inputVal = document.getElementById("codeInput").value.trim().toUpperCase();
+        let listContainer = document.getElementById("suggestionsList");
+        listContainer.innerHTML = "";
 
-            if (query && raftersDB[query]) {
-                const item = raftersDB[query];
-                errorMsg.style.display = "none";
-                
-                document.getElementById("resCode").innerText = item.code;
-                document.getElementById("resTitle").innerText = item.desc;
-                document.getElementById("resLength").innerText = item.length;
-                document.getElementById("resThick").innerText = item.thick;
-                document.getElementById("resSize").innerText = item.size;
-                document.getElementById("pdfFrame").src = item.pdf || "";
-                
-                resultSec.style.display = "block";
-            } else {
-                resultSec.style.display = "none";
-                errorMsg.style.display = "block";
+        if (!inputVal) {
+            return;
+        }
+
+        let matches = [];
+        for (let key in raftersDB) {
+            // Match chahe code se ho ya description se
+            if (key.includes(inputVal) || raftersDB[key].desc.toUpperCase().includes(inputVal)) {
+                matches.push(raftersDB[key]);
             }
         }
+
+        if (matches.length > 0) {
+            matches.forEach(item => {
+                let div = document.createElement("div");
+                div.className = "suggestion-item";
+                div.innerHTML = `<strong>${item.code}</strong> - ${item.desc}`;
+                div.onclick = function() {
+                    document.getElementById("codeInput").value = item.code;
+                    listContainer.innerHTML = "";
+                    displayItem(item.code);
+                };
+                listContainer.appendChild(div);
+            });
+        }
     }
+
+    function displayItem(code) {
+        const item = raftersDB[code];
+        const resultSec = document.getElementById("resultSection");
+        const errorMsg = document.getElementById("errorMsg");
+
+        if (item) {
+            errorMsg.style.display = "none";
+            document.getElementById("resCode").innerText = item.code;
+            document.getElementById("resTitle").innerText = item.desc;
+            document.getElementById("resLength").innerText = item.length;
+            document.getElementById("resThick").innerText = item.thick;
+            document.getElementById("resSize").innerText = item.size;
+            document.getElementById("pdfFrame").src = item.pdf || "";
+            resultSec.style.display = "block";
+        } else {
+            resultSec.style.display = "none";
+            errorMsg.style.display = "block";
+        }
+    }
+
+    // Hide suggestions when clicking outside
+    document.addEventListener("click", function(e) {
+        if (!e.target.closest(".search-container")) {
+            document.getElementById("suggestionsList").innerHTML = "";
+        }
+    });
 </script>
 
 </body>
