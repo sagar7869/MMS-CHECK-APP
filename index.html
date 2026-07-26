@@ -26,7 +26,8 @@
     <h2>🔍 SolarSquare Rafter Quick Finder</h2>
     
     <div class="search-container">
-        <input type="text" id="codeInput" placeholder="Enter Item Code or Number (e.g. 0101) & Press Enter..." onkeypress="handleSearch(event)">
+        <!-- oninput lagaya hai taaki type karte hi ya Enter dabate hi search ho jaye -->
+        <input type="text" id="codeInput" placeholder="Enter Item Code or Number (e.g. 0101 or RAFT-0101)..." oninput="handleSearch()" onkeypress="handleSearchEnter(event)">
     </div>
     
     <div id="errorMsg" class="error-msg">Item Code not found in database! Please check and try again.</div>
@@ -50,38 +51,76 @@
 </div>
 
 <script>
-            let query = document.getElementById("codeInput").value.trim().toUpperCase();
-            const resultSec = document.getElementById("resultSection");
-            const errorMsg = document.getElementById("errorMsg");
+    function getDrivePreviewUrl(url) {
+        if (!url) return "";
+        return url.replace(/\/view\?.*$/, "/preview");
+    }
 
-            let matchedItem = null;
+    const raftersDB = {
+        "RAFT-0101": { code: "RAFT-0101", desc: "R1PL - Rafter 1P Light (Mono 540)", size: "80x40x10 mm", thick: "1.2 mm", length: "1611 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1-w0BCIHwoz9eF-XGNVQVqnq6QI1RYkvq/view?usp=drive_link") },
+        "RAFT-0102": { code: "RAFT-0102", desc: "R1PM - Rafter 1P Medium (Mono 540)", size: "80x40x10 mm", thick: "1.5 mm", length: "1611 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1D9QSwNur_NvDNqqWB90KyFuJ-8dEx52k/view?usp=drive_link") },
+        "RAFT-0103": { code: "RAFT-0103", desc: "R1PH - Rafter 1P Heavy (Mono 540)", size: "80x40x10 mm", thick: "2.0 mm", length: "1611 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/19I1GcLM-ttewy3iDNiKDw1fwLJDBv-Qg/view?usp=drive_link") },
+        "RAFT-0201": { code: "RAFT-0201", desc: "R2PL - Rafter 2P Light (Mono 540)", size: "90x45x15 mm", thick: "1.2 mm", length: "3910 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1SSkArR29WG6pe8UuYFi9MtZ5q_5ZhnTn/view?usp=drive_link") },
+        "RAFT-0202": { code: "RAFT-0202", desc: "R2PM - Rafter 2P Medium (Mono 540)", size: "100x45x15 mm", thick: "1.5 mm", length: "3910 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1MVvUIEkqZDu6E8JOUZbeTjJVg5SuJrDy/view?usp=drive_link") },
+        "RAFT-0203": { code: "RAFT-0203", desc: "R2PH - Rafter 2P Heavy (Mono 540)", size: "130x45x15 mm", thick: "2.0 mm", length: "3910 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1rVSmv2g0QW3khxhrSYn1dMjRISh2z482/view?usp=drive_link") },
+        "RAFT-0311": { code: "RAFT-0311", desc: "R3PTL - Rafter 3P Top Light (Mono 540)", size: "125x55x15 mm", thick: "1.5 mm", length: "3000 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1xp0Emmm-xqY5YScRc2hE97R8hhmYaRoK/view?usp=drive_link") },
+        "RAFT-0312": { code: "RAFT-0312", desc: "R3PTM - Rafter 3P Top Medium (Mono 540)", size: "130x55x15 mm", thick: "2.0 mm", length: "3000 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1QQAeSb4smErtRnIyK7hxZhqduk9lqXRq/view?usp=drive_link") },
+        "RAFT-0313": { code: "RAFT-0313", desc: "R3PTH - Rafter 3P Top Heavy (Mono 540)", size: "180x55x15 mm", thick: "2.0 mm", length: "3000 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1nzi8X0zqcYO0FHHEdUbkBt8Xyah-Y2xl/view?usp=drive_link") },
+        "RAFT-0321": { code: "RAFT-0321", desc: "R3PBL - Rafter 3P Bottom Light (Mono 540)", size: "125x55x15 mm", thick: "1.5 mm", length: "3200 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1kaO9houqrNp9sBy7nAykWwNfH6dQZKoC/view?usp=drive_link") },
+        "RAFT-0322": { code: "RAFT-0322", desc: "R3PBM - Rafter 3P Bottom Medium (Mono 540)", size: "130x55x15 mm", thick: "2.0 mm", length: "3200 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1QR-FRZrIQIBe8G0KkCEmRzih6IR5g1Zl/view?usp=drive_link") },
+        "RAFT-0323": { code: "RAFT-0323", desc: "R3PBH - Rafter 3P Bottom Heavy (Mono 540)", size: "180x55x15 mm", thick: "2.0 mm", length: "3200 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1L6h9jpP8ykRjq6Qrdw93yO6U9YhYFDx4/view?usp=drive_link") },
+        "RAFT-1202": { code: "RAFT-1202", desc: "Rafter 2P Medium Gen 2 (Topcon 610)", size: "100x45x15 mm", thick: "1.5 mm", length: "4014 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/18F2_tPnxAT_cZHPkJG0ZED9W0dt2V4nX/view?usp=drive_link") },
+        "RAFT-1203": { code: "RAFT-1203", desc: "Rafter 2P Heavy Gen 2 (Topcon 610)", size: "130x45x15 mm", thick: "1.5 mm", length: "4014 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1vVzPharqtFXenhi5cRSwAJnbhccMSQPC/view?usp=drive_link") },
+        "RAFT-1204": { code: "RAFT-1204", desc: "Rafter 2P Super Heavy Gen 2 (Topcon 610)", size: "160x45x15 mm", thick: "1.5 mm", length: "4014 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1gpaDB-3CKpJvYcpOAEHd3eTZE8BXURbv/view?usp=drive_link") },
+        "RAFT-1312": { code: "RAFT-1312", desc: "Rafter 3P Top Medium Gen 2 (Topcon 610)", size: "130x55x15 mm", thick: "1.5 / 2.0 mm", length: "3104 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1G9y9vX3ndzabjqJu77bWn9AfeUk2S_rw/view?usp=drive_link") },
+        "RAFT-1313": { code: "RAFT-1313", desc: "Rafter 3P Top Heavy Gen 2 (Topcon 610)", size: "180x55x15 mm", thick: "1.5 / 2.0 mm", length: "3104 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1iTlBrkyIb4dEt2DaauAUU83PiI4dmpvr/view?usp=drive_link") },
+        "RAFT-1322": { code: "RAFT-1322", desc: "Rafter 3P Bottom Medium Gen 2 (Topcon 610)", size: "130x55x15 mm", thick: "1.5 / 2.0 mm", length: "3304 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1iTlBrkyIb4dEt2DaauAUU83PiI4dmpvr/view?usp=drive_link") },
+        "RAFT-1323": { code: "RAFT-1323", desc: "Rafter `3P Bottom Heavy Gen 2 (Topcon 610)", size: "180x55x15 mm", thick: "1.5 / 2.0 mm", length: "3304 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1cEGfo466Lkitm4XrzUl0UgF5377q52F9/view?usp=drive_link") }
+    };
 
-            if (query) {
-                if (!query.includes("RAFT")) {
-                    query = "RAFT-" + query;
-                }
+    function handleSearch() {
+        let query = document.getElementById("codeInput").value.trim().toUpperCase();
+        const resultSec = document.getElementById("resultSection");
+        const errorMsg = document.getElementById("errorMsg");
 
-                for (let key in raftersDB) {
-                    if (key === query || key.includes(query)) {
-                        matchedItem = raftersDB[key];
-                        break;
-                    }
-                }
+        let matchedItem = null;
+
+        if (query) {
+            // Agar user ne sirf numbers dale hain (jaise 0101), toh RAFT- apne aap jud jayega
+            if (!query.includes("RAFT") && !isNaN(query)) {
+                query = "RAFT-" + query;
             }
 
-            if (matchedItem) {
-                errorMsg.style.display = "none";
-                document.getElementById("resCode").innerText = matchedItem.code;
-                document.getElementById("resTitle").innerText = matchedItem.desc;
-                document.getElementById("resLength").innerText = matchedItem.length;
-                document.getElementById("resThick").innerText = matchedItem.thick;
-                document.getElementById("resSize").innerText = matchedItem.size;
-                document.getElementById("pdfFrame").src = matchedItem.pdf || "";
-                resultSec.style.display = "block";
-            } else {
-                resultSec.style.display = "none";
+            for (let key in raftersDB) {
+                if (key === query || key.includes(query)) {
+                    matchedItem = raftersDB[key];
+                    break;
+                }
+            }
+        }
+
+        if (matchedItem) {
+            errorMsg.style.display = "none";
+            document.getElementById("resCode").innerText = matchedItem.code;
+            document.getElementById("resTitle").innerText = matchedItem.desc;
+            document.getElementById("resLength").innerText = matchedItem.length;
+            document.getElementById("resThick").innerText = matchedItem.thick;
+            document.getElementById("resSize").innerText = matchedItem.size;
+            document.getElementById("pdfFrame").src = matchedItem.pdf || "";
+            resultSec.style.display = "block";
+        } else {
+            resultSec.style.display = "none";
+            if (query.length > 2) {
                 errorMsg.style.display = "block";
+            } else {
+                errorMsg.style.display = "none";
             }
+        }
+    }
+
+    function handleSearchEnter(event) {
+        if (event.key === "Enter") {
+            handleSearch();
         }
     }
 </script>
