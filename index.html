@@ -1,195 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SolarSquare Rafter Finder</title>
+    <title>Rafter & Column Master Data Search</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #0056b3; margin-bottom: 25px; }
-        
-        /* Search Box & Suggestions CSS */
-        .search-container { position: relative; width: 70%; margin: 0 auto 20px auto; }
-        .search-container input { width: 100%; padding: 12px 18px; font-size: 18px; border: 2px solid #0056b3; border-radius: 6px; outline: none; text-transform: uppercase; box-sizing: border-box; }
-        
-        .suggestions-list {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #fff;
-            border: 1px solid #ccc;
-            border-top: none;
-            border-radius: 0 0 6px 6px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .suggestion-item {
-            padding: 10px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 15px;
-        }
-        .suggestion-item:hover {
-            background-color: #eef2f7;
-            color: #0056b3;
-            font-weight: bold;
-        }
-
-        .result-section { display: none; margin-top: 20px; }
-        .details-card { background: #eef2f7; padding: 15px 20px; border-radius: 6px; margin-bottom: 20px; border-left: 5px solid #0056b3; }
-        .details-card h3 { margin-top: 0; color: #0056b3; }
-        .details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 16px; }
-        .pdf-viewer-container { width: 100%; height: 550px; border: 1px solid #ccc; border-radius: 6px; background: #eee; }
-        iframe { width: 100%; height: 100%; border: none; border-radius: 6px; }
-        .error-msg { color: red; text-align: center; font-weight: bold; margin-top: 15px; display: none; }
-        
-        @media(max-width: 600px) { 
-            .details-grid { grid-template-columns: 100%; } 
-            .search-container { width: 100%; } 
-        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f8f9fa; padding: 20px; color: #333; margin: 0; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .row { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
+        .group { flex: 1; min-width: 220px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #1557b0; }
+        .table-responsive { width: 100%; overflow-x: auto; max-height: 500px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; white-space: nowrap; }
+        th { background: #f1f3f4; position: sticky; top: 0; z-index: 1; }
+        .btn-pdf { background: #d93025; color: white; border: none; padding: 6px 12px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        .btn-pdf:hover { background: #b31412; }
+        .msg { text-align: center; padding: 20px; font-weight: bold; color: #666; }
+        .error { color: #d93025; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="card" style="text-align: center;">
+            <h2>Rafter & Column Master Data Search</h2>
+            <p>Search by Item Code (e.g. RAFT-0101 or COLU-1620) across Sheets and open PDFs</p>
+        </div>
 
-<div class="container">
-    <h2>🔍 SolarSquare Rafter Quick Finder</h2>
-    
-    <div class="search-container">
-        <input type="text" id="codeInput" placeholder="Enter Code or Number (e.g. 0101) & Press Enter..." oninput="showSuggestions()" onkeypress="handleSearchEnter(event)" autocomplete="off">
-        <div id="suggestionsList" class="suggestions-list"></div>
-    </div>
-    
-    <div id="errorMsg" class="error-msg">Item Code not found in database! Please check and try again.</div>
-
-    <div id="resultSection" class="result-section">
-        <div class="details-card">
-            <h3 id="resTitle"></h3>
-            <div class="details-grid">
-                <div><strong>Item Code:</strong> <span id="resCode"></span></div>
-                <div><strong>Length:</strong> <span id="resLength"></span></div>
-                <div><strong>Thickness:</strong> <span id="resThick"></span></div>
-                <div><strong>Section Size:</strong> <span id="resSize"></span></div>
+        <div class="card">
+            <div class="row">
+                <div class="group">
+                    <label>Select Category / Tab:</label>
+                    <select id="sheetSelect">
+                        <option value="Sheet1">Sheet1 (Rafters)</option>
+                        <option value="Columns">Columns</option>
+                    </select>
+                </div>
+                <div class="group">
+                    <label>Enter Item Code:</label>
+                    <input type="text" id="searchQuery" placeholder="e.g. COLU-1620 or RAFT-0101" onkeydown="if(event.key === 'Enter') runSearch()">
+                </div>
+                <div class="group" style="flex: 0;">
+                    <button onclick="runSearch()">Search Item</button>
+                </div>
             </div>
         </div>
 
-        <h3>📄 Drawing PDF Preview</h3>
-        <div class="pdf-viewer-container">
-            <iframe id="pdfFrame" src=""></iframe>
+        <div class="card">
+            <h3>Search Results</h3>
+            <div id="resultBox" class="table-responsive">
+                <div class="msg">Please select category and enter an Item Code to search.</div>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    function getDrivePreviewUrl(url) {
-        if (!url) return "";
-        return url.replace(/\/view\?.*$/, "/preview");
-    }
+    <script>
+        // Yahan apna Google Apps Script ka deployed Web App URL paste karein
+        const WEB_APP_URL = "APNA_GOOGLE_APPS_SCRIPT_WEB_APP_URL_YAHAN_DALO";
 
-    const raftersDB = {
-        "RAFT-0101": { code: "RAFT-0101", desc: "R1PL - Rafter 1P Light (Mono 540)", size: "80x40x10 mm", thick: "1.2 mm", length: "1611 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1-w0BCIHwoz9eF-XGNVQVqnq6QI1RYkvq/view?usp=drive_link") },
-        "RAFT-0102": { code: "RAFT-0102", desc: "R1PM - Rafter 1P Medium (Mono 540)", size: "80x40x10 mm", thick: "1.5 mm", length: "1611 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1D9QSwNur_NvDNqqWB90KyFuJ-8dEx52k/view?usp=drive_link") },
-        "RAFT-0103": { code: "RAFT-0103", desc: "R1PH - Rafter 1P Heavy (Mono 540)", size: "80x40x10 mm", thick: "2.0 mm", length: "1611 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/19I1GcLM-ttewy3iDNiKDw1fwLJDBv-Qg/view?usp=drive_link") },
-        "RAFT-0201": { code: "RAFT-0201", desc: "R2PL - Rafter 2P Light (Mono 540)", size: "90x45x15 mm", thick: "1.2 mm", length: "3910 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1SSkArR29WG6pe8UuYFi9MtZ5q_5ZhnTn/view?usp=drive_link") },
-        "RAFT-0202": { code: "RAFT-0202", desc: "R2PM - Rafter 2P Medium (Mono 540)", size: "100x45x15 mm", thick: "1.5 mm", length: "3910 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1MVvUIEkqZDu6E8JOUZbeTjJVg5SuJrDy/view?usp=drive_link") },
-        "RAFT-0203": { code: "RAFT-0203", desc: "R2PH - Rafter 2P Heavy (Mono 540)", size: "130x45x15 mm", thick: "2.0 mm", length: "3910 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1rVSmv2g0QW3khxhrSYn1dMjRISh2z482/view?usp=drive_link") },
-        "RAFT-0311": { code: "RAFT-0311", desc: "R3PTL - Rafter 3P Top Light (Mono 540)", size: "125x55x15 mm", thick: "1.5 mm", length: "3000 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1xp0Emmm-xqY5YScRc2hE97R8hhmYaRoK/view?usp=drive_link") },
-        "RAFT-0312": { code: "RAFT-0312", desc: "R3PTM - Rafter 3P Top Medium (Mono 540)", size: "130x55x15 mm", thick: "2.0 mm", length: "3000 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1QQAeSb4smErtRnIyK7hxZhqduk9lqXRq/view?usp=drive_link") },
-        "RAFT-0313": { code: "RAFT-0313", desc: "R3PTH - Rafter 3P Top Heavy (Mono 540)", size: "180x55x15 mm", thick: "2.0 mm", length: "3000 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1nzi8X0zqcYO0FHHEdUbkBt8Xyah-Y2xl/view?usp=drive_link") },
-        "RAFT-0321": { code: "RAFT-0321", desc: "R3PBL - Rafter 3P Bottom Light (Mono 540)", size: "125x55x15 mm", thick: "1.5 mm", length: "3200 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1kaO9houqrNp9sBy7nAykWwNfH6dQZKoC/view?usp=drive_link") },
-        "RAFT-0322": { code: "RAFT-0322", desc: "R3PBM - Rafter 3P Bottom Medium (Mono 540)", size: "130x55x15 mm", thick: "2.0 mm", length: "3200 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1QR-FRZrIQIBe8G0KkCEmRzih6IR5g1Zl/view?usp=drive_link") },
-        "RAFT-0323": { code: "RAFT-0323", desc: "R3PBH - Rafter 3P Bottom Heavy (Mono 540)", size: "180x55x15 mm", thick: "2.0 mm", length: "3200 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1L6h9jpP8ykRjq6Qrdw93yO6U9YhYFDx4/view?usp=drive_link") },
-        "RAFT-1202": { code: "RAFT-1202", desc: "Rafter 2P Medium Gen 2 (Topcon 610)", size: "100x45x15 mm", thick: "1.5 mm", length: "4014 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/18F2_tPnxAT_cZHPkJG0ZED9W0dt2V4nX/view?usp=drive_link") },
-        "RAFT-1203": { code: "RAFT-1203", desc: "Rafter 2P Heavy Gen 2 (Topcon 610)", size: "130x45x15 mm", thick: "1.5 mm", length: "4014 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1vVzPharqtFXenhi5cRSwAJnbhccMSQPC/view?usp=drive_link") },
-        "RAFT-1204": { code: "RAFT-1204", desc: "Rafter 2P Super Heavy Gen 2 (Topcon 610)", size: "160x45x15 mm", thick: "1.5 mm", length: "4014 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1gpaDB-3CKpJvYcpOAEHd3eTZE8BXURbv/view?usp=drive_link") },
-        "RAFT-1312": { code: "RAFT-1312", desc: "Rafter 3P Top Medium Gen 2 (Topcon 610)", size: "130x55x15 mm", thick: "1.5 / 2.0 mm", length: "3104 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1G9y9vX3ndzabjqJu77bWn9AfeUk2S_rw/view?usp=drive_link") },
-        "RAFT-1313": { code: "RAFT-1313", desc: "Rafter 3P Top Heavy Gen 2 (Topcon 610)", size: "180x55x15 mm", thick: "1.5 / 2.0 mm", length: "3104 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1iTlBrkyIb4dEt2DaauAUU83PiI4dmpvr/view?usp=drive_link") },
-        "RAFT-1322": { code: "RAFT-1322", desc: "Rafter 3P Bottom Medium Gen 2 (Topcon 610)", size: "130x55x15 mm", thick: "1.5 / 2.0 mm", length: "3304 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1iTlBrkyIb4dEt2DaauAUU83PiI4dmpvr/view?usp=drive_link") },
-        "RAFT-1323": { code: "RAFT-1323", desc: "Rafter 3P Bottom Heavy Gen 2 (Topcon 610)", size: "180x55x15 mm", thick: "1.5 / 2.0 mm", length: "3304 mm", pdf: getDrivePreviewUrl("https://drive.google.com/file/d/1cEGfo466Lkitm4XrzUl0UgF5377q52F9/view?usp=drive_link") }
-    };
+        function runSearch() {
+            var sheetName = document.getElementById('sheetSelect').value;
+            var query = document.getElementById('searchQuery').value.trim();
+            var box = document.getElementById('resultBox');
+            
+            box.innerHTML = '<div class="msg">Searching database...</div>';
 
-    function showSuggestions() {
-        let inputVal = document.getElementById("codeInput").value.trim().toUpperCase();
-        let listContainer = document.getElementById("suggestionsList");
-        listContainer.innerHTML = "";
+            var url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(sheetName) + "&query=" + encodeURIComponent(query);
 
-        if (!inputVal) return;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data || data.length <= 1) {
+                        box.innerHTML = '<div class="msg error">No matching record found!</div>';
+                        return;
+                    }
 
-        let matches = [];
-        let searchKey = (!inputVal.includes("RAFT") && !isNaN(inputVal)) ? "RAFT-" + inputVal : inputVal;
+                    var html = '<table><thead><tr>';
+                    var headers = data[0];
+                    for (var i = 0; i < headers.length; i++) {
+                        html += '<th>' + headers[i] + '</th>';
+                    }
+                    html += '<th>PDF Action</th></tr></thead><tbody>';
 
-        for (let key in raftersDB) {
-            if (key.includes(searchKey) || raftersDB[key].desc.toUpperCase().includes(inputVal)) {
-                matches.push(raftersDB[key]);
-            }
+                    for (var r = 1; r < data.length; r++) {
+                        html += '<tr>';
+                        var row = data[r];
+                        for (var c = 0; c < row.length; c++) {
+                            html += '<td>' + (row[c] !== undefined ? row[c] : '') + '</td>';
+                        }
+                        html += '<td><button class="btn-pdf" onclick="openPdf(\'' + sheetName + '\', ' + r + ')">Open PDF</button></td>';
+                        html += '</tr>';
+                    }
+                    html += '</tbody></table>';
+                    box.innerHTML = html;
+                })
+                .catch(err => {
+                    box.innerHTML = '<div class="msg error">Connection Error: ' + err.message + '</div>';
+                });
         }
 
-        if (matches.length > 0) {
-            matches.forEach(item => {
-                let div = document.createElement("div");
-                div.className = "suggestion-item";
-                div.innerHTML = `<strong>${item.code}</strong> - ${item.desc}`;
-                div.onclick = function() {
-                    document.getElementById("codeInput").value = item.code;
-                    listContainer.innerHTML = "";
-                    displayItem(item.code);
-                };
-                listContainer.appendChild(div);
-            });
+        function openPdf(sheetName, rowIndex) {
+            var url = WEB_APP_URL + "?action=pdf&sheet=" + encodeURIComponent(sheetName) + "&row=" + rowIndex;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(res => {
+                    if (res && res.pdfUrl) {
+                        window.open(res.pdfUrl, '_blank');
+                    } else {
+                        alert('No PDF file found for this item in Drive or Sheet.');
+                    }
+                })
+                .catch(err => {
+                    alert('Error fetching PDF: ' + err.message);
+                });
         }
-    }
-
-    function handleSearchEnter(event) {
-        if (event.key === "Enter") {
-            let query = document.getElementById("codeInput").value.trim().toUpperCase();
-            document.getElementById("suggestionsList").innerHTML = "";
-
-            if (!query.includes("RAFT") && !isNaN(query)) {
-                query = "RAFT-" + query;
-            }
-
-            if (raftersDB[query]) {
-                displayItem(query);
-            } else {
-                // Agar exact match nahi mila toh pehla matching item utha lo
-                let foundKey = Object.keys(raftersDB).find(k => k.includes(query));
-                if (foundKey) {
-                    displayItem(foundKey);
-                } else {
-                    document.getElementById("resultSection").style.display = "none";
-                    document.getElementById("errorMsg").style.display = "block";
-                }
-            }
-        }
-    }
-
-    function displayItem(code) {
-        const item = raftersDB[code];
-        const resultSec = document.getElementById("resultSection");
-        const errorMsg = document.getElementById("errorMsg");
-
-        if (item) {
-            errorMsg.style.display = "none";
-            document.getElementById("resCode").innerText = item.code;
-            document.getElementById("resTitle").innerText = item.desc;
-            document.getElementById("resLength").innerText = item.length;
-            document.getElementById("resThick").innerText = item.thick;
-            document.getElementById("resSize").innerText = item.size;
-            document.getElementById("pdfFrame").src = item.pdf || "";
-            resultSec.style.display = "block";
-        }
-    }
-
-    // Hide suggestions when clicking outside
-    document.addEventListener("click", function(e) {
-        if (!e.target.closest(".search-container")) {
-            document.getElementById("suggestionsList").innerHTML = "";
-        }
-    });
-</script>
-
+    </script>
 </body>
 </html>
