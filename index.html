@@ -28,7 +28,7 @@
     <div class="container">
         <div class="card" style="text-align: center;">
             <h2>Rafter & Column Master Data Search</h2>
-            <p>Search by Item Code (e.g. RAFT-0101 or COLU-1620) across Sheets and open PDFs</p>
+            <p>Hosted on GitHub & Connected to Google Sheet</p>
         </div>
 
         <div class="card">
@@ -59,8 +59,8 @@
     </div>
 
     <script>
-        // Yahan apna Google Apps Script ka deployed Web App URL paste karein
-        const WEB_APP_URL = "APNA_GOOGLE_APPS_SCRIPT_WEB_APP_URL_YAHAN_DALO";
+        // Aapka naya Web App URL yahan properly configured hai
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxjnM58NxITtap_ewWL_RzJomDv4L78x4X9iI5j55XRmyDqYaH4QcVh66uPZAnkviopdw/exec";
 
         function runSearch() {
             var sheetName = document.getElementById('sheetSelect').value;
@@ -72,7 +72,10 @@
             var url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(sheetName) + "&query=" + encodeURIComponent(query);
 
             fetch(url)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.json();
+                })
                 .then(data => {
                     if (!data || data.length <= 1) {
                         box.innerHTML = '<div class="msg error">No matching record found!</div>';
@@ -92,14 +95,14 @@
                         for (var c = 0; c < row.length; c++) {
                             html += '<td>' + (row[c] !== undefined ? row[c] : '') + '</td>';
                         }
-                        html += '<td><button class="btn-pdf" onclick="openPdf(\'' + sheetName + '\', ' + r + ')">Open PDF</button></td>';
+                        html += '<td><button class="btn-pdf" onclick="openPdf(\'' + sheetName + \'', ' + r + ')">Open PDF</button></td>';
                         html += '</tr>';
                     }
                     html += '</tbody></table>';
                     box.innerHTML = html;
                 })
                 .catch(err => {
-                    box.innerHTML = '<div class="msg error">Connection Error: ' + err.message + '</div>';
+                    box.innerHTML = '<div class="msg error">Connection Error: ' + err.message + '. Please check Web App URL & permissions.</div>';
                 });
         }
 
