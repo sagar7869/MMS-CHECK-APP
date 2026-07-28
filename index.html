@@ -6,20 +6,26 @@
     <title>Rafter & Column Master Data Search</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f8f9fa; padding: 20px; color: #333; margin: 0; }
-        .container { max-width: 1400px; margin: 0 auto; }
-        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .row { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
         .group { flex: 1; min-width: 220px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
         select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         button { background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; }
         button:hover { background: #1557b0; }
-        .table-responsive { width: 100%; overflow-x: auto; max-height: 500px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; white-space: nowrap; }
-        th { background: #f1f3f4; position: sticky; top: 0; z-index: 1; }
-        .btn-pdf { background: #d93025; color: white; border: none; padding: 6px 12px; border-radius: 3px; cursor: pointer; font-size: 12px; }
-        .btn-pdf:hover { background: #b31412; }
+        
+        /* Specifications Layout */
+        .spec-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 15px; }
+        .spec-item { background: #f1f3f4; padding: 12px 15px; border-radius: 6px; border-left: 4px solid #1a73e8; }
+        .spec-title { font-size: 12px; color: #5f6368; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
+        .spec-value { font-size: 15px; color: #202124; font-weight: 600; word-break: break-all; }
+        
+        /* Direct PDF Viewer Frame */
+        .pdf-viewer-section { margin-top: 25px; }
+        .pdf-viewer-section h3 { margin-bottom: 10px; color: #1a73e8; }
+        iframe { width: 100%; height: 600px; border: 1px solid #ccc; border-radius: 6px; background: #fff; }
+        
         .msg { text-align: center; padding: 20px; font-weight: bold; color: #666; }
         .error { color: #d93025; }
     </style>
@@ -28,7 +34,7 @@
     <div class="container">
         <div class="card" style="text-align: center;">
             <h2>Rafter & Column Master Data Search</h2>
-            <p>Search by Item Code across Sheets and open PDFs</p>
+            <p>Search by Item Code to view Specifications and Direct PDF Preview</p>
         </div>
 
         <div class="card">
@@ -51,9 +57,17 @@
         </div>
 
         <div class="card">
-            <h3>Search Results</h3>
-            <div id="resultBox" class="table-responsive">
+            <h3>Item Specifications</h3>
+            <div id="resultBox">
                 <div class="msg">Please select category and enter an Item Code to search.</div>
+            </div>
+        </div>
+
+        <!-- Direct PDF Viewer Card -->
+        <div class="card" id="pdfCard" style="display: none;">
+            <div class="pdf-viewer-section">
+                <h3>Engineering Drawing Preview (PDF)</h3>
+                <iframe id="pdfFrame" src=""></iframe>
             </div>
         </div>
     </div>
@@ -63,71 +77,76 @@
 
         document.getElementById('searchBtn').addEventListener('click', runSearch);
         document.getElementById('searchQuery').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                runSearch();
-            }
+            if (e.key === 'Enter') { runSearch(); }
         });
 
         function runSearch() {
             var sheetName = document.getElementById('sheetSelect').value;
             var query = document.getElementById('searchQuery').value.trim();
             var box = document.getElementById('resultBox');
+            var pdfCard = document.getElementById('pdfCard');
             
             box.innerHTML = '<div class="msg">Searching database...</div>';
+            pdfCard.style.display = 'none';
 
             var url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(sheetName) + "&query=" + encodeURIComponent(query);
 
             fetch(url)
-                .then(function(response) {
-                    if (!response.ok) throw new Error("Network response was not ok");
-                    return response.json();
-                })
+                .then(function(response) { return response.json(); })
                 .then(function(data) {
                     if (!data || data.length <= 1) {
                         box.innerHTML = '<div class="msg error">No matching record found!</div>';
                         return;
                     }
 
-                    var html = '<table><thead><tr>';
-                    var headers = data[0];
-                    for (var i = 0; i < headers.length; i++) {
-                        html += '<th>' + headers[i] + '</th>';
-                    }
-                    html += '<th>PDF Action</th></tr></thead><tbody>';
+                    var headers = data[0]; 
+                    var row = data[1];     
 
-                    for (var r = 1; r < data.length; r++) {
-                        html += '<tr>';
-                        var row = data[r];
-                        for (var c = 0; c < row.length; c++) {
-                            html += '<td>' + (row[c] !== undefined ? row[c] : '') + '</td>';
+                    var html = '<div class="spec-container">';
+                    for (var i = 0; i < headers.length; i++) {
+                        var hName = headers[i];
+                        var val = row[i] !== undefined ? row[i] : '';
+                        
+                        if (hName.toLowerCase().indexOf('pdf') === -1) {
+                            html += '<div class="spec-item">';
+                            html += '<div class="spec-title">' + hName + '</div>';
+                            html += '<div class="spec-value">' + (val !== '' ? val : '-') + '</div>';
+                            html += '</div>';
                         }
-                        html += '<td><button class="btn-pdf" onclick="openPdf(\x27' + sheetName + '\x27, ' + r + ')">Open PDF</button></td>';
-                        html += '</tr>';
                     }
-                    html += '</tbody></table>';
+                    html += '</div>';
                     box.innerHTML = html;
+
+                    // Automatically fetch and show PDF in preview frame
+                    fetchPdfUrl(sheetName, 1);
                 })
                 .catch(function(err) {
                     box.innerHTML = '<div class="msg error">Connection Error: ' + err.message + '</div>';
                 });
         }
 
-        function openPdf(sheetName, rowIndex) {
+        function fetchPdfUrl(sheetName, rowIndex) {
             var url = WEB_APP_URL + "?action=pdf&sheet=" + encodeURIComponent(sheetName) + "&row=" + rowIndex;
             
             fetch(url)
-                .then(function(response) {
-                    return response.json();
-                })
+                .then(function(response) { return response.json(); })
                 .then(function(res) {
                     if (res && res.pdfUrl) {
-                        window.open(res.pdfUrl, '_blank');
-                    } else {
-                        alert('No PDF file found for this item in Drive or Sheet.');
+                        var pdfCard = document.getElementById('pdfCard');
+                        var pdfFrame = document.getElementById('pdfFrame');
+                        
+                        // Convert Google Drive view link to embed preview format if needed
+                        var embedUrl = res.pdfUrl;
+                        if (embedUrl.indexOf('view') !== -1) {
+                            embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view', '/preview');
+                        }
+                        
+                        pdfFrame.src = embedUrl;
+                        pdfCard.style.display = 'block';
                     }
                 })
                 .catch(function(err) {
-                    alert('Error fetching PDF: ' + err.message);
+                    console.error('Error fetching PDF preview: ' + err.message);
                 });
         }
     </script>
