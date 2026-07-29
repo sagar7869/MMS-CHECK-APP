@@ -5,71 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rafter & Column Master Data Search</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f8f9fa; padding: 20px; color: #333; margin: 0; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .card { background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            --card-bg: #ffffff;
+            --bg-color: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        
+        /* Header */
+        .header-card { background: var(--primary-gradient); color: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); text-align: center; margin-bottom: 20px; }
+        .header-card h2 { margin: 0 0 5px 0; font-size: 24px; }
+        .header-card p { margin: 0; opacity: 0.85; font-size: 13px; }
+
+        /* Search Form */
+        .search-card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 20px; border: 1px solid var(--border-color); }
         .row { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
         .group { flex: 1; min-width: 220px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        button:hover { background: #1557b0; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
+        select, input { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; background: #f8fafc; }
+        select:focus, input:focus { border-color: #3b82f6; outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         
-        /* Specifications Layout */
-        .spec-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 15px; }
-        .spec-item { background: #f1f3f4; padding: 12px 15px; border-radius: 6px; border-left: 4px solid #1a73e8; }
-        .spec-title { font-size: 12px; color: #5f6368; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
-        .spec-value { font-size: 15px; color: #202124; font-weight: 600; word-break: break-all; }
+        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; transition: background 0.2s; }
+        button:hover { background: #2563eb; }
+
+        /* Category Wise Summary Cards Layout */
+        .section-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; margin-bottom: 20px; }
         
-        /* Direct PDF Viewer Frame */
-        .pdf-viewer-section { margin-top: 25px; }
-        .pdf-viewer-section h3 { margin-bottom: 10px; color: #1a73e8; }
-        iframe { width: 100%; height: 600px; border: 1px solid #ccc; border-radius: 6px; background: #fff; }
+        .category-card { background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02); overflow: hidden; }
+        .cat-header { background: #f1f5f9; padding: 10px 15px; font-weight: 700; font-size: 13px; color: #334155; border-bottom: 1px solid var(--border-color); text-transform: uppercase; letter-spacing: 0.5px; }
+        .cat-body { padding: 12px 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         
-        .msg { text-align: center; padding: 20px; font-weight: bold; color: #666; }
-        .error { color: #d93025; }
+        .data-item { display: flex; flex-direction: column; }
+        .data-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        .data-val { font-size: 14px; color: var(--text-main); font-weight: 700; margin-top: 2px; }
+
+        /* Expandable Accordion for All Data */
+        .expand-section { margin-bottom: 20px; }
+        .expand-btn { background: #e2e8f0; color: #334155; border: none; width: 100%; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; text-align: center; font-size: 13px; }
+        .expand-btn:hover { background: #cbd5e1; }
+        .all-specs-box { display: none; background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+
+        /* PDF Direct Preview Box */
+        .pdf-card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border-color); margin-top: 20px; display: none; }
+        .pdf-frame-container { position: relative; width: 100%; height: 500px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #e2e8f0; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        .msg { text-align: center; padding: 30px; font-weight: 600; color: var(--text-muted); background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); }
+        .error { color: #dc2626; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card" style="text-align: center;">
-            <h2>Rafter & Column Master Data Search</h2>
-            <p>Search by Item Code to view Specifications and Direct PDF Preview</p>
+        <!-- Header -->
+        <div class="header-card">
+            <h2>Rafter & Column Master Data Portal</h2>
+            <p>Structured Category View & Direct PDF Preview</p>
         </div>
 
-        <div class="card">
+        <!-- Search Card -->
+        <div class="search-card">
             <div class="row">
                 <div class="group">
-                    <label>Select Category / Tab:</label>
+                    <label>Select Category / Tab</label>
                     <select id="sheetSelect">
                         <option value="Sheet1">Sheet1 (Rafters)</option>
                         <option value="Columns">Columns</option>
                     </select>
                 </div>
                 <div class="group">
-                    <label>Enter Item Code:</label>
+                    <label>Enter Item Code</label>
                     <input type="text" id="searchQuery" placeholder="e.g. COLU-1620 or RAFT-0101">
                 </div>
                 <div class="group" style="flex: 0;">
-                    <button id="searchBtn">Search Item</button>
+                    <button id="searchBtn">Search</button>
                 </div>
             </div>
         </div>
 
-        <div class="card">
-            <h3>Item Specifications</h3>
-            <div id="resultBox">
-                <div class="msg">Please select category and enter an Item Code to search.</div>
+        <!-- Main Results Container (Hidden initially) -->
+        <div id="resultsWrapper" style="display: none;">
+            <div class="section-title">📌 Core Specifications (Category-wise)</div>
+            <div id="categoryGrid" class="category-grid"></div>
+
+            <!-- Expandable Button for Extra/All Details -->
+            <div class="expand-section">
+                <button class="expand-btn" id="toggleExpandBtn" onclick="toggleAllSpecs()">▼ View All Detailed Specifications</button>
+                <div id="allSpecsBox" class="all-specs-box"></div>
             </div>
         </div>
 
-        <!-- Direct PDF Viewer Card -->
-        <div class="card" id="pdfCard" style="display: none;">
-            <div class="pdf-viewer-section">
-                <h3>Engineering Drawing Preview (PDF)</h3>
+        <!-- Direct PDF Viewer -->
+        <div class="pdf-card" id="pdfCard">
+            <div class="section-title">📄 Engineering Drawing Preview</div>
+            <div class="pdf-frame-container">
                 <iframe id="pdfFrame" src=""></iframe>
             </div>
         </div>
+
+        <div id="msgBox" class="msg">Please select a category and enter an Item Code to begin search.</div>
     </div>
 
     <script>
@@ -83,10 +121,13 @@
         function runSearch() {
             var sheetName = document.getElementById('sheetSelect').value;
             var query = document.getElementById('searchQuery').value.trim();
-            var box = document.getElementById('resultBox');
+            var msgBox = document.getElementById('msgBox');
+            var resultsWrapper = document.getElementById('resultsWrapper');
             var pdfCard = document.getElementById('pdfCard');
             
-            box.innerHTML = '<div class="msg">Searching database...</div>';
+            msgBox.style.display = 'block';
+            msgBox.innerHTML = 'Searching database...';
+            resultsWrapper.style.display = 'none';
             pdfCard.style.display = 'none';
 
             var url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(sheetName) + "&query=" + encodeURIComponent(query);
@@ -95,37 +136,97 @@
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
                     if (!data || data.length <= 1) {
-                        box.innerHTML = '<div class="msg error">No matching record found!</div>';
+                        msgBox.innerHTML = '<span class="error">No matching record found! Please check the Item Code.</span>';
                         return;
                     }
 
+                    msgBox.style.display = 'none';
+                    resultsWrapper.style.display = 'block';
+
                     var headers = data[0]; 
                     var row = data[1];     
-
-                    var html = '<div class="spec-container">';
+                    
+                    // Map headers to row values for easy lookup
+                    var dataMap = {};
                     for (var i = 0; i < headers.length; i++) {
-                        var hName = headers[i];
-                        var val = row[i] !== undefined ? row[i] : '';
-                        
-                        if (hName.toLowerCase().indexOf('pdf') === -1) {
-                            html += '<div class="spec-item">';
-                            html += '<div class="spec-title">' + hName + '</div>';
-                            html += '<div class="spec-value">' + (val !== '' ? val : '-') + '</div>';
-                            html += '</div>';
+                        dataMap[headers[i].toString().trim().toLowerCase()] = row[i] !== undefined ? row[i] : '-';
+                    }
+
+                    // Helper to get value securely
+                    function getVal(keyKeywords) {
+                        for (var key in dataMap) {
+                            for (var k = 0; k < keyKeywords.length; k++) {
+                                if (key.indexOf(keyKeywords[k]) !== -1) {
+                                    return dataMap[key];
+                                }
+                            }
+                        }
+                        return '-';
+                    }
+
+                    // 1. Render Category-wise Structured Cards (excluding current/voltage/co2/welded as requested)
+                    var catHtml = '';
+
+                    // Box 1: General & Dimensions
+                    catHtml += '<div class="category-card"><div class="cat-header">📏 Basic & Dimensions</div><div class="cat-body">';
+                    catHtml += createDataBox('Item Code', getVal(['item code']));
+                    catHtml += createDataBox('Length', getVal(['length']));
+                    catHtml += createDataBox('Thickness', getVal(['thickness']));
+                    catHtml += createDataBox('Section Size', getVal(['section size']));
+                    catHtml += '</div></div>';
+
+                    // Box 2: Cee Section Info
+                    catHtml += '<div class="category-card"><div class="cat-header">🔲 Cee Section Info</div><div class="cat-body">';
+                    catHtml += createDataBox('Top Cee Size', getVal(['top cee']));
+                    catHtml += createDataBox('Bottom Cee Size', getVal(['bottom cee']));
+                    catHtml += '</div></div>';
+
+                    // Box 3: Rib & Plate Information
+                    catHtml += '<div class="category-card"><div class="cat-header">🧱 Rib & Base Plate</div><div class="cat-body">';
+                    catHtml += createDataBox('Rib Size', getVal(['rib size']));
+                    catHtml += createDataBox('Rib Thickness', getVal(['rib thickness']));
+                    catHtml += createDataBox('Base Plate Size', getVal(['base plate size']));
+                    catHtml += createDataBox('Plate Thickness', getVal(['base plate thickness']));
+                    catHtml += '</div></div>';
+
+                    document.getElementById('categoryGrid').innerHTML = catHtml;
+
+                    // 2. Render All Detailed Specifications inside Expandable Box
+                    var allHtml = '';
+                    for (var j = 0; j < headers.length; j++) {
+                        var h = headers[j];
+                        var v = row[j] !== undefined ? row[j] : '-';
+                        if (h.toLowerCase().indexOf('pdf') === -1) {
+                            allHtml += '<div class="data-item"><span class="data-label">' + h + '</span><span class="data-val">' + (v !== '' ? v : '-') + '</span></div>';
                         }
                     }
-                    html += '</div>';
-                    box.innerHTML = html;
+                    document.getElementById('allSpecsBox').innerHTML = allHtml;
 
-                    // Automatically fetch and show PDF in preview frame
-                    fetchPdfUrl(sheetName, 1);
+                    // Fetch and embed PDF preview directly
+                    fetchAndShowPdf(sheetName, 1);
                 })
                 .catch(function(err) {
-                    box.innerHTML = '<div class="msg error">Connection Error: ' + err.message + '</div>';
+                    msgBox.innerHTML = '<span class="error">Connection Error: ' + err.message + '</span>';
                 });
         }
 
-        function fetchPdfUrl(sheetName, rowIndex) {
+        function createDataBox(label, val) {
+            return '<div class="data-item"><span class="data-label">' + label + '</span><span class="data-val">' + (val !== '' ? val : '-') + '</span></div>';
+        }
+
+        function toggleAllSpecs() {
+            var box = document.getElementById('allSpecsBox');
+            var btn = document.getElementById('toggleExpandBtn');
+            if (box.style.display === 'grid') {
+                box.style.display = 'none';
+                btn.innerHTML = '▼ View All Detailed Specifications';
+            } else {
+                box.style.display = 'grid';
+                btn.innerHTML = '▲ Hide Detailed Specifications';
+            }
+        }
+
+        function fetchAndShowPdf(sheetName, rowIndex) {
             var url = WEB_APP_URL + "?action=pdf&sheet=" + encodeURIComponent(sheetName) + "&row=" + rowIndex;
             
             fetch(url)
@@ -135,9 +236,8 @@
                         var pdfCard = document.getElementById('pdfCard');
                         var pdfFrame = document.getElementById('pdfFrame');
                         
-                        // Convert Google Drive view link to embed preview format if needed
                         var embedUrl = res.pdfUrl;
-                        if (embedUrl.indexOf('view') !== -1) {
+                        if (embedUrl.indexOf('drive.google.com') !== -1) {
                             embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view', '/preview');
                         }
                         
@@ -146,7 +246,7 @@
                     }
                 })
                 .catch(function(err) {
-                    console.error('Error fetching PDF preview: ' + err.message);
+                    console.error('Error loading PDF: ' + err.message);
                 });
         }
     </script>
