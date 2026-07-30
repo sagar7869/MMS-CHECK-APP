@@ -20,15 +20,22 @@
         .header-card h2 { margin: 0 0 5px 0; font-size: 22px; }
         .header-card p { margin: 0; opacity: 0.85; font-size: 12px; }
 
-        .search-card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 20px; border: 1px solid var(--border-color); }
+        .search-card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 20px; border: 1px solid var(--border-color); position: relative; }
         .row { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
-        .group { flex: 1; min-width: 220px; }
+        .group { flex: 1; min-width: 220px; position: relative; }
         label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
-        select, input { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; background: #f8fafc; }
+        select, input { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; background: #f8fafc; box-sizing: border-box; }
         select:focus, input:focus { border-color: #3b82f6; outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         
         button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; transition: background 0.2s; }
         button:hover { background: #2563eb; }
+        .btn-clear { background: #64748b; }
+        .btn-clear:hover { background: #475569; }
+
+        /* Autocomplete List */
+        .autocomplete-items { position: absolute; border: 1px solid var(--border-color); border-bottom: none; border-top: none; z-index: 99; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 6px 6px; max-height: 150px; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .autocomplete-items div { padding: 10px; cursor: pointer; background: #fff; border-bottom: 1px solid var(--border-color); font-size: 13px; }
+        .autocomplete-items div:hover { background: #f1f5f9; }
 
         .section-title { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
         .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; margin-bottom: 20px; }
@@ -58,24 +65,26 @@
     <div class="container">
         <div class="header-card">
             <h2>Rafter & Column Master Data Portal</h2>
-            <p>Fast Search by Number (e.g. 2811, 1620) & Instant Preview</p>
+            <p>Fast Search & Instant Preview</p>
         </div>
 
         <div class="search-card">
             <div class="row">
                 <div class="group">
-                    <label>Select Category / Tab</label>
+                    <label>Select Category</label>
                     <select id="sheetSelect" onchange="onCategoryChange()">
-                        <option value="Sheet1">Sheet1 (Rafters)</option>
+                        <option value="Rafters">Rafters</option>
                         <option value="Columns">Columns</option>
                     </select>
                 </div>
-                <div class="group">
+                <div class="group" style="position: relative;">
                     <label>Enter Item Code / Number</label>
-                    <input type="text" id="searchQuery" placeholder="e.g. 2811 or 1620">
+                    <input type="text" id="searchQuery" placeholder="e.g. 1620, 2811" autocomplete="off">
+                    <div id="autocompleteList" class="autocomplete-items"></div>
                 </div>
-                <div class="group" style="flex: 0;">
+                <div class="group" style="flex: 0; display: flex; gap: 8px;">
                     <button id="searchBtn">Search</button>
+                    <button id="clearBtn" class="btn-clear" onclick="clearSearch()">Clear</button>
                 </div>
             </div>
         </div>
@@ -102,29 +111,75 @@
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxjnM58NxITtap_ewWL_RzJomDv4L78x4X9iI5j55XRmyDqYaH4QcVh66uPZAnkviopdw/exec";
+        
+        // Dummy master list for quick suggestion matching
+        const sampleCodes = ["0101", "0102", "0103", "1323", "1620", "2811", "2621", "2612", "3811", "3621", "2812", "3613", "3813", "3821"];
 
         function onCategoryChange() {
+            clearSearch();
+            document.getElementById('msgBox').innerHTML = 'Category changed. Please enter item code/number.';
+        }
+
+        function clearSearch() {
             document.getElementById('searchQuery').value = '';
             document.getElementById('resultsWrapper').style.display = 'none';
             document.getElementById('pdfCard').style.display = 'none';
             document.getElementById('msgBox').style.display = 'block';
-            document.getElementById('msgBox').innerHTML = 'Category changed. Please enter item code/number.';
+            document.getElementById('msgBox').innerHTML = 'Please select a category and enter an item number to search.';
+            document.getElementById('autocompleteListinnerHTML').innerHTML = '';
+            document.getElementById('searchQuery').focus();
         }
 
         document.getElementById('searchBtn').addEventListener('click', runSearch);
-        document.getElementById('searchQuery').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') { runSearch(); }
+        
+        let searchInput = document.getElementById('searchQuery');
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') { 
+                closeAllLists();
+                runSearch(); 
+            }
+        });
+
+        // Autocomplete logic
+        searchInput.addEventListener('input', function(e) {
+            var val = this.value;
+            closeAllLists();
+            if (!val) { return false; }
+            
+            var listContainer = document.getElementById('autocompleteList');
+            listContainer.innerHTML = '';
+            
+            var matches = sampleCodes.filter(item => item.toLowerCase().includes(val.toLowerCase()));
+            matches.forEach(match => {
+                var itemDiv = document.createElement('div');
+                itemDiv.innerHTML = "<strong>" + match.substr(0, val.length) + "</strong>" + match.substr(val.length);
+                itemDiv.addEventListener('click', function(e) {
+                    searchInput.value = match;
+                    closeAllLists();
+                    runSearch();
+                });
+                listContainer.appendChild(itemDiv);
+            });
+        });
+
+        function closeAllLists() {
+            document.getElementById('autocompleteList').innerHTML = '';
+        }
+
+        document.addEventListener('click', function (e) {
+            if (e.target !== searchInput) { closeAllLists(); }
         });
 
         function runSearch() {
             var sheetName = document.getElementById('sheetSelect').value;
-            var query = document.getElementById('searchQuery').value.trim();
+            var query = searchInput.value.trim();
             var msgBox = document.getElementById('msgBox');
             var resultsWrapper = document.getElementById('resultsWrapper');
             var pdfCard = document.getElementById('pdfCard');
             
             if(!query) {
                 alert('Please enter a search code or number!');
+                searchInput.focus();
                 return;
             }
 
@@ -138,17 +193,18 @@
             fetch(url)
                 .then(function(response) { return response.json(); })
                 .then(function(resData) {
-                    // Check if response contains row and data structure
-                    var data = resData.data || resData;
-                    var rowIndex = resData.rowIndex;
-
-                    if (!data || data.length <= 1) {
-                        msgBox.innerHTML = '<span class="error">No matching record found for "' + query + '"!</span>';
+                    if (resData.error || !resData.data || resData.data.length <= 1) {
+                        msgBox.innerHTML = '<span class="error">⚠️ Wrong category selected or item "' + query + '" not found in ' + sheetName + '! Please check and try again.</span>';
+                        searchInput.focus();
+                        searchInput.select();
                         return;
                     }
 
                     msgBox.style.display = 'none';
                     resultsWrapper.style.display = 'block';
+
+                    var data = resData.data;
+                    var rowIndex = resData.rowIndex;
 
                     var headers = data[0]; 
                     var row = data[1];     
@@ -201,15 +257,21 @@
                             allHtml += '<div class="data-item"><span class="data-label">' + h + '</span><span class="data-val">' + (v !== '' ? v : '-') + '</span></div>';
                         }
                     }
+                    document.getElementById('allSpecsBox').style.display = 'none';
+                    document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Detailed Specifications';
                     document.getElementById('allSpecsBox').innerHTML = allHtml;
 
-                    // Ab yahan hardcoded 1 ki jagah backend se mila hua exact rowIndex pass hoga
                     if (rowIndex) {
                         fetchAndShowPdf(sheetName, rowIndex);
                     }
+                    
+                    // Keep cursor back inside search input for next search
+                    searchInput.focus();
+                    searchInput.select();
                 })
                 .catch(function(err) {
                     msgBox.innerHTML = '<span class="error">Connection Error: ' + err.message + '</span>';
+                    searchInput.focus();
                 });
         }
 
