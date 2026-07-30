@@ -6,70 +6,80 @@
     <title>Rafter & Column Master Data Portal</title>
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #3b82f6 50%, #06b6d4 100%);
             --card-bg: #ffffff;
-            --bg-color: #f8fafc;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
+            --bg-color: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-color: #cbd5e1;
+            --accent-color: #6366f1;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; padding-bottom: 30px; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; padding-bottom: 40px; }
         
-        .header-card { background: var(--primary-gradient); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); text-align: center; margin-bottom: 20px; }
-        .header-card h2 { margin: 0 0 5px 0; font-size: 22px; }
-        .header-card p { margin: 0; opacity: 0.85; font-size: 12px; }
+        /* Modern Header */
+        .header-card { background: var(--primary-gradient); color: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3); text-align: center; margin-bottom: 24px; position: relative; overflow: hidden; }
+        .header-card h2 { margin: 0 0 8px 0; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+        .header-card p { margin: 0; opacity: 0.9; font-size: 13px; font-weight: 500; }
 
-        .search-card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 20px; border: 1px solid var(--border-color); position: relative; }
-        .row { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
+        /* Search Card */
+        .search-card { background: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05); margin-bottom: 24px; border: 1px solid var(--border-color); position: relative; }
+        .row { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
         .group { flex: 1; min-width: 220px; position: relative; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
-        select, input { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; background: #f8fafc; box-sizing: border-box; }
-        select:focus, input:focus { border-color: #3b82f6; outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        select, input { width: 100%; padding: 12px 14px; border: 2px solid var(--border-color); border-radius: 8px; font-size: 14px; background: #f8fafc; box-sizing: border-box; transition: all 0.2s ease; font-weight: 600; color: var(--text-main); }
+        select:focus, input:focus { border-color: var(--accent-color); outline: none; background: #fff; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); }
         
-        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; transition: background 0.2s; }
-        button:hover { background: #2563eb; }
-        .btn-clear { background: #64748b; }
+        button { background: var(--accent-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25); }
+        button:hover { background: #4f46e5; transform: translateY(-1px); }
+        .btn-clear { background: #64748b; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2); }
         .btn-clear:hover { background: #475569; }
 
-        /* Autocomplete List */
-        .autocomplete-items { position: absolute; border: 1px solid var(--border-color); border-bottom: none; border-top: none; z-index: 99; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 6px 6px; max-height: 150px; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .autocomplete-items div { padding: 10px; cursor: pointer; background: #fff; border-bottom: 1px solid var(--border-color); font-size: 13px; }
-        .autocomplete-items div:hover { background: #f1f5f9; }
+        /* Loading Animation Effect on Search */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        .searching-effect { animation: pulseGlow 1.2s infinite; border-color: var(--accent-color) !important; background: #e0e7ff !important; }
 
-        .section-title { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        /* Autocomplete Keyboard Navigation Styles */
+        .autocomplete-items { position: absolute; border: 1px solid var(--border-color); z-index: 99; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 8px 8px; max-height: 180px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .autocomplete-items div { padding: 12px 14px; cursor: pointer; background: #fff; border-bottom: 1px solid #f1f5f9; font-size: 14px; font-weight: 600; color: var(--text-main); }
+        .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #e0e7ff; color: #3730a3; }
+
+        .section-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px; }
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px; }
         
-        .category-card { background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02); overflow: hidden; }
-        .cat-header { background: #f1f5f9; padding: 10px 15px; font-weight: 700; font-size: 13px; color: #334155; border-bottom: 1px solid var(--border-color); text-transform: uppercase; }
-        .cat-body { padding: 12px 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .category-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; transition: transform 0.2s; }
+        .category-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+        .cat-header { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 12px 16px; font-weight: 800; font-size: 12px; color: #334155; border-bottom: 1px solid var(--border-color); text-transform: uppercase; letter-spacing: 0.5px; }
+        .cat-body { padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         
         .data-item { display: flex; flex-direction: column; }
-        .data-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
-        .data-val { font-size: 14px; color: var(--text-main); font-weight: 700; margin-top: 2px; }
+        .data-label { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .data-val { font-size: 15px; color: var(--text-main); font-weight: 800; margin-top: 3px; }
 
-        .expand-section { margin-bottom: 20px; }
-        .expand-btn { background: #e2e8f0; color: #334155; border: none; width: 100%; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; text-align: center; font-size: 13px; }
+        .expand-section { margin-bottom: 24px; }
+        .expand-btn { background: #e2e8f0; color: #1e293b; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; transition: background 0.2s; }
         .expand-btn:hover { background: #cbd5e1; }
-        .all-specs-box { display: none; background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+        .all-specs-box { display: none; background: var(--card-bg); padding: 18px; border-radius: 12px; border: 1px solid var(--border-color); margin-top: 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
 
-        .pdf-card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border-color); margin-top: 20px; display: none; }
-        .pdf-frame-container { position: relative; width: 100%; height: 450px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #e2e8f0; }
+        .pdf-card { background: var(--card-bg); padding: 20px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid var(--border-color); margin-top: 24px; display: none; }
+        .pdf-frame-container { position: relative; width: 100%; height: 480px; border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; background: #e2e8f0; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        .msg { text-align: center; padding: 30px; font-weight: 600; color: var(--text-muted); background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); }
-        .error { color: #dc2626; }
+        .msg { text-align: center; padding: 40px; font-weight: 700; color: var(--text-muted); background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .error { color: #dc2626; font-weight: 700; }
 
-        /* Professional Footer Styling */
-        .portal-footer { text-align: center; margin-top: 30px; padding: 15px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-color); }
-        .portal-footer strong { color: var(--text-main); font-weight: 700; }
+        .portal-footer { text-align: center; margin-top: 40px; padding: 20px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+        .portal-footer strong { color: var(--text-main); font-weight: 800; background: linear-gradient(135deg, #4f46e5, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-card">
             <h2>Rafter & Column Master Data Portal</h2>
-            <p>Fast Search & Instant Preview</p>
+            <p>High Performance Engineering Search & Instant Preview</p>
         </div>
 
         <div class="search-card">
@@ -77,7 +87,7 @@
                 <div class="group">
                     <label>Select Category</label>
                     <select id="sheetSelect" onchange="onCategoryChange()">
-                        <option value="Rafters">Rafters</option>
+                        <option value="Sheet1">Rafters</option>
                         <option value="Columns">Columns</option>
                     </select>
                 </div>
@@ -112,7 +122,6 @@
 
         <div id="msgBox" class="msg">Please select a category and enter an item number to search.</div>
 
-        <!-- Professional Footer -->
         <div class="portal-footer">
             Developed by <strong>Sagar Hirole</strong>
         </div>
@@ -120,8 +129,9 @@
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxjnM58NxITtap_ewWL_RzJomDv4L78x4X9iI5j55XRmyDqYaH4QcVh66uPZAnkviopdw/exec";
-        
         const sampleCodes = ["0101", "0102", "0103", "1323", "1620", "2811", "2621", "2612", "3811", "3621", "2812", "3613", "3813", "3821"];
+        
+        let currentFocus = -1;
 
         function onCategoryChange() {
             clearSearch();
@@ -129,36 +139,68 @@
         }
 
         function clearSearch() {
-            document.getElementById('searchQuery').value = '';
+            let input = document.getElementById('searchQuery');
+            input.value = '';
+            input.classList.remove('searching-effect');
             document.getElementById('resultsWrapper').style.display = 'none';
             document.getElementById('pdfCard').style.display = 'none';
             document.getElementById('msgBox').style.display = 'block';
             document.getElementById('msgBox').innerHTML = 'Please select a category and enter an item number to search.';
-            document.getElementById('autocompleteList').innerHTML = '';
-            document.getElementById('searchQuery').focus();
+            closeAllLists();
+            input.focus();
         }
 
-        document.getElementById('searchBtn').addEventListener('click', runSearch);
-        
         let searchInput = document.getElementById('searchQuery');
-        searchInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') { 
-                closeAllLists();
-                runSearch(); 
+
+        // Keyboard arrow navigation support
+        searchInput.addEventListener('keydown', function(e) {
+            let x = document.getElementById('autocompleteList');
+            if (x) x = x.getElementsByTagName('div');
+            
+            if (e.keyCode == 40) { // Arrow DOWN
+                currentFocus++;
+                addActive(x);
+            } else if (e.keyCode == 38) { // Arrow UP
+                currentFocus--;
+                addActive(x);
+            } else if (e.keyCode == 13) { // ENTER key
+                e.preventDefault();
+                if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                } else {
+                    closeAllLists();
+                    runSearch();
+                }
             }
         });
 
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add('autocomplete-active');
+            x[currentFocus].scrollIntoView({ block: 'nearest' });
+        }
+
+        function removeActive(x) {
+            for (let i = 0; i < x.length; i++) {
+                x[i].classList.remove('autocomplete-active');
+            }
+        }
+
         searchInput.addEventListener('input', function(e) {
-            var val = this.value;
+            let val = this.value;
             closeAllLists();
             if (!val) { return false; }
+            currentFocus = -1;
             
-            var listContainer = document.getElementById('autocompleteList');
+            let listContainer = document.getElementById('autocompleteList');
             listContainer.innerHTML = '';
             
-            var matches = sampleCodes.filter(item => item.toLowerCase().includes(val.toLowerCase()));
+            let matches = sampleCodes.filter(item => item.toLowerCase().includes(val.toLowerCase()));
             matches.forEach(match => {
-                var itemDiv = document.createElement('div');
+                let itemDiv = document.createElement('div');
                 itemDiv.innerHTML = "<strong>" + match.substr(0, val.length) + "</strong>" + match.substr(val.length);
                 itemDiv.addEventListener('click', function(e) {
                     searchInput.value = match;
@@ -169,20 +211,27 @@
             });
         });
 
-        function closeAllLists() {
-            document.getElementById('autocompleteList').innerHTML = '';
+        function closeAllLists(elmnt) {
+            let x = document.getElementsByClassName('autocomplete-items');
+            for (let i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != searchInput) {
+                    x[i].innerHTML = '';
+                }
+            }
         }
 
         document.addEventListener('click', function (e) {
-            if (e.target !== searchInput) { closeAllLists(); }
+            closeAllLists(e.target);
         });
 
+        document.getElementById('searchBtn').addEventListener('click', runSearch);
+
         function runSearch() {
-            var sheetName = document.getElementById('sheetSelect').value;
-            var query = searchInput.value.trim();
-            var msgBox = document.getElementById('msgBox');
-            var resultsWrapper = document.getElementById('resultsWrapper');
-            var pdfCard = document.getElementById('pdfCard');
+            let sheetName = document.getElementById('sheetSelect').value;
+            let query = searchInput.value.trim();
+            let msgBox = document.getElementById('msgBox');
+            let resultsWrapper = document.getElementById('resultsWrapper');
+            let pdfCard = document.getElementById('pdfCard');
             
             if(!query) {
                 alert('Please enter a search code or number!');
@@ -190,16 +239,19 @@
                 return;
             }
 
+            closeAllLists();
+            searchInput.classList.add('searching-effect');
             msgBox.style.display = 'block';
-            msgBox.innerHTML = 'Searching fast...';
+            msgBox.innerHTML = '⚡ Searching and loading data...';
             resultsWrapper.style.display = 'none';
             pdfCard.style.display = 'none';
 
-            var url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(sheetName) + "&query=" + encodeURIComponent(query);
+            let url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(sheetName) + "&query=" + encodeURIComponent(query);
 
             fetch(url)
-                .then(function(response) { return response.json(); })
-                .then(function(resData) {
+                .then(response => response.json())
+                .then(resData => {
+                    searchInput.classList.remove('searching-effect');
                     if (resData.error || !resData.data || resData.data.length <= 1) {
                         msgBox.innerHTML = '<span class="error">⚠️ Wrong category selected or item "' + query + '" not found in ' + sheetName + '! Please check and try again.</span>';
                         searchInput.focus();
@@ -210,20 +262,19 @@
                     msgBox.style.display = 'none';
                     resultsWrapper.style.display = 'block';
 
-                    var data = resData.data;
-                    var rowIndex = resData.rowIndex;
-
-                    var headers = data[0]; 
-                    var row = data[1];     
+                    let data = resData.data;
+                    let rowIndex = resData.rowIndex;
+                    let headers = data[0]; 
+                    let row = data[1];     
                     
-                    var dataMap = {};
-                    for (var i = 0; i < headers.length; i++) {
+                    let dataMap = {};
+                    for (let i = 0; i < headers.length; i++) {
                         dataMap[headers[i].toString().trim().toLowerCase()] = row[i] !== undefined ? row[i] : '-';
                     }
 
                     function getVal(keyKeywords) {
-                        for (var key in dataMap) {
-                            for (var k = 0; k < keyKeywords.length; k++) {
+                        for (let key in dataMap) {
+                            for (let k = 0; k < keyKeywords.length; k++) {
                                 if (key.indexOf(keyKeywords[k]) !== -1) {
                                     return dataMap[key];
                                 }
@@ -232,10 +283,7 @@
                         return '-';
                     }
 
-                    var topCeeVal = getVal(['top cee']);
-                    var bottomCeeVal = getVal(['bottom cee']);
-
-                    var catHtml = '';
+                    let catHtml = '';
                     catHtml += '<div class="category-card"><div class="cat-header">📏 Basic & Dimensions</div><div class="cat-body">';
                     catHtml += createDataBox('Item Code', getVal(['item code']));
                     catHtml += createDataBox('Length', getVal(['length']));
@@ -244,8 +292,8 @@
                     catHtml += '</div></div>';
 
                     catHtml += '<div class="category-card"><div class="cat-header">🔲 Cee Section Info</div><div class="cat-body">';
-                    catHtml += createDataBox('Top Cee Size', topCeeVal);
-                    catHtml += createDataBox('Bottom Cee Size', bottomCeeVal);
+                    catHtml += createDataBox('Top Cee Size', getVal(['top cee']));
+                    catHtml += createDataBox('Bottom Cee Size', getVal(['bottom cee']));
                     catHtml += '</div></div>';
 
                     catHtml += '<div class="category-card"><div class="cat-header">🧱 Rib & Base Plate</div><div class="cat-body">';
@@ -256,10 +304,10 @@
 
                     document.getElementById('categoryGrid').innerHTML = catHtml;
 
-                    var allHtml = '';
-                    for (var j = 0; j < headers.length; j++) {
-                        var h = headers[j];
-                        var v = row[j] !== undefined ? row[j] : '-';
+                    let allHtml = '';
+                    for (let j = 0; j < headers.length; j++) {
+                        let h = headers[j];
+                        let v = row[j] !== undefined ? row[j] : '-';
                         if (h.toLowerCase().indexOf('pdf') === -1) {
                             allHtml += '<div class="data-item"><span class="data-label">' + h + '</span><span class="data-val">' + (v !== '' ? v : '-') + '</span></div>';
                         }
@@ -275,7 +323,8 @@
                     searchInput.focus();
                     searchInput.select();
                 })
-                .catch(function(err) {
+                .catch(err => {
+                    searchInput.classList.remove('searching-effect');
                     msgBox.innerHTML = '<span class="error">Connection Error: ' + err.message + '</span>';
                     searchInput.focus();
                 });
@@ -286,8 +335,8 @@
         }
 
         function toggleAllSpecs() {
-            var box = document.getElementById('allSpecsBox');
-            var btn = document.getElementById('toggleExpandBtn');
+            let box = document.getElementById('allSpecsBox');
+            let btn = document.getElementById('toggleExpandBtn');
             if (box.style.display === 'grid') {
                 box.style.display = 'none';
                 btn.innerHTML = '▼ View All Detailed Specifications';
@@ -298,16 +347,16 @@
         }
 
         function fetchAndShowPdf(sheetName, rowIndex) {
-            var url = WEB_APP_URL + "?action=pdf&sheet=" + encodeURIComponent(sheetName) + "&row=" + rowIndex;
+            let url = WEB_APP_URL + "?action=pdf&sheet=" + encodeURIComponent(sheetName) + "&row=" + rowIndex;
             
             fetch(url)
-                .then(function(response) { return response.json(); })
-                .then(function(res) {
+                .then(response => response.json())
+                .then(res => {
                     if (res && res.pdfUrl) {
-                        var pdfCard = document.getElementById('pdfCard');
-                        var pdfFrame = document.getElementById('pdfFrame');
+                        let pdfCard = document.getElementById('pdfCard');
+                        let pdfFrame = document.getElementById('pdfFrame');
                         
-                        var embedUrl = res.pdfUrl;
+                        let embedUrl = res.pdfUrl;
                         if (embedUrl.indexOf('drive.google.com') !== -1) {
                             embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view', '/preview');
                         }
@@ -316,7 +365,7 @@
                         pdfCard.style.display = 'block';
                     }
                 })
-                .catch(function(err) {
+                .catch(err => {
                     console.error('Error loading PDF: ' + err.message);
                 });
         }
