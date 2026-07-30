@@ -14,7 +14,7 @@
             --border-color: #e2e8f0;
         }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; }
+        .container { max-width: 1100px; margin: 0 auto; padding-bottom: 30px; }
         
         .header-card { background: var(--primary-gradient); color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); text-align: center; margin-bottom: 20px; }
         .header-card h2 { margin: 0 0 5px 0; font-size: 22px; }
@@ -59,6 +59,10 @@
 
         .msg { text-align: center; padding: 30px; font-weight: 600; color: var(--text-muted); background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); }
         .error { color: #dc2626; }
+
+        /* Professional Footer Styling */
+        .portal-footer { text-align: center; margin-top: 30px; padding: 15px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+        .portal-footer strong { color: var(--text-main); font-weight: 700; }
     </style>
 </head>
 <body>
@@ -107,12 +111,16 @@
         </div>
 
         <div id="msgBox" class="msg">Please select a category and enter an item number to search.</div>
+
+        <!-- Professional Footer -->
+        <div class="portal-footer">
+            Developed by <strong>Sagar Hirole</strong>
+        </div>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxjnM58NxITtap_ewWL_RzJomDv4L78x4X9iI5j55XRmyDqYaH4QcVh66uPZAnkviopdw/exec";
         
-        // Dummy master list for quick suggestion matching
         const sampleCodes = ["0101", "0102", "0103", "1323", "1620", "2811", "2621", "2612", "3811", "3621", "2812", "3613", "3813", "3821"];
 
         function onCategoryChange() {
@@ -126,7 +134,7 @@
             document.getElementById('pdfCard').style.display = 'none';
             document.getElementById('msgBox').style.display = 'block';
             document.getElementById('msgBox').innerHTML = 'Please select a category and enter an item number to search.';
-            document.getElementById('autocompleteListinnerHTML').innerHTML = '';
+            document.getElementById('autocompleteList').innerHTML = '';
             document.getElementById('searchQuery').focus();
         }
 
@@ -140,7 +148,6 @@
             }
         });
 
-        // Autocomplete logic
         searchInput.addEventListener('input', function(e) {
             var val = this.value;
             closeAllLists();
@@ -265,7 +272,6 @@
                         fetchAndShowPdf(sheetName, rowIndex);
                     }
                     
-                    // Keep cursor back inside search input for next search
                     searchInput.focus();
                     searchInput.select();
                 })
