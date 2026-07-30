@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rafter & Column Master Data Search</title>
+    <title>Rafter & Column Master Data Portal</title>
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
@@ -46,7 +46,6 @@
         .expand-btn:hover { background: #cbd5e1; }
         .all-specs-box { display: none; background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
 
-        /* Fast & Optimized PDF Frame */
         .pdf-card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border-color); margin-top: 20px; display: none; }
         .pdf-frame-container { position: relative; width: 100%; height: 450px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: #e2e8f0; }
         iframe { width: 100%; height: 100%; border: none; }
@@ -104,7 +103,6 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxjnM58NxITtap_ewWL_RzJomDv4L78x4X9iI5j55XRmyDqYaH4QcVh66uPZAnkviopdw/exec";
 
-        // Category change par input box automatic blank ho jayega
         function onCategoryChange() {
             document.getElementById('searchQuery').value = '';
             document.getElementById('resultsWrapper').style.display = 'none';
@@ -139,7 +137,11 @@
 
             fetch(url)
                 .then(function(response) { return response.json(); })
-                .then(function(data) {
+                .then(function(resData) {
+                    // Check if response contains row and data structure
+                    var data = resData.data || resData;
+                    var rowIndex = resData.rowIndex;
+
                     if (!data || data.length <= 1) {
                         msgBox.innerHTML = '<span class="error">No matching record found for "' + query + '"!</span>';
                         return;
@@ -167,7 +169,6 @@
                         return '-';
                     }
 
-                    // Top aur Bottom Cee values ko properly map kiya gaya hai
                     var topCeeVal = getVal(['top cee']);
                     var bottomCeeVal = getVal(['bottom cee']);
 
@@ -188,7 +189,6 @@
                     catHtml += createDataBox('Rib Size', getVal(['rib size']));
                     catHtml += createDataBox('Rib Thickness', getVal(['rib thickness']));
                     catHtml += createDataBox('Base Plate Size', getVal(['base plate size']));
-                    catHtml += createDataBox('Plate Thickness', getVal(['base plate thickness']));
                     catHtml += '</div></div>';
 
                     document.getElementById('categoryGrid').innerHTML = catHtml;
@@ -203,7 +203,10 @@
                     }
                     document.getElementById('allSpecsBox').innerHTML = allHtml;
 
-                    fetchAndShowPdf(sheetName, 1);
+                    // Ab yahan hardcoded 1 ki jagah backend se mila hua exact rowIndex pass hoga
+                    if (rowIndex) {
+                        fetchAndShowPdf(sheetName, rowIndex);
+                    }
                 })
                 .catch(function(err) {
                     msgBox.innerHTML = '<span class="error">Connection Error: ' + err.message + '</span>';
