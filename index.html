@@ -6,123 +6,137 @@
     <title>Rafter & Column Master Data Portal</title>
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #3b82f6 50%, #06b6d4 100%);
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --bg-body: #f8fafc;
             --card-bg: #ffffff;
-            --bg-color: #f1f5f9;
             --text-main: #0f172a;
-            --text-muted: #475569;
-            --border-color: #cbd5e1;
-            --accent-color: #6366f1;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --accent: #2563eb;
         }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; padding-bottom: 40px; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 15px; }
+        .container { max-width: 1200px; margin: 0 auto; padding-bottom: 30px; }
         
-        /* Modern Header */
-        .header-card { background: var(--primary-gradient); color: white; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3); text-align: center; margin-bottom: 24px; position: relative; overflow: hidden; }
-        .header-card h2 { margin: 0 0 8px 0; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
-        .header-card p { margin: 0; opacity: 0.9; font-size: 13px; font-weight: 500; }
+        /* Compact Header */
+        .header-card { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 18px 24px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15); margin-bottom: 15px; }
+        .header-card h2 { margin: 0; font-size: 20px; font-weight: 700; }
+        .header-card p { margin: 0; opacity: 0.8; font-size: 11px; }
 
-        /* Search Card */
-        .search-card { background: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05); margin-bottom: 24px; border: 1px solid var(--border-color); position: relative; }
-        .row { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
-        .group { flex: 1; min-width: 220px; position: relative; }
-        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        select, input { width: 100%; padding: 12px 14px; border: 2px solid var(--border-color); border-radius: 8px; font-size: 14px; background: #f8fafc; box-sizing: border-box; transition: all 0.2s ease; font-weight: 600; color: var(--text-main); }
-        select:focus, input:focus { border-color: var(--accent-color); outline: none; background: #fff; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); }
+        /* Search Panel */
+        .search-card { background: var(--card-bg); padding: 15px 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 15px; border: 1px solid var(--border); }
+        .search-row { display: flex; gap: 12px; align-items: flex-end; }
+        .search-group { flex: 1; position: relative; }
+        label { display: block; font-weight: 700; margin-bottom: 5px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        select, input { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: #fff; box-sizing: border-box; font-weight: 600; color: var(--text-main); }
+        select:focus, input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
         
-        button { background: var(--accent-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25); }
-        button:hover { background: #4f46e5; transform: translateY(-1px); }
-        .btn-clear { background: #64748b; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2); }
+        button { background: var(--accent); color: white; border: none; padding: 9px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 13px; transition: background 0.2s; height: 38px; }
+        button:hover { background: #1d4ed8; }
+        .btn-clear { background: #64748b; }
         .btn-clear:hover { background: #475569; }
 
-        /* Loading Animation Effect on Search */
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-        .searching-effect { animation: pulseGlow 1.2s infinite; border-color: var(--accent-color) !important; background: #e0e7ff !important; }
+        /* Autocomplete dropdown */
+        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 99; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 6px 6px; max-height: 140px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .autocomplete-items div { padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #f1f5f9; }
+        .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #eff6ff; color: var(--accent); }
 
-        /* Autocomplete Keyboard Navigation Styles */
-        .autocomplete-items { position: absolute; border: 1px solid var(--border-color); z-index: 99; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 8px 8px; max-height: 180px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .autocomplete-items div { padding: 12px 14px; cursor: pointer; background: #fff; border-bottom: 1px solid #f1f5f9; font-size: 14px; font-weight: 600; color: var(--text-main); }
-        .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #e0e7ff; color: #3730a3; }
+        /* Main Dashboard Grid layout (Data left mein, PDF right mein) */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        @media(max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
 
-        .section-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px; }
-        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        
-        .category-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; transition: transform 0.2s; }
-        .category-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
-        .cat-header { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 12px 16px; font-weight: 800; font-size: 12px; color: #334155; border-bottom: 1px solid var(--border-color); text-transform: uppercase; letter-spacing: 0.5px; }
-        .cat-body { padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        
-        .data-item { display: flex; flex-direction: column; }
-        .data-label { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-        .data-val { font-size: 15px; color: var(--text-main); font-weight: 800; margin-top: 3px; }
+        .panel-card { background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); overflow: hidden; display: flex; flex-direction: column; }
+        .panel-header { background: #f8fafc; padding: 10px 15px; font-weight: 700; font-size: 12px; color: #334155; border-bottom: 1px solid var(--border); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+        .panel-body { padding: 15px; flex: 1; }
 
-        .expand-section { margin-bottom: 24px; }
-        .expand-btn { background: #e2e8f0; color: #1e293b; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; transition: background 0.2s; }
-        .expand-btn:hover { background: #cbd5e1; }
-        .all-specs-box { display: none; background: var(--card-bg); padding: 18px; border-radius: 12px; border: 1px solid var(--border-color); margin-top: 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        /* Compact Data Grid */
+        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .spec-box { background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #f1f5f9; }
+        .spec-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .spec-val { font-size: 13px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        .pdf-card { background: var(--card-bg); padding: 20px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid var(--border-color); margin-top: 24px; display: none; }
-        .pdf-frame-container { position: relative; width: 100%; height: 480px; border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; background: #e2e8f0; }
+        /* Detailed specs toggle section */
+        .expand-section { margin-top: 12px; }
+        .expand-btn { background: #f1f5f9; color: #334155; border: 1px solid var(--border); width: 100%; padding: 8px; border-radius: 6px; font-weight: 700; cursor: pointer; text-align: center; font-size: 12px; }
+        .expand-btn:hover { background: #e2e8f0; }
+        .all-specs-box { display: none; margin-top: 8px; max-height: 160px; overflow-y: auto; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+        /* PDF Frame Container */
+        .pdf-container { width: 100%; height: 350px; background: #e2e8f0; position: relative; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        .msg { text-align: center; padding: 40px; font-weight: 700; color: var(--text-muted); background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        /* Messages & States */
+        .msg-box { background: var(--card-bg); padding: 30px; border-radius: 10px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
         .error { color: #dc2626; font-weight: 700; }
 
-        .portal-footer { text-align: center; margin-top: 40px; padding: 20px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-color); }
-        .portal-footer strong { color: var(--text-main); font-weight: 800; background: linear-gradient(135deg, #4f46e5, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* Footer */
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 15px; }
+        .footer strong { color: var(--text-main); background: linear-gradient(135deg, #1e3a8a, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header-card">
-            <h2>Rafter & Column Master Data Portal</h2>
-            <p>High Performance Engineering Search & Instant Preview</p>
+            <div>
+                <h2>Rafter & Column Master Portal</h2>
+                <p>Instant Engineering Specification & Drawing Viewer</p>
+            </div>
         </div>
 
+        <!-- Search Form -->
         <div class="search-card">
-            <div class="row">
-                <div class="group">
-                    <label>Select Category</label>
+            <div class="search-row">
+                <div class="search-group" style="flex: 0.8;">
+                    <label>Category</label>
                     <select id="sheetSelect" onchange="onCategoryChange()">
                         <option value="Sheet1">Rafters</option>
                         <option value="Columns">Columns</option>
                     </select>
                 </div>
-                <div class="group" style="position: relative;">
-                    <label>Enter Item Code / Number</label>
-                    <input type="text" id="searchQuery" placeholder="e.g. 1620, 2811" autocomplete="off">
+                <div class="search-group" style="flex: 1.5;">
+                    <label>Item Code / Number</label>
+                    <input type="text" id="searchQuery" placeholder="Type code e.g. 1620, 2811..." autocomplete="off">
                     <div id="autocompleteList" class="autocomplete-items"></div>
                 </div>
-                <div class="group" style="flex: 0; display: flex; gap: 8px;">
+                <div style="display: flex; gap: 8px;">
                     <button id="searchBtn">Search</button>
-                    <button id="clearBtn" class="btn-clear" onclick="clearSearch()">Clear</button>
+                    <button class="btn-clear" onclick="clearSearch()">Clear</button>
                 </div>
             </div>
         </div>
 
-        <div id="resultsWrapper" style="display: none;">
-            <div class="section-title">📌 Core Specifications</div>
-            <div id="categoryGrid" class="category-grid"></div>
+        <!-- Initial Message Box -->
+        <div id="msgBox" class="msg-box">Please select a category and enter an item code to load details.</div>
 
-            <div class="expand-section">
-                <button class="expand-btn" id="toggleExpandBtn" onclick="toggleAllSpecs()">▼ View All Detailed Specifications</button>
-                <div id="allSpecsBox" class="all-specs-box"></div>
+        <!-- Main Dashboard View (Hidden initially) -->
+        <div id="dashboardView" style="display: none;">
+            <div class="dashboard-grid">
+                <!-- Left Panel: Specifications -->
+                <div class="panel-card">
+                    <div class="panel-header">📌 Core Specifications</div>
+                    <div class="panel-body">
+                        <div id="specsGrid" class="specs-grid"></div>
+                        
+                        <div class="expand-section">
+                            <button class="expand-btn" id="toggleExpandBtn" onclick="toggleAllSpecs()">▼ View All Parameters</button>
+                            <div id="allSpecsBox" class="all-specs-box"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: PDF Preview -->
+                <div class="panel-card">
+                    <div class="panel-header">📄 Engineering Drawing Preview</div>
+                    <div class="pdf-container">
+                        <iframe id="pdfFrame" src=""></iframe>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="pdf-card" id="pdfCard">
-            <div class="section-title">📄 Fast Engineering Drawing Preview</div>
-            <div class="pdf-frame-container">
-                <iframe id="pdfFrame" src="" loading="lazy"></iframe>
-            </div>
-        </div>
-
-        <div id="msgBox" class="msg">Please select a category and enter an item number to search.</div>
-
-        <div class="portal-footer">
+        <!-- Footer -->
+        <div class="footer">
             Developed by <strong>Sagar Hirole</strong>
         </div>
     </div>
@@ -132,38 +146,35 @@
         const sampleCodes = ["0101", "0102", "0103", "1323", "1620", "2811", "2621", "2612", "3811", "3621", "2812", "3613", "3813", "3821"];
         
         let currentFocus = -1;
+        let searchInput = document.getElementById('searchQuery');
 
         function onCategoryChange() {
             clearSearch();
-            document.getElementById('msgBox').innerHTML = 'Category changed. Please enter item code/number.';
         }
 
         function clearSearch() {
-            let input = document.getElementById('searchQuery');
-            input.value = '';
-            input.classList.remove('searching-effect');
-            document.getElementById('resultsWrapper').style.display = 'none';
-            document.getElementById('pdfCard').style.display = 'none';
-            document.getElementById('msgBox').style.display = 'block';
-            document.getElementById('msgBox').innerHTML = 'Please select a category and enter an item number to search.';
+            searchInput.value = '';
+            document.getElementById('dashboardView').style.display = 'none';
+            let msgBox = document.getElementById('msgBox');
+            msgBox.style.display = 'block';
+            msgBox.innerHTML = 'Please select a category and enter an item code to load details.';
             closeAllLists();
-            input.focus();
+            searchInput.focus();
         }
 
-        let searchInput = document.getElementById('searchQuery');
+        document.getElementById('searchBtn').addEventListener('click', runSearch);
 
-        // Keyboard arrow navigation support
         searchInput.addEventListener('keydown', function(e) {
             let x = document.getElementById('autocompleteList');
             if (x) x = x.getElementsByTagName('div');
             
-            if (e.keyCode == 40) { // Arrow DOWN
+            if (e.keyCode == 40) { // Down
                 currentFocus++;
                 addActive(x);
-            } else if (e.keyCode == 38) { // Arrow UP
+            } else if (e.keyCode == 38) { // Up
                 currentFocus--;
                 addActive(x);
-            } else if (e.keyCode == 13) { // ENTER key
+            } else if (e.keyCode == 13) { // Enter
                 e.preventDefault();
                 if (currentFocus > -1) {
                     if (x) x[currentFocus].click();
@@ -192,7 +203,7 @@
         searchInput.addEventListener('input', function(e) {
             let val = this.value;
             closeAllLists();
-            if (!val) { return false; }
+            if (!val) return false;
             currentFocus = -1;
             
             let listContainer = document.getElementById('autocompleteList');
@@ -202,7 +213,7 @@
             matches.forEach(match => {
                 let itemDiv = document.createElement('div');
                 itemDiv.innerHTML = "<strong>" + match.substr(0, val.length) + "</strong>" + match.substr(val.length);
-                itemDiv.addEventListener('click', function(e) {
+                itemDiv.addEventListener('click', function() {
                     searchInput.value = match;
                     closeAllLists();
                     runSearch();
@@ -224,14 +235,11 @@
             closeAllLists(e.target);
         });
 
-        document.getElementById('searchBtn').addEventListener('click', runSearch);
-
         function runSearch() {
             let sheetName = document.getElementById('sheetSelect').value;
             let query = searchInput.value.trim();
             let msgBox = document.getElementById('msgBox');
-            let resultsWrapper = document.getElementById('resultsWrapper');
-            let pdfCard = document.getElementById('pdfCard');
+            let dashboardView = document.getElementById('dashboardView');
             
             if(!query) {
                 alert('Please enter a search code or number!');
@@ -240,27 +248,24 @@
             }
 
             closeAllLists();
-            searchInput.classList.add('searching-effect');
             msgBox.style.display = 'block';
-            msgBox.innerHTML = '⚡ Searching and loading data...';
-            resultsWrapper.style.display = 'none';
-            pdfCard.style.display = 'none';
+            msgBox.innerHTML = '⚡ Loading data...';
+            dashboardView.style.display = 'none';
 
             let url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(sheetName) + "&query=" + encodeURIComponent(query);
 
             fetch(url)
                 .then(response => response.json())
                 .then(resData => {
-                    searchInput.classList.remove('searching-effect');
                     if (resData.error || !resData.data || resData.data.length <= 1) {
-                        msgBox.innerHTML = '<span class="error">⚠️ Wrong category selected or item "' + query + '" not found in ' + sheetName + '! Please check and try again.</span>';
+                        msgBox.innerHTML = '<span class="error">⚠️ Wrong category selected or item "' + query + '" not found in ' + sheetName + '!</span>';
                         searchInput.focus();
                         searchInput.select();
                         return;
                     }
 
                     msgBox.style.display = 'none';
-                    resultsWrapper.style.display = 'block';
+                    dashboardView.style.display = 'block';
 
                     let data = resData.data;
                     let rowIndex = resData.rowIndex;
@@ -283,37 +288,28 @@
                         return '-';
                     }
 
-                    let catHtml = '';
-                    catHtml += '<div class="category-card"><div class="cat-header">📏 Basic & Dimensions</div><div class="cat-body">';
-                    catHtml += createDataBox('Item Code', getVal(['item code']));
-                    catHtml += createDataBox('Length', getVal(['length']));
-                    catHtml += createDataBox('Thickness', getVal(['thickness']));
-                    catHtml += createDataBox('Section Size', getVal(['section size']));
-                    catHtml += '</div></div>';
+                    let specsHtml = '';
+                    specsHtml += createSpecBox('Item Code', getVal(['item code']));
+                    specsHtml += createSpecBox('Length', getVal(['length']));
+                    specsHtml += createSpecBox('Thickness', getVal(['thickness']));
+                    specsHtml += createSpecBox('Section Size', getVal(['section size']));
+                    specsHtml += createSpecBox('Top Cee', getVal(['top cee']));
+                    specsHtml += createSpecBox('Bottom Cee', getVal(['bottom cee']));
+                    specsHtml += createSpecBox('Rib Size', getVal(['rib size']));
+                    specsHtml += createSpecBox('Base Plate', getVal(['base plate size']));
 
-                    catHtml += '<div class="category-card"><div class="cat-header">🔲 Cee Section Info</div><div class="cat-body">';
-                    catHtml += createDataBox('Top Cee Size', getVal(['top cee']));
-                    catHtml += createDataBox('Bottom Cee Size', getVal(['bottom cee']));
-                    catHtml += '</div></div>';
-
-                    catHtml += '<div class="category-card"><div class="cat-header">🧱 Rib & Base Plate</div><div class="cat-body">';
-                    catHtml += createDataBox('Rib Size', getVal(['rib size']));
-                    catHtml += createDataBox('Rib Thickness', getVal(['rib thickness']));
-                    catHtml += createDataBox('Base Plate Size', getVal(['base plate size']));
-                    catHtml += '</div></div>';
-
-                    document.getElementById('categoryGrid').innerHTML = catHtml;
+                    document.getElementById('specsGrid').innerHTML = specsHtml;
 
                     let allHtml = '';
                     for (let j = 0; j < headers.length; j++) {
                         let h = headers[j];
                         let v = row[j] !== undefined ? row[j] : '-';
                         if (h.toLowerCase().indexOf('pdf') === -1) {
-                            allHtml += '<div class="data-item"><span class="data-label">' + h + '</span><span class="data-val">' + (v !== '' ? v : '-') + '</span></div>';
+                            allHtml += '<div class="spec-box"><div class="spec-label">' + h + '</div><div class="spec-val">' + (v !== '' ? v : '-') + '</div></div>';
                         }
                     }
                     document.getElementById('allSpecsBox').style.display = 'none';
-                    document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Detailed Specifications';
+                    document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Parameters';
                     document.getElementById('allSpecsBox').innerHTML = allHtml;
 
                     if (rowIndex) {
@@ -324,14 +320,13 @@
                     searchInput.select();
                 })
                 .catch(err => {
-                    searchInput.classList.remove('searching-effect');
                     msgBox.innerHTML = '<span class="error">Connection Error: ' + err.message + '</span>';
                     searchInput.focus();
                 });
         }
 
-        function createDataBox(label, val) {
-            return '<div class="data-item"><span class="data-label">' + label + '</span><span class="data-val">' + (val !== '' ? val : '-') + '</span></div>';
+        function createSpecBox(label, val) {
+            return '<div class="spec-box"><div class="spec-label">' + label + '</div><div class="spec-val">' + (val !== '' ? val : '-') + '</div></div>';
         }
 
         function toggleAllSpecs() {
@@ -339,10 +334,10 @@
             let btn = document.getElementById('toggleExpandBtn');
             if (box.style.display === 'grid') {
                 box.style.display = 'none';
-                btn.innerHTML = '▼ View All Detailed Specifications';
+                btn.innerHTML = '▼ View All Parameters';
             } else {
                 box.style.display = 'grid';
-                btn.innerHTML = '▲ Hide Detailed Specifications';
+                btn.innerHTML = '▲ Hide Parameters';
             }
         }
 
@@ -353,16 +348,12 @@
                 .then(response => response.json())
                 .then(res => {
                     if (res && res.pdfUrl) {
-                        let pdfCard = document.getElementById('pdfCard');
                         let pdfFrame = document.getElementById('pdfFrame');
-                        
                         let embedUrl = res.pdfUrl;
                         if (embedUrl.indexOf('drive.google.com') !== -1) {
                             embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view', '/preview');
                         }
-                        
                         pdfFrame.src = embedUrl;
-                        pdfCard.style.display = 'block';
                     }
                 })
                 .catch(err => {
