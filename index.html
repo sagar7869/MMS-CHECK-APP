@@ -3,281 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rafter, Column & Kitting Master Data Portal</title>
+    <title>Rafter & Kitting Portal</title>
     
-    <!-- PWA & Mobile Native App Config -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1e3a8a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3256/3256013.png">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3256/3256013.png">
 
     <style>
         :root {
             --primary: #1e3a8a;
-            --primary-light: #3b82f6;
-            --bg-body: #f1f5f9;
+            --primary-accent: #2563eb;
+            --bg-body: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --border: #cbd5e1;
-            --accent: #2563eb;
-            --success: #16a34a;
+            --border: #e2e8f0;
         }
 
-        /* Prevent text selection & bouncy bounce scrolling for app feel */
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        body { 
-            background-color: var(--bg-body); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 8px 8px 20px 8px; 
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-        /* Mobile App Header Bar */
-        .header-card { 
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); 
-            color: white; 
-            padding: 14px 16px; 
-            border-radius: 12px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2); 
-            margin-bottom: 10px; 
-        }
-        .header-card h2 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.3px; }
-        .header-card p { margin: 2px 0 0 0; opacity: 0.85; font-size: 10px; }
-
-        /* Search Section - Mobile Friendly Layout */
-        .search-card { 
-            background: var(--card-bg); 
-            padding: 12px; 
-            border-radius: 12px; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05); 
-            margin-bottom: 10px; 
-            border: 1px solid var(--border); 
-        }
-        .search-row { display: flex; flex-direction: column; gap: 10px; }
-        
-        @media (min-width: 600px) {
-            .search-row { flex-direction: row; align-items: flex-end; }
+        /* App Main Shell */
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
-        .search-group { flex: 1; position: relative; }
-        label { display: block; font-weight: 700; margin-bottom: 4px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        select, input { 
-            width: 100%; 
-            padding: 11px 12px; 
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
-            font-size: 14px; 
-            background: #fff; 
-            font-weight: 600; 
-            color: var(--text-main); 
-            appearance: none;
-            -webkit-appearance: none;
+        /* App Top Bar */
+        .app-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 10;
         }
-        
-        select:focus, input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-        
-        .btn-group { display: flex; gap: 8px; width: 100%; }
-        button { 
-            flex: 1;
-            background: var(--accent); 
-            color: white; 
-            border: none; 
-            padding: 11px 16px; 
-            border-radius: 8px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            font-size: 14px; 
-            transition: background 0.2s, transform 0.1s; 
-            height: 44px;
+
+        .app-header h1 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .app-header span {
+            font-size: 10px;
+            opacity: 0.8;
+            display: block;
+        }
+
+        /* Compact Search Bar */
+        .search-container {
+            padding: 10px 12px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            z-index: 9;
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: 110px 1fr 44px;
+            gap: 6px;
+            align-items: center;
+        }
+
+        select, input {
+            width: 100%;
+            height: 42px;
+            padding: 0 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary-accent);
+            background: #ffffff;
+        }
+
+        .btn-search {
+            height: 42px;
+            background: var(--primary-accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
         }
-        button:active { transform: scale(0.98); }
-        button:hover { background: #1d4ed8; }
-        .btn-clear { background: #64748b; flex: 0.4; }
-        .btn-clear:hover { background: #475569; }
 
-        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 999; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; box-shadow: 0 8px 16px rgba(0,0,0,0.12); }
-        .autocomplete-items div { padding: 12px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #f1f5f9; }
-        .autocomplete-items div:active, .autocomplete-items .autocomplete-active { background: #eff6ff; color: var(--accent); }
+        .btn-search:active {
+            transform: scale(0.95);
+        }
 
-        /* Mobile Segmented Tab Switcher */
-        .tab-bar { display: flex; background: #e2e8f0; border-radius: 10px; padding: 3px; margin-bottom: 10px; gap: 4px; }
-        .tab-btn { flex: 1; padding: 10px 6px; background: transparent; color: var(--text-muted); border: none; font-weight: 700; font-size: 12px; border-radius: 8px; cursor: pointer; text-align: center; height: auto; }
-        .tab-btn.active { background: #ffffff; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .autocomplete-items {
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            z-index: 100;
+        }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .autocomplete-items div {
+            padding: 12px;
+            font-size: 13px;
+            border-bottom: 1px solid #f1f5f9;
+            font-weight: 600;
+        }
 
-        .panel-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.03); overflow: hidden; display: flex; flex-direction: column; }
-        .panel-header { background: #f8fafc; padding: 10px 14px; font-weight: 700; font-size: 11px; color: #334155; border-bottom: 1px solid var(--border); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
-        .panel-body { padding: 12px; flex: 1; }
+        .autocomplete-items div:active {
+            background: #eff6ff;
+            color: var(--primary-accent);
+        }
 
-        /* Specs Grid - 2 columns on mobile */
-        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .spec-box { background: #f8fafc; padding: 8px 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-        .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; word-break: break-word; }
+        /* Scrollable Content View */
+        .app-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
 
-        .expand-section { margin-top: 10px; }
-        .expand-btn { background: #f1f5f9; color: #334155; border: 1px solid var(--border); width: 100%; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 12px; height: auto; }
-        .all-specs-box { display: none; margin-top: 8px; max-height: 240px; overflow-y: auto; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        /* Card Views */
+        .card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
 
-        /* Full Screen Mobile PDF View */
-        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 230px); min-height: 400px; background: #525659; border-radius: 8px; overflow: hidden; }
-        .pdf-toolbar { position: absolute; top: 8px; right: 8px; z-index: 10; display: flex; gap: 6px; background: rgba(15, 23, 42, 0.85); padding: 4px 6px; border-radius: 8px; backdrop-filter: blur(4px); }
-        .zoom-btn { background: #2563eb; color: #ffffff; border: none; width: 36px; height: 36px; border-radius: 6px; font-weight: bold; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
-        .zoom-btn:active { background: #1d4ed8; transform: scale(0.92); }
-        .pdf-viewport { width: 100%; height: 100%; overflow: auto; display: flex; justify-content: center; align-items: flex-start; }
-        .pdf-container-zoom { width: 100%; height: 100%; transform-origin: top center; transition: transform 0.2s ease-out; }
-        iframe { width: 100%; height: 100%; border: none; }
+        .card-header {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
 
-        .kit-title-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 12px; margin-bottom: 10px; }
-        .kit-title-card h3 { margin: 0 0 4px 0; color: #1e40af; font-size: 14px; }
-        .kit-title-card p { margin: 0; font-size: 11px; color: #3b82f6; font-weight: 600; }
-        
-        .calculator-box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 10px 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .calculator-box label { margin-bottom: 0; color: #166534; font-size: 10px; }
-        .calculator-box input { width: 80px; border-color: #86efac; text-align: center; font-size: 16px; color: #14532d; padding: 6px; border-radius: 6px; }
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
 
-        /* Responsive Mobile Table */
-        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .kit-table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 480px; }
-        .kit-table th { background: #f1f5f9; text-align: left; padding: 8px 6px; font-size: 9px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); }
-        .kit-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); font-weight: 600; }
-        .badge-code { background: #e0e7ff; color: #3730a3; padding: 2px 5px; border-radius: 4px; font-size: 10px; font-family: monospace; }
-        .qty-badge { background: #dcfce7; color: #166534; font-weight: 800; text-align: center; border-radius: 4px; padding: 2px 6px; }
+        .spec-item {
+            background: #f8fafc;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+        }
 
-        .msg-box { background: var(--card-bg); padding: 20px; border-radius: 10px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); font-size: 13px; }
-        .error { color: #dc2626; font-weight: 700; }
+        .spec-item .label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .spec-item .val { font-size: 12px; font-weight: 800; color: var(--text-main); margin-top: 2px; }
 
-        .footer { text-align: center; margin-top: 15px; font-size: 10px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 10px; }
-        .footer strong { color: var(--text-main); background: linear-gradient(135deg, #1e3a8a, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* Full Height Drawing Viewer */
+        .pdf-frame-wrapper {
+            width: 100%;
+            height: calc(100vh - 180px);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #525659;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Table Responsive */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 450px; }
+        th { background: #f1f5f9; padding: 8px 6px; text-align: left; color: var(--text-muted); font-size: 9px; text-transform: uppercase; }
+        td { padding: 8px 6px; border-bottom: 1px solid var(--border); font-weight: 600; }
+
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            height: 56px;
+            background: #ffffff;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+
+        .nav-item .icon { font-size: 18px; margin-bottom: 2px; }
+        .nav-item.active { color: var(--primary-accent); }
+
+        .placeholder-msg {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header-card">
+
+    <div class="app-shell">
+        <!-- Top App Header -->
+        <div class="app-header">
             <div>
-                <h2>Rafter, Column & Kitting Portal</h2>
-                <p>Instant Specification, Full Drawing & Kit Calculator</p>
+                <h1>Rafter & Kitting Portal</h1>
+                <span>Master Data & Drawing Portal</span>
             </div>
+            <div style="font-size: 10px; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 20px; font-weight: bold;">v2.0</div>
         </div>
 
-        <div class="search-card">
-            <div class="search-row">
-                <div class="search-group">
-                    <label>Category</label>
-                    <select id="sheetSelect" onchange="onCategoryChange()">
-                        <option value="Sheet1">Rafters</option>
-                        <option value="Columns">Columns</option>
-                        <option value="Kitting">Kitting Sets</option>
-                    </select>
-                </div>
-                <div class="search-group">
-                    <label>Item / Kit Code</label>
-                    <input type="text" id="searchQuery" placeholder="Type or tap to select..." autocomplete="off">
-                    <div id="autocompleteList" class="autocomplete-items"></div>
-                </div>
-                <div class="btn-group">
-                    <button id="searchBtn">Search</button>
-                    <button class="btn-clear" onclick="clearSearch()">Clear</button>
-                </div>
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-grid">
+                <select id="sheetSelect" onchange="onCategoryChange()">
+                    <option value="Sheet1">Rafters</option>
+                    <option value="Columns">Columns</option>
+                    <option value="Kitting">Kitting</option>
+                </select>
+                <input type="text" id="searchQuery" placeholder="Search Code / Name..." autocomplete="off">
+                <button class="btn-search" id="searchBtn">🔍</button>
             </div>
+            <div id="autocompleteList" class="autocomplete-items"></div>
         </div>
 
-        <div id="msgBox" class="msg-box">Select a category and enter an item code to view details.</div>
-
-        <!-- MAIN DATA DISPLAY WITH TAB SWITCHER -->
-        <div id="dashboardView" style="display: none;">
-            <div class="tab-bar">
-                <button class="tab-btn active" onclick="switchTab('specsTab', this)">📋 Specifications</button>
-                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Drawing (PDF)</button>
+        <!-- Main Body Area -->
+        <div class="app-body">
+            <div id="msgBox" class="placeholder-msg">
+                📦 Category chunein aur Code enter karke Search karein.
             </div>
 
-            <!-- TAB 1: SPECIFICATIONS -->
-            <div id="specsTab" class="tab-content active">
-                <div class="panel-card">
-                    <div class="panel-header">📌 Core Specifications</div>
-                    <div class="panel-body">
+            <!-- Dashboard Content -->
+            <div id="dashboardView" style="display: none;">
+                <!-- Tab 1: Specs -->
+                <div id="viewSpecs" class="tab-pane">
+                    <div class="card">
+                        <div class="card-header">📌 Key Specifications</div>
                         <div id="specsGrid" class="specs-grid"></div>
-                        <div class="expand-section">
-                            <button class="expand-btn" id="toggleExpandBtn" onclick="toggleAllSpecs()">▼ View All Parameters</button>
-                            <div id="allSpecsBox" class="all-specs-box"></div>
-                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Drawing -->
+                <div id="viewDrawing" class="tab-pane" style="display: none;">
+                    <div class="pdf-frame-wrapper">
+                        <iframe id="pdfFrame" src=""></iframe>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 2: FULL DISPLAY PDF WITH ZOOM -->
-            <div id="pdfTab" class="tab-content">
-                <div class="panel-card">
-                    <div class="panel-header">
-                        <span>📄 Engineering Drawing</span>
-                    </div>
-                    <div class="pdf-wrapper">
-                        <div class="pdf-toolbar">
-                            <button class="zoom-btn" onclick="adjustZoom(0.25)" title="Zoom In">＋</button>
-                            <button class="zoom-btn" onclick="adjustZoom(-0.25)" title="Zoom Out">－</button>
-                            <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom">↺</button>
-                        </div>
-                        <div class="pdf-viewport">
-                            <div id="pdfZoomContainer" class="pdf-container-zoom">
-                                <iframe id="pdfFrame" src=""></iframe>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Kitting View -->
+            <div id="kittingView" style="display: none;">
+                <div class="card" style="background: #eff6ff; border-color: #bfdbfe;">
+                    <div style="font-size: 14px; font-weight: bold; color: #1e40af;" id="kitDisplayName">Kit Name</div>
+                    <div style="font-size: 11px; color: #3b82f6; margin-top: 2px;" id="kitCodeSubtitle">SKU Code</div>
                 </div>
-            </div>
-        </div>
 
-        <!-- KITTING VIEW -->
-        <div id="kittingView" style="display: none;">
-            <div class="kit-title-card">
-                <h3 id="kitDisplayName">KITS - 0021 Earthing & LA Kit</h3>
-                <p id="kitCodeSubtitle">SKU Code: KITS-0021</p>
-            </div>
-
-            <div class="calculator-box">
-                <div>
-                    <label>🔢 Target Sets Multiplier</label>
-                    <div style="font-size: 10px; color: #15803d; font-weight: 600; margin-top: 1px;">Calculates total required parts</div>
+                <div class="card" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 12px; font-weight: bold;">Set Multiplier:</span>
+                    <input type="number" id="kitCountInput" value="1" min="1" oninput="recalculateKitComponents()" style="width: 80px; text-align: center;">
                 </div>
-                <div>
-                    <input type="number" id="kitCountInput" value="1" min="1" oninput="recalculateKitComponents()">
-                </div>
-            </div>
 
-            <div class="panel-card">
-                <div class="panel-header">📦 Component Breakdown</div>
-                <div class="panel-body" style="padding: 6px;">
-                    <div class="table-responsive">
-                        <table class="kit-table">
+                <div class="card">
+                    <div class="card-header">📦 Component List</div>
+                    <div class="table-wrap">
+                        <table>
                             <thead>
                                 <tr>
-                                    <th style="width: 5%;">#</th>
-                                    <th style="width: 45%;">Component Description</th>
-                                    <th style="width: 20%;">SKU Code</th>
-                                    <th style="width: 10%;">UOM</th>
-                                    <th style="width: 10%; text-align: center;">Per Kit</th>
-                                    <th style="width: 10%; text-align: center;">Total</th>
+                                    <th>#</th>
+                                    <th>Description</th>
+                                    <th>SKU</th>
+                                    <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody id="kitComponentsTableBody"></tbody>
@@ -287,383 +334,159 @@
             </div>
         </div>
 
-        <div class="footer">
-            Developed by <strong>Sagar Herole</strong>
+        <!-- Bottom Navigation Bar -->
+        <div class="bottom-nav">
+            <button class="nav-item active" id="navSpecsBtn" onclick="switchNav('specs')">
+                <span class="icon">📋</span>
+                <span>Specs</span>
+            </button>
+            <button class="nav-item" id="navDrawingBtn" onclick="switchNav('drawing')">
+                <span class="icon">📄</span>
+                <span>Drawing</span>
+            </button>
         </div>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxjnM58NxITtap_ewWL_RzJomDv4L78x4X9iI5j55XRmyDqYaH4QcVh66uPZAnkviopdw/exec";
-        
         const sampleCodes = ["0101", "0102", "0103", "1323", "1620", "2811", "2621", "2612", "3811", "3621", "2812", "3613", "3813", "3821"];
         
         const kittingDatabase = [
-            { id: "KIT-0001", aliases: ["KIT-1", "KITS-0001", "CABLE & WIRE CONSUMABLES KIT"], name: "KITS - 0001 Cable & Wire Consumables Kit", components: [{ name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm", sku: "CNYC-0011", uom: "Packet", qty: 2 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm", sku: "CNYC-0009", uom: "Packet", qty: 2 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 30 }, { name: "PVC Electrical Insulation Tape 1.8cmx6.5m - Black", sku: "CINT-0001", uom: "Nos", qty: 2 }, { name: "Corrugated Box 5 ply", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0002", aliases: ["KIT-2", "KITS-0002", "EARTHING & LA ACCESSORIES KIT 1"], name: "KITS - 0002 Earthing & LA Accessories Kit - 1", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 2 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }] },
-            { id: "KIT-0003", aliases: ["KIT-3", "KITS-0003", "STRUCTURE HARDWARE KIT 1"], name: "KITS - 0003 Structure Hardware Kit - 1", components: [{ name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 12 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 12 }, { name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 12 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 24 }, { name: "HDG Plate Washer 45x20x4.0 mm with 12mm Hole", sku: "FHDG-0050", uom: "Nos", qty: 12 }] },
-            { id: "KIT-0004", aliases: ["KIT-4", "KITS-0004", "MODULE MOUNTING KIT 1"], name: "KITS - 0004 Module Mounting Hardware Kit - 1", components: [{ name: "SS304 Hex Bolt M8x25", sku: "FSSB-0081", uom: "Nos", qty: 20 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 20 }, { name: "Zn Flake Coated Plate Washer 50x16x2 mm", sku: "FSSW-0052", uom: "Nos", qty: 20 }, { name: "Nord-Lock Zn Coated Steel Washer M8", sku: "FSSW-0048", uom: "Nos", qty: 20 }] },
-            { id: "KIT-0005", aliases: ["KIT-5", "KITS-0005", "ELECTRICAL ACCESSORIES KIT 1"], name: "KITS - 0005 Electrical Accessories Kit - 1", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 10 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug", sku: "CCUR-0012", uom: "Nos", qty: 10 }, { name: "MC4 Connector - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 4 }, { name: "MC4 Connector - MALE", sku: "CMCC-0002", uom: "Nos", qty: 4 }] },
-            { id: "KIT-0006", aliases: ["KIT-6", "KITS-0006", "INVERTER MOUNTING KIT"], name: "KITS - 0006 Inverter Mounting Hardware Kit", components: [{ name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 6 }, { name: "SS304 Hex Bolt M6x30", sku: "FSSB-0030", uom: "Nos", qty: 6 }, { name: "SS304 Plain Washer M6", sku: "FSSW-0006", uom: "Nos", qty: 6 }, { name: "SS304 Hex Nut M6", sku: "FSSN-0004", uom: "Nos", qty: 6 }] },
-            { id: "KIT-0010", aliases: ["KIT-10", "KITS-0010", "I&C CONSUMABLES KIT"], name: "I&C Consumables Kit (KITS-0010)", components: [{ name: "HIT-RE 10 Cartridge - 580ml", sku: "GGCH-0001", uom: "Nos", qty: 3 }, { name: "Adhesive Mixing Nozzle-LOCAL MAKE", sku: "NOZZ-0002-LOCAL MAKE", uom: "Nos", qty: 3 }, { name: "PVC Electrical Insulation Tape 1.8cmx6.5mx0.125mm - Black-Steelgrip", sku: "CINT-0001-Steelgrip", uom: "Nos", qty: 3 }, { name: "Selsil Montage 750 PU Foam Can - Pale Yellow - 750 ml-SELSIL", sku: "CPUS-0007-SELSIL", uom: "Nos", qty: 1 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 50 }, { name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm-KSS", sku: "CNYC-0011-KSS", uom: "Packet", qty: 4 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm-KSS", sku: "CNYC-0009-KSS", uom: "Packet", qty: 4 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE - 32.0016P0001-UR-STAUBLI", sku: "CMCC-0001-STAUBLI", uom: "Nos", qty: 12 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE - 32.0017P0001-UR-STAUBLI", sku: "CMCC-0002-STAUBLI", uom: "Nos", qty: 12 }, { name: "Corrugated Box 5 ply 420x270x220 mm", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0021", aliases: ["KIT-21", "KITS-0021", "EARTHING & LA KIT"], name: "KITS - 0021 Earthing & LA Kit (with Gen 2 LA Stand & SS LA with Insulator Base)", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr - 150 micron", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia - 1 Mtr - With PVC Insulator Base", sku: "EALA-0031-RATNESHWAR METAL", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod, Structure Earthing & LA", sku: "LAKITS-0007", uom: "Nos", qty: 5 }, { name: "PVC Base 100x100X6 mm for SS316 Conventional LA - 8mm Dia", sku: "EALA-0038", uom: "Nos", qty: 1 }, { name: "HDG LA Stand for Gen 2 rafter for PVC with insulator base", sku: "EALA-0032", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }, { name: "SS304 Spring Washer M8", sku: "FSSW-0015", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }] },
-            { id: "KIT-0022", aliases: ["KIT-22", "KITS-0022", "ELECTRICAL ACCESSORIES KIT - 7"], name: "Electrical Accessories Kit - 7 (KITS-0022)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 8 }, { name: "2.5 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0021", uom: "Nos", qty: 18 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0012-DOWELL", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0013-DOWELL", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE - 32.0016P0001-UR-STAUBLI", sku: "CMCC-0001-STAUBLI", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE - 32.0017P0001-UR-STAUBLI", sku: "CMCC-0002-STAUBLI", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar inverter - Stickers Vinyl with Glass Lamination V3 (Current)", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-8mm)-DOWELL", sku: "CCUR-0014-DOWELL", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0023", aliases: ["KIT-23", "KITS-0023", "ELECTRICAL ACCESSORIES KIT - 8"], name: "Electrical Accessories Kit - 8 (KITS-0023)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 8 }, { name: "10 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0024", uom: "Nos", qty: 10 }, { name: "16 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0025", uom: "Nos", qty: 10 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0012-DOWELL", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0013-DOWELL", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE - 32.0016P0001-UR-STAUBLI", sku: "CMCC-0001-STAUBLI", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE - 32.0017P0001-UR-STAUBLI", sku: "CMCC-0002-STAUBLI", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar inverter - Stickers Vinyl with Glass Lamination V3 (Current)", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-8mm)-DOWELL", sku: "CCUR-0014-DOWELL", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0024", aliases: ["KIT-24", "KITS-0024", "ELECTRICAL ACCESSORIES KIT - 9"], name: "Electrical Accessories Kit - 9 (KITS-0024)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 3 }, { name: "2.5 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0021", uom: "Nos", qty: 10 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0012-DOWELL", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0013-DOWELL", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE - 32.0016P0001-UR-STAUBLI", sku: "CMCC-0001-STAUBLI", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE - 32.0017P0001-UR-STAUBLI", sku: "CMCC-0002-STAUBLI", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar inverter - Stickers Vinyl with Glass Lamination V3 (Current)", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-8mm)-DOWELL", sku: "CCUR-0014-DOWELL", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0027", aliases: ["KIT-27", "KITS-0027", "ELECTRICAL ACCESSORIES KIT - 12"], name: "Electrical Accessories Kit - 12 (KITS-0027)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 20 }, { name: "2.5 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0021", uom: "Nos", qty: 15 }, { name: "10 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0024", uom: "Nos", qty: 15 }, { name: "16 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0025", uom: "Nos", qty: 15 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0012-DOWELL", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0013-DOWELL", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE - 32.0016P0001-UR-STAUBLI", sku: "CMCC-0001-STAUBLI", uom: "Nos", qty: 2 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE - 32.0017P0001-UR-STAUBLI", sku: "CMCC-0002-STAUBLI", uom: "Nos", qty: 2 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar inverter - Stickers Vinyl with Glass Lamination V3 (Current)", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-8mm)-DOWELL", sku: "CCUR-0014-DOWELL", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 4 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (2) - 6 sqmm", sku: "PFEV-0005", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 2 }] },
-            { id: "KIT-0042", aliases: ["KIT-42", "KITS-0042", "MODULE EARTHING"], name: "KIT-0042: SS304 M6x30 Nut-Bolt Set for Module Earthing", components: [{ name: "SS304 Hex Bolt M6x30", sku: "FSSB-0030", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M6 Standard OD", sku: "FSSW-0006", uom: "Nos", qty: 1 }, { name: "SS304 Spring Washer M6", sku: "FSSW-0012", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M6", sku: "FSSN-0004", uom: "Nos", qty: 1 }, { name: "SS304 Double Sided Star Washer M6", sku: "FSSW-0020", uom: "Nos", qty: 1 }] },
-            { id: "LAKITS-0007", aliases: ["KIT-0007", "KIT-7", "KITS-0007", "EARTHING NUT BOLT SET"], name: "LAKITS-0007: SS304 M6x30 Nut-Bolt Set for Earthing Rod, Structure Earthing & LA", components: [{ name: "SS304 Hex Bolt M6x30", sku: "FSSB-0030", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M6 Standard OD", sku: "FSSW-0006", uom: "Nos", qty: 1 }, { name: "SS304 Spring Washer M6", sku: "FSSW-0012", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M6", sku: "FSSN-0004", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0060", aliases: ["KIT-60", "KITS-0060", "EARTHING & LA KIT - 7"], name: "KITS - 0060 Earthing & LA Kit - 7 (SS LA with Insulator Base without LA stand)", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr - 150 micron", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia - 1 Mtr - With PVC Insulator Base", sku: "EALA-0031-RATNESHWAR METAL", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod, Structure Earthing & LA", sku: "LAKITS-0007", uom: "Nos", qty: 5 }, { name: "PVC Base 100x100X6 mm for SS316 Conventional LA - 8mm Dia", sku: "EALA-0038", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }, { name: "SS304 Spring Washer M8", sku: "FSSW-0015", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }] },
-            { id: "KIT-0071", aliases: ["KIT-71", "KITS-0071", "MODULE MOUNTING SET"], name: "KIT-0071: SS304 M8x20 Nut-Bolt Set with NordLock & Zn Flake Plate Washers for Module Mounting", components: [{ name: "SS304 Hex Bolt M8x25", sku: "FSSB-0081", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 1 }, { name: "Zn Flake Coated Plate Washer 50x16x2 mm with 9mm Hole-Dilip Engg", sku: "FSSW-0052-Dilip Engg", uom: "Nos", qty: 1 }, { name: "SS304 Plate Washer 50x32x2 mm with 9mm Hole", sku: "FSSW-0055", uom: "Nos", qty: 1 }, { name: "Nord-Lock Zn Coated Steel Washer M8-NL8 ID 8.7, OD 13.5, Thick 2.5mm-Nord-Lock", sku: "FSSW-0048-Nord-Lock", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0072", aliases: ["KIT-72", "KITS-0072", "PURLIN TO RAFTER JOINTING"], name: "KIT-0072: SS304 M10x30 Nut-Bolt Set with HDG Plate Washers for Purlin to Rafter Jointing", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 1 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x20x4.0 mm with 12mm Hole (80 micron)", sku: "FHDG-0050", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x28x4.0 mm with 12mm Hole (80 micron)", sku: "FHDG-0051", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0073", aliases: ["KIT-73", "KITS-0073", "RAFTER TO COLUMN JOINTING"], name: "KIT-0073: Rafter to Column Jointing Set with HDG Plate Washers & 4 nos SS304 M10x30 Nut-Bolts", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 4 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 4 }, { name: "HDG Plate Washer 74x68x4.0 mm with 12mm Hole (80 micron)", sku: "FHDG-0041", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0074", aliases: ["KIT-74", "KITS-0074", "BRACING JOINTING KIT"], name: "KIT-0074: SS304 M10x30 Nut-Bolt Set with HDG Plate Washers for 1P Front & Back Bracing to Rafter & Column Jointing Kit", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 1 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x20x4.0 mm with 12mm Hole (80 micron)", sku: "FHDG-0050", uom: "Nos", qty: 1 }] }
+            { id: "KIT-0001", aliases: ["KIT-1", "KITS-0001"], name: "KITS - 0001 Cable & Wire Consumables Kit", components: [{ name: "UV Protected Black Cable Tie", sku: "CNYC-0011", uom: "Pkt", qty: 2 }, { name: "PVC Tape Black", sku: "CINT-0001", uom: "Nos", qty: 2 }] },
+            { id: "KIT-0021", aliases: ["KIT-21", "KITS-0021"], name: "KITS - 0021 Earthing & LA Kit", components: [{ name: "Copper Bonded Earthing Rod", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "SS304 M6x30 Nut-Bolt", sku: "LAKITS-0007", uom: "Nos", qty: 5 }] }
         ];
 
         let currentActiveKit = null;
-        let currentFocus = -1;
-        let currentZoomLevel = 1.0;
         let searchInput = document.getElementById('searchQuery');
 
-        function switchTab(tabId, btnElement) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active');
-            if(btnElement) btnElement.classList.add('active');
-        }
+        function switchNav(tab) {
+            document.getElementById('navSpecsBtn').classList.remove('active');
+            document.getElementById('navDrawingBtn').classList.remove('active');
 
-        function adjustZoom(amount) {
-            currentZoomLevel += amount;
-            if (currentZoomLevel < 0.5) currentZoomLevel = 0.5;
-            if (currentZoomLevel > 3.0) currentZoomLevel = 3.0;
-            applyZoom();
-        }
-
-        function resetZoom() {
-            currentZoomLevel = 1.0;
-            applyZoom();
-        }
-
-        function applyZoom() {
-            let container = document.getElementById('pdfZoomContainer');
-            container.style.transform = "scale(" + currentZoomLevel + ")";
-            if (currentZoomLevel > 1) {
-                container.style.width = (100 / currentZoomLevel) + "%";
-                container.style.height = (100 / currentZoomLevel) + "%";
+            if (tab === 'specs') {
+                document.getElementById('navSpecsBtn').classList.add('active');
+                document.getElementById('viewSpecs').style.display = 'block';
+                document.getElementById('viewDrawing').style.display = 'none';
             } else {
-                container.style.width = "100%";
-                container.style.height = "100%";
+                document.getElementById('navDrawingBtn').classList.add('active');
+                document.getElementById('viewSpecs').style.display = 'none';
+                document.getElementById('viewDrawing').style.display = 'block';
             }
-        }
-
-        function resetOldViews() {
-            document.getElementById('dashboardView').style.display = 'none';
-            document.getElementById('kittingView').style.display = 'none';
-            document.getElementById('pdfFrame').src = '';
-            document.getElementById('specsGrid').innerHTML = '';
-            document.getElementById('allSpecsBox').innerHTML = '';
-            document.getElementById('kitComponentsTableBody').innerHTML = '';
-            resetZoom();
-        }
-
-        function onCategoryChange() {
-            clearSearch();
         }
 
         function clearSearch() {
             searchInput.value = '';
-            resetOldViews();
-            
-            let msgBox = document.getElementById('msgBox');
-            msgBox.style.display = 'block';
-            msgBox.innerHTML = 'Select a category and enter an item code to view details.';
+            document.getElementById('dashboardView').style.display = 'none';
+            document.getElementById('kittingView').style.display = 'none';
+            document.getElementById('msgBox').style.display = 'block';
             closeAllLists();
-            searchInput.focus();
         }
+
+        function onCategoryChange() { clearSearch(); }
 
         document.getElementById('searchBtn').addEventListener('click', runSearch);
 
-        searchInput.addEventListener('focus', function() {
-            showSuggestions(this.value);
-        });
-
         searchInput.addEventListener('input', function() {
-            showSuggestions(this.value);
-        });
-
-        function showSuggestions(val) {
+            let val = this.value.toLowerCase();
             let cat = document.getElementById('sheetSelect').value;
-            closeAllLists();
-            currentFocus = -1;
-            
-            let listContainer = document.getElementById('autocompleteList');
-            listContainer.innerHTML = '';
+            let list = document.getElementById('autocompleteList');
+            list.innerHTML = '';
+
+            if(!val) return;
 
             if (cat === 'Kitting') {
-                let valLower = (val || '').toLowerCase();
-                let matches = kittingDatabase.filter(kit => {
-                    return !valLower || 
-                           kit.id.toLowerCase().includes(valLower) || 
-                           kit.name.toLowerCase().includes(valLower) ||
-                           kit.aliases.some(a => a.toLowerCase().includes(valLower));
-                });
-
-                matches.forEach(kit => {
-                    let itemDiv = document.createElement('div');
-                    itemDiv.innerHTML = "<strong>" + kit.id + "</strong> - " + kit.name;
-                    itemDiv.addEventListener('click', function() {
-                        searchInput.value = kit.id;
-                        closeAllLists();
-                        runSearch();
-                    });
-                    listContainer.appendChild(itemDiv);
+                kittingDatabase.filter(k => k.id.toLowerCase().includes(val) || k.name.toLowerCase().includes(val)).forEach(k => {
+                    let d = document.createElement('div');
+                    d.innerHTML = k.id + " - " + k.name;
+                    d.onclick = () => { searchInput.value = k.id; closeAllLists(); runSearch(); };
+                    list.appendChild(d);
                 });
             } else {
-                let valLower = (val || '').toLowerCase();
-                let matches = sampleCodes.filter(item => !valLower || item.toLowerCase().includes(valLower));
-                matches.forEach(match => {
-                    let itemDiv = document.createElement('div');
-                    itemDiv.innerHTML = "<strong>" + match + "</strong>";
-                    itemDiv.addEventListener('click', function() {
-                        searchInput.value = match;
-                        closeAllLists();
-                        runSearch();
-                    });
-                    listContainer.appendChild(itemDiv);
+                sampleCodes.filter(s => s.toLowerCase().includes(val)).forEach(s => {
+                    let d = document.createElement('div');
+                    d.innerHTML = s;
+                    d.onclick = () => { searchInput.value = s; closeAllLists(); runSearch(); };
+                    list.appendChild(d);
                 });
             }
-        }
-
-        searchInput.addEventListener('keydown', function(e) {
-            let x = document.getElementById('autocompleteList');
-            if (x) x = x.getElementsByTagName('div');
-            
-            if (e.keyCode == 40) {
-                currentFocus++;
-                addActive(x);
-            } else if (e.keyCode == 38) {
-                currentFocus--;
-                addActive(x);
-            } else if (e.keyCode == 13) {
-                e.preventDefault();
-                if (currentFocus > -1) {
-                    if (x) x[currentFocus].click();
-                } else {
-                    closeAllLists();
-                    runSearch();
-                }
-            }
         });
 
-        function addActive(x) {
-            if (!x) return false;
-            removeActive(x);
-            if (currentFocus >= x.length) currentFocus = 0;
-            if (currentFocus < 0) currentFocus = (x.length - 1);
-            x[currentFocus].classList.add('autocomplete-active');
-            x[currentFocus].scrollIntoView({ block: 'nearest' });
-        }
-
-        function removeActive(x) {
-            for (let i = 0; i < x.length; i++) {
-                x[i].classList.remove('autocomplete-active');
-            }
-        }
-
-        function closeAllLists(elmnt) {
-            let x = document.getElementsByClassName('autocomplete-items');
-            for (let i = 0; i < x.length; i++) {
-                if (elmnt != x[i] && elmnt != searchInput) {
-                    x[i].innerHTML = '';
-                }
-            }
-        }
-
-        document.addEventListener('click', function (e) {
-            closeAllLists(e.target);
-        });
+        function closeAllLists() { document.getElementById('autocompleteList').innerHTML = ''; }
 
         function runSearch() {
-            let category = document.getElementById('sheetSelect').value;
-            let query = searchInput.value.trim();
-            let msgBox = document.getElementById('msgBox');
-            
-            if(!query) {
-                alert('Please enter a search code or name!');
-                searchInput.focus();
-                return;
-            }
+            let cat = document.getElementById('sheetSelect').value;
+            let q = searchInput.value.trim();
+            let msg = document.getElementById('msgBox');
+
+            if(!q) return;
 
             closeAllLists();
-            resetOldViews();
+            document.getElementById('dashboardView').style.display = 'none';
+            document.getElementById('kittingView').style.display = 'none';
 
-            if (category === "Kitting") {
-                let qLower = query.toLowerCase();
-                let foundKit = kittingDatabase.find(kit => 
-                    kit.id.toLowerCase() === qLower || 
-                    kit.aliases.some(a => a.toLowerCase() === qLower) ||
-                    kit.name.toLowerCase().includes(qLower)
-                );
-
-                if (foundKit) {
-                    msgBox.style.display = 'none';
+            if (cat === 'Kitting') {
+                let kit = kittingDatabase.find(k => k.id.toLowerCase() === q.toLowerCase());
+                if (kit) {
+                    msg.style.display = 'none';
                     document.getElementById('kittingView').style.display = 'block';
-                    currentActiveKit = foundKit;
-                    document.getElementById('kitDisplayName').innerText = foundKit.name;
-                    document.getElementById('kitCodeSubtitle').innerText = "SKU ID: " + foundKit.id;
-                    document.getElementById('kitCountInput').value = 1;
+                    currentActiveKit = kit;
+                    document.getElementById('kitDisplayName').innerText = kit.name;
+                    document.getElementById('kitCodeSubtitle').innerText = kit.id;
                     recalculateKitComponents();
                 } else {
-                    msgBox.style.display = 'block';
-                    msgBox.innerHTML = '<span class="error">⚠️ Kit "' + query + '" not found in Kitting Master!</span>';
+                    msg.innerHTML = "⚠️ Kit nahi mila!";
                 }
             } else {
-                msgBox.style.display = 'block';
-                msgBox.innerHTML = '⚡ Fetching data...';
-
-                let url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(category) + "&query=" + encodeURIComponent(query);
-
-                fetch(url)
-                    .then(response => response.json())
-                    .then(resData => {
-                        if (resData.error || !resData.data || resData.data.length <= 1) {
-                            msgBox.innerHTML = '<span class="error">⚠️ Item "' + query + '" not found in ' + category + '!</span>';
-                            searchInput.focus();
-                            searchInput.select();
+                msg.innerHTML = "⏳ Loading Data...";
+                fetch(WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(cat) + "&query=" + encodeURIComponent(q))
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res.error || !res.data || res.data.length <= 1) {
+                            msg.innerHTML = "⚠️ Item nahi mila!";
                             return;
                         }
 
-                        msgBox.style.display = 'none';
+                        msg.style.display = 'none';
                         document.getElementById('dashboardView').style.display = 'block';
-                        
-                        switchTab('specsTab', document.querySelectorAll('.tab-btn')[0]);
+                        switchNav('specs');
 
-                        let data = resData.data;
-                        let rowIndex = resData.rowIndex;
-                        let headers = data[0]; 
-                        let row = data[1];     
-                        
-                        let dataMap = {};
-                        for (let i = 0; i < headers.length; i++) {
-                            dataMap[headers[i].toString().trim().toLowerCase()] = row[i] !== undefined ? row[i] : '-';
-                        }
+                        let headers = res.data[0];
+                        let row = res.data[1];
+                        let html = '';
 
-                        function getVal(keyKeywords) {
-                            for (let key in dataMap) {
-                                for (let k = 0; k < keyKeywords.length; k++) {
-                                    if (key.indexOf(keyKeywords[k]) !== -1) {
-                                        return dataMap[key];
+                        headers.forEach((h, idx) => {
+                            if(h.toLowerCase().indexOf('pdf') === -1) {
+                                html += `<div class="spec-item"><div class="label">${h}</div><div class="val">${row[idx] || '-'}</div></div>`;
+                            }
+                        });
+                        document.getElementById('specsGrid').innerHTML = html;
+
+                        if (res.rowIndex) {
+                            fetch(WEB_APP_URL + "?action=pdf&sheet=" + encodeURIComponent(cat) + "&row=" + res.rowIndex)
+                                .then(r => r.json())
+                                .then(pdfRes => {
+                                    if(pdfRes && pdfRes.pdfUrl) {
+                                        let url = pdfRes.pdfUrl.replace('/view?usp=drivesdk', '/preview').replace('/view', '/preview');
+                                        document.getElementById('pdfFrame').src = url;
                                     }
-                                }
-                            }
-                            return '-';
+                                });
                         }
-
-                        let specsHtml = '';
-                        specsHtml += createSpecBox('Item Code', getVal(['item code']));
-                        specsHtml += createSpecBox('Length', getVal(['length']));
-                        specsHtml += createSpecBox('Thickness', getVal(['thickness']));
-                        specsHtml += createSpecBox('Section Size', getVal(['section size']));
-                        specsHtml += createSpecBox('Top Cee', getVal(['top cee']));
-                        specsHtml += createSpecBox('Bottom Cee', getVal(['bottom cee']));
-                        specsHtml += createSpecBox('Rib Size', getVal(['rib size']));
-                        specsHtml += createSpecBox('Base Plate', getVal(['base plate size']));
-
-                        document.getElementById('specsGrid').innerHTML = specsHtml;
-
-                        let allHtml = '';
-                        for (let j = 0; j < headers.length; j++) {
-                            let h = headers[j];
-                            let v = row[j] !== undefined ? row[j] : '-';
-                            if (h.toLowerCase().indexOf('pdf') === -1) {
-                                allHtml += '<div class="spec-box"><div class="spec-label">' + h + '</div><div class="spec-val">' + (v !== '' ? v : '-') + '</div></div>';
-                            }
-                        }
-                        document.getElementById('allSpecsBox').style.display = 'none';
-                        document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Parameters';
-                        document.getElementById('allSpecsBox').innerHTML = allHtml;
-
-                        if (rowIndex) {
-                            fetchAndShowPdf(category, rowIndex);
-                        }
-                        
-                        searchInput.focus();
-                        searchInput.select();
-                    })
-                    .catch(err => {
-                        msgBox.innerHTML = '<span class="error">Connection Error: ' + err.message + '</span>';
-                        searchInput.focus();
                     });
             }
         }
 
         function recalculateKitComponents() {
             if (!currentActiveKit) return;
-            
-            let countInput = document.getElementById('kitCountInput').value;
-            let multiplier = parseInt(countInput);
-            if (isNaN(multiplier) || multiplier < 1) multiplier = 1;
-
-            let tbody = document.getElementById('kitComponentsTableBody');
+            let mult = parseInt(document.getElementById('kitCountInput').value) || 1;
             let html = '';
-
-            currentActiveKit.components.forEach((comp, idx) => {
-                let totalQty = comp.qty * multiplier;
-                html += '<tr>' +
-                    '<td>' + (idx + 1) + '</td>' +
-                    '<td>' + comp.name + '</td>' +
-                    '<td><span class="badge-code">' + comp.sku + '</span></td>' +
-                    '<td>' + comp.uom + '</td>' +
-                    '<td style="text-align: center;">' + comp.qty + '</td>' +
-                    '<td style="text-align: center;"><span class="qty-badge">' + totalQty + '</span></td>' +
-                '</tr>';
+            currentActiveKit.components.forEach((c, i) => {
+                html += `<tr><td>${i+1}</td><td>${c.name}</td><td>${c.sku}</td><td><b>${c.qty * mult}</b></td></tr>`;
             });
-
-            tbody.innerHTML = html;
-        }
-
-        function createSpecBox(label, val) {
-            return '<div class="spec-box"><div class="spec-label">' + label + '</div><div class="spec-val">' + (val !== '' ? val : '-') + '</div></div>';
-        }
-
-        function toggleAllSpecs() {
-            let box = document.getElementById('allSpecsBox');
-            let btn = document.getElementById('toggleExpandBtn');
-            if (box.style.display === 'grid') {
-                box.style.display = 'none';
-                btn.innerHTML = '▼ View All Parameters';
-            } else {
-                box.style.display = 'grid';
-                btn.innerHTML = '▲ Hide Parameters';
-            }
-        }
-
-        function fetchAndShowPdf(sheetName, rowIndex) {
-            let url = WEB_APP_URL + "?action=pdf&sheet=" + encodeURIComponent(sheetName) + "&row=" + rowIndex;
-            
-            fetch(url)
-                .then(response => response.json())
-                .then(res => {
-                    if (res && res.pdfUrl) {
-                        let pdfFrame = document.getElementById('pdfFrame');
-                        let embedUrl = res.pdfUrl;
-                        if (embedUrl.indexOf('drive.google.com') !== -1) {
-                            embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view', '/preview');
-                        }
-                        pdfFrame.src = embedUrl;
-                    }
-                })
-                .catch(err => {
-                    console.error('Error loading PDF: ' + err.message);
-                });
+            document.getElementById('kitComponentsTableBody').innerHTML = html;
         }
 
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then((reg) => console.log('Service Worker Registered!', reg.scope))
-                    .catch((err) => console.log('Service Worker registration failed:', err));
-            });
+            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
         }
     </script>
 </body>
