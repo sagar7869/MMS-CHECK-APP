@@ -39,7 +39,6 @@
             -webkit-user-select: none;
         }
 
-        /* App Main Shell */
         .app-shell {
             display: flex;
             flex-direction: column;
@@ -50,7 +49,6 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
-        /* App Top Bar */
         .app-header {
             background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
             color: white;
@@ -66,26 +64,25 @@
             margin: 0;
             font-size: 16px;
             font-weight: 700;
-            letter-spacing: 0.3px;
         }
 
         .app-header span {
             font-size: 10px;
-            opacity: 0.8;
+            opacity: 0.85;
             display: block;
         }
 
-        /* Compact Search Bar */
         .search-container {
             padding: 10px 12px;
             background: #ffffff;
             border-bottom: 1px solid var(--border);
             z-index: 9;
+            position: relative;
         }
 
         .search-grid {
             display: grid;
-            grid-template-columns: 110px 1fr 44px;
+            grid-template-columns: 100px 1fr 44px;
             gap: 6px;
             align-items: center;
         }
@@ -122,25 +119,22 @@
             cursor: pointer;
         }
 
-        .btn-search:active {
-            transform: scale(0.95);
-        }
-
         .autocomplete-items {
             position: absolute;
             left: 12px;
             right: 12px;
+            top: 56px;
             background: #ffffff;
             border: 1px solid var(--border);
             border-radius: 8px;
-            max-height: 220px;
+            max-height: 200px;
             overflow-y: auto;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             z-index: 100;
         }
 
         .autocomplete-items div {
-            padding: 12px;
+            padding: 10px 12px;
             font-size: 13px;
             border-bottom: 1px solid #f1f5f9;
             font-weight: 600;
@@ -151,22 +145,47 @@
             color: var(--primary-accent);
         }
 
-        /* Scrollable Content View */
+        /* Segmented Tabs */
+        .tab-bar {
+            display: flex;
+            background: #f1f5f9;
+            padding: 3px;
+            margin: 10px 12px 0 12px;
+            border-radius: 8px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px 4px;
+            border: none;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
         .app-body {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
+            padding: 10px 12px;
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Card Views */
         .card {
             background: #ffffff;
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 12px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            margin-bottom: 10px;
         }
 
         .card-header {
@@ -175,7 +194,6 @@
             color: var(--text-muted);
             text-transform: uppercase;
             margin-bottom: 8px;
-            letter-spacing: 0.5px;
         }
 
         .specs-grid {
@@ -194,10 +212,11 @@
         .spec-item .label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-item .val { font-size: 12px; font-weight: 800; color: var(--text-main); margin-top: 2px; }
 
-        /* Full Height Drawing Viewer */
+        /* Full Mobile Heights PDF Viewer */
         .pdf-frame-wrapper {
             width: 100%;
-            height: calc(100vh - 180px);
+            height: calc(100vh - 220px);
+            min-height: 350px;
             border-radius: 10px;
             overflow: hidden;
             border: 1px solid var(--border);
@@ -210,39 +229,10 @@
             border: none;
         }
 
-        /* Table Responsive */
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 450px; }
         th { background: #f1f5f9; padding: 8px 6px; text-align: left; color: var(--text-muted); font-size: 9px; text-transform: uppercase; }
         td { padding: 8px 6px; border-bottom: 1px solid var(--border); font-weight: 600; }
-
-        /* Bottom Navigation Bar */
-        .bottom-nav {
-            height: 56px;
-            background: #ffffff;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: var(--text-muted);
-            font-size: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-        }
-
-        .nav-item .icon { font-size: 18px; margin-bottom: 2px; }
-        .nav-item.active { color: var(--primary-accent); }
 
         .placeholder-msg {
             text-align: center;
@@ -256,7 +246,6 @@
 <body>
 
     <div class="app-shell">
-        <!-- Top App Header -->
         <div class="app-header">
             <div>
                 <h1>Rafter & Kitting Portal</h1>
@@ -265,7 +254,7 @@
             <div style="font-size: 10px; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 20px; font-weight: bold;">v2.0</div>
         </div>
 
-        <!-- Search Bar -->
+        <!-- Compact Top Search -->
         <div class="search-container">
             <div class="search-grid">
                 <select id="sheetSelect" onchange="onCategoryChange()">
@@ -279,71 +268,66 @@
             <div id="autocompleteList" class="autocomplete-items"></div>
         </div>
 
-        <!-- Main Body Area -->
-        <div class="app-body">
-            <div id="msgBox" class="placeholder-msg">
-                📦 Category chunein aur Code enter karke Search karein.
+        <div id="msgBox" class="placeholder-msg">
+            📦 Category select karein aur Code daal kar Search karein.
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardView" style="display: none;">
+            <!-- Specs / Drawing Switcher Tabs -->
+            <div class="tab-bar">
+                <button class="tab-btn active" id="tabSpecsBtn" onclick="switchTab('specs')">📋 Specifications</button>
+                <button class="tab-btn" id="tabDrawingBtn" onclick="switchTab('drawing')">📄 Drawing (PDF)</button>
             </div>
 
-            <!-- Dashboard Content -->
-            <div id="dashboardView" style="display: none;">
-                <!-- Tab 1: Specs -->
-                <div id="viewSpecs" class="tab-pane">
+            <div class="app-body">
+                <!-- TAB 1: SPECIFICATIONS -->
+                <div id="viewSpecs">
                     <div class="card">
-                        <div class="card-header">📌 Key Specifications</div>
+                        <div class="card-header">📌 Specifications</div>
                         <div id="specsGrid" class="specs-grid"></div>
                     </div>
                 </div>
 
-                <!-- Tab 2: Drawing -->
-                <div id="viewDrawing" class="tab-pane" style="display: none;">
-                    <div class="pdf-frame-wrapper">
-                        <iframe id="pdfFrame" src=""></iframe>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kitting View -->
-            <div id="kittingView" style="display: none;">
-                <div class="card" style="background: #eff6ff; border-color: #bfdbfe;">
-                    <div style="font-size: 14px; font-weight: bold; color: #1e40af;" id="kitDisplayName">Kit Name</div>
-                    <div style="font-size: 11px; color: #3b82f6; margin-top: 2px;" id="kitCodeSubtitle">SKU Code</div>
-                </div>
-
-                <div class="card" style="display: flex; align-items: center; justify-content: space-between;">
-                    <span style="font-size: 12px; font-weight: bold;">Set Multiplier:</span>
-                    <input type="number" id="kitCountInput" value="1" min="1" oninput="recalculateKitComponents()" style="width: 80px; text-align: center;">
-                </div>
-
-                <div class="card">
-                    <div class="card-header">📦 Component List</div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Description</th>
-                                    <th>SKU</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="kitComponentsTableBody"></tbody>
-                        </table>
+                <!-- TAB 2: PDF DRAWING VIEWER -->
+                <div id="viewDrawing" style="display: none;">
+                    <div class="card" style="padding: 6px;">
+                        <div class="pdf-frame-wrapper">
+                            <iframe id="pdfFrame" src=""></iframe>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Bottom Navigation Bar -->
-        <div class="bottom-nav">
-            <button class="nav-item active" id="navSpecsBtn" onclick="switchNav('specs')">
-                <span class="icon">📋</span>
-                <span>Specs</span>
-            </button>
-            <button class="nav-item" id="navDrawingBtn" onclick="switchNav('drawing')">
-                <span class="icon">📄</span>
-                <span>Drawing</span>
-            </button>
+        <!-- KITTING VIEW -->
+        <div id="kittingView" class="app-body" style="display: none;">
+            <div class="card" style="background: #eff6ff; border-color: #bfdbfe;">
+                <div style="font-size: 14px; font-weight: bold; color: #1e40af;" id="kitDisplayName">Kit Name</div>
+                <div style="font-size: 11px; color: #3b82f6; margin-top: 2px;" id="kitCodeSubtitle">SKU Code</div>
+            </div>
+
+            <div class="card" style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 12px; font-weight: bold;">Set Multiplier:</span>
+                <input type="number" id="kitCountInput" value="1" min="1" oninput="recalculateKitComponents()" style="width: 80px; text-align: center; height: 36px;">
+            </div>
+
+            <div class="card">
+                <div class="card-header">📦 Component List</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Description</th>
+                                <th>SKU</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kitComponentsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -359,16 +343,16 @@
         let currentActiveKit = null;
         let searchInput = document.getElementById('searchQuery');
 
-        function switchNav(tab) {
-            document.getElementById('navSpecsBtn').classList.remove('active');
-            document.getElementById('navDrawingBtn').classList.remove('active');
+        function switchTab(type) {
+            document.getElementById('tabSpecsBtn').classList.remove('active');
+            document.getElementById('tabDrawingBtn').classList.remove('active');
 
-            if (tab === 'specs') {
-                document.getElementById('navSpecsBtn').classList.add('active');
+            if (type === 'specs') {
+                document.getElementById('tabSpecsBtn').classList.add('active');
                 document.getElementById('viewSpecs').style.display = 'block';
                 document.getElementById('viewDrawing').style.display = 'none';
             } else {
-                document.getElementById('navDrawingBtn').classList.add('active');
+                document.getElementById('tabDrawingBtn').classList.add('active');
                 document.getElementById('viewSpecs').style.display = 'none';
                 document.getElementById('viewDrawing').style.display = 'block';
             }
@@ -379,6 +363,7 @@
             document.getElementById('dashboardView').style.display = 'none';
             document.getElementById('kittingView').style.display = 'none';
             document.getElementById('msgBox').style.display = 'block';
+            document.getElementById('pdfFrame').src = '';
             closeAllLists();
         }
 
@@ -437,7 +422,9 @@
                     msg.innerHTML = "⚠️ Kit nahi mila!";
                 }
             } else {
-                msg.innerHTML = "⏳ Loading Data...";
+                msg.style.display = 'block';
+                msg.innerHTML = "⚡ Data load ho raha hai...";
+                
                 fetch(WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(cat) + "&query=" + encodeURIComponent(q))
                     .then(r => r.json())
                     .then(res => {
@@ -448,7 +435,7 @@
 
                         msg.style.display = 'none';
                         document.getElementById('dashboardView').style.display = 'block';
-                        switchNav('specs');
+                        switchTab('specs');
 
                         let headers = res.data[0];
                         let row = res.data[1];
@@ -471,6 +458,9 @@
                                     }
                                 });
                         }
+                    })
+                    .catch(err => {
+                        msg.innerHTML = "⚠️ Network Error: " + err.message;
                     });
             }
         }
