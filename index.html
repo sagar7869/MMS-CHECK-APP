@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rafter, Column & Kitting Master Data Portal</title>
     <style>
         :root {
@@ -16,31 +16,36 @@
             --accent: #2563eb;
             --success: #16a34a;
         }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 15px; }
-        .container { max-width: 1200px; margin: 0 auto; padding-bottom: 30px; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 12px; box-sizing: border-box; }
+        .container { max-width: 1200px; margin: 0 auto; padding-bottom: 20px; }
         
-        .header-card { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 18px 24px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15); margin-bottom: 15px; }
-        .header-card h2 { margin: 0; font-size: 20px; font-weight: 700; }
+        .header-card { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 16px 20px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15); margin-bottom: 12px; }
+        .header-card h2 { margin: 0; font-size: 18px; font-weight: 700; }
         .header-card p { margin: 0; opacity: 0.8; font-size: 11px; }
 
-        .search-card { background: var(--card-bg); padding: 15px 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 15px; border: 1px solid var(--border); }
-        .search-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-        .search-group { flex: 1; min-width: 200px; position: relative; }
-        label { display: block; font-weight: 700; margin-bottom: 5px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .search-card { background: var(--card-bg); padding: 12px 16px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 12px; border: 1px solid var(--border); }
+        .search-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+        .search-group { flex: 1; min-width: 150px; position: relative; }
+        label { display: block; font-weight: 700; margin-bottom: 4px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         select, input { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: #fff; box-sizing: border-box; font-weight: 600; color: var(--text-main); }
         select:focus, input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
         
-        button { background: var(--accent); color: white; border: none; padding: 9px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 13px; transition: background 0.2s; height: 38px; }
+        button { background: var(--accent); color: white; border: none; padding: 9px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 13px; transition: background 0.2s; height: 38px; }
         button:hover { background: #1d4ed8; }
         .btn-clear { background: #64748b; }
         .btn-clear:hover { background: #475569; }
 
-        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 99; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 6px 6px; max-height: 250px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 999; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 6px 6px; max-height: 220px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .autocomplete-items div { padding: 10px 12px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #f1f5f9; }
         .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #eff6ff; color: var(--accent); }
 
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        @media(max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+        /* TAB NAVIGATION STYLES */
+        .tab-bar { display: flex; background: #e2e8f0; border-radius: 8px; padding: 4px; margin-bottom: 12px; gap: 4px; }
+        .tab-btn { flex: 1; padding: 10px; background: transparent; color: var(--text-muted); border: none; font-weight: 700; font-size: 13px; border-radius: 6px; cursor: pointer; text-align: center; height: auto; }
+        .tab-btn.active { background: #ffffff; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         .panel-card { background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); overflow: hidden; display: flex; flex-direction: column; }
         .panel-header { background: #f8fafc; padding: 10px 15px; font-weight: 700; font-size: 12px; color: #334155; border-bottom: 1px solid var(--border); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
@@ -54,30 +59,35 @@
         .expand-section { margin-top: 12px; }
         .expand-btn { background: #f1f5f9; color: #334155; border: 1px solid var(--border); width: 100%; padding: 8px; border-radius: 6px; font-weight: 700; cursor: pointer; text-align: center; font-size: 12px; }
         .expand-btn:hover { background: #e2e8f0; }
-        .all-specs-box { display: none; margin-top: 8px; max-height: 160px; overflow-y: auto; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .all-specs-box { display: none; margin-top: 8px; max-height: 200px; overflow-y: auto; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 8px; }
 
-        .pdf-container { width: 100%; height: 350px; background: #e2e8f0; position: relative; }
+        /* FULL DISPLAY PDF & ZOOM CONTROLS */
+        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 220px); min-height: 480px; background: #525659; border-radius: 8px; overflow: hidden; }
+        .pdf-toolbar { position: absolute; top: 10px; right: 10px; z-index: 10; display: flex; gap: 6px; background: rgba(15, 23, 42, 0.85); padding: 6px; border-radius: 8px; backdrop-filter: blur(4px); }
+        .zoom-btn { background: #2563eb; color: #ffffff; border: none; width: 34px; height: 34px; border-radius: 6px; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+        .zoom-btn:active { background: #1d4ed8; transform: scale(0.95); }
+        .pdf-viewport { width: 100%; height: 100%; overflow: auto; display: flex; justify-content: center; align-items: flex-start; }
+        .pdf-container-zoom { width: 100%; height: 100%; transform-origin: top center; transition: transform 0.2s ease-out; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        .kit-title-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 15px; margin-bottom: 15px; }
-        .kit-title-card h3 { margin: 0 0 4px 0; color: #1e40af; font-size: 16px; }
+        .kit-title-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 15px; margin-bottom: 12px; }
+        .kit-title-card h3 { margin: 0 0 4px 0; color: #1e40af; font-size: 15px; }
         .kit-title-card p { margin: 0; font-size: 12px; color: #3b82f6; font-weight: 600; }
         
-        .calculator-box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+        .calculator-box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
         .calculator-box label { margin-bottom: 0; color: #166534; font-size: 11px; }
-        .calculator-box input { width: 130px; border-color: #86efac; text-align: center; font-size: 15px; color: #14532d; }
+        .calculator-box input { width: 100px; border-color: #86efac; text-align: center; font-size: 15px; color: #14532d; }
 
         .kit-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
         .kit-table th { background: #f1f5f9; text-align: left; padding: 8px 10px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); }
         .kit-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); font-weight: 600; }
-        .kit-table tr:hover { background: #f8fafc; }
         .badge-code { background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-family: monospace; }
         .qty-badge { background: #dcfce7; color: #166534; font-weight: 800; text-align: center; border-radius: 4px; padding: 3px 8px; }
 
-        .msg-box { background: var(--card-bg); padding: 30px; border-radius: 10px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
+        .msg-box { background: var(--card-bg); padding: 25px; border-radius: 10px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
         .error { color: #dc2626; font-weight: 700; }
 
-        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 15px; }
+        .footer { text-align: center; margin-top: 15px; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 12px; }
         .footer strong { color: var(--text-main); background: linear-gradient(135deg, #1e3a8a, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
@@ -86,7 +96,7 @@
         <div class="header-card">
             <div>
                 <h2>Rafter, Column & Kitting Portal</h2>
-                <p>Instant Specification, Drawing & Kit Components Calculator</p>
+                <p>Instant Specification, Full Drawing & Kit Calculator</p>
             </div>
         </div>
 
@@ -102,20 +112,27 @@
                 </div>
                 <div class="search-group" style="flex: 1.5;">
                     <label>Item / Kit Code</label>
-                    <input type="text" id="searchQuery" placeholder="Type or click to see all..." autocomplete="off">
+                    <input type="text" id="searchQuery" placeholder="Type or tap to select..." autocomplete="off">
                     <div id="autocompleteList" class="autocomplete-items"></div>
                 </div>
-                <div style="display: flex; gap: 8px;">
+                <div style="display: flex; gap: 6px;">
                     <button id="searchBtn">Search</button>
                     <button class="btn-clear" onclick="clearSearch()">Clear</button>
                 </div>
             </div>
         </div>
 
-        <div id="msgBox" class="msg-box">Please select a category and enter an item code to load details.</div>
+        <div id="msgBox" class="msg-box">Select a category and enter an item code to view details.</div>
 
+        <!-- MAIN DATA DISPLAY WITH SWIPE/TAB SWITCHER -->
         <div id="dashboardView" style="display: none;">
-            <div class="dashboard-grid">
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('specsTab', this)">📋 Specifications</button>
+                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Full Drawing (PDF)</button>
+            </div>
+
+            <!-- TAB 1: SPECIFICATIONS -->
+            <div id="specsTab" class="tab-content active">
                 <div class="panel-card">
                     <div class="panel-header">📌 Core Specifications</div>
                     <div class="panel-body">
@@ -126,16 +143,31 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <!-- TAB 2: FULL DISPLAY PDF WITH ZOOM -->
+            <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
-                    <div class="panel-header">📄 Engineering Drawing Preview</div>
-                    <div class="pdf-container">
-                        <iframe id="pdfFrame" src=""></iframe>
+                    <div class="panel-header">
+                        <span>📄 Engineering Drawing (Full View)</span>
+                    </div>
+                    <div class="pdf-wrapper">
+                        <div class="pdf-toolbar">
+                            <button class="zoom-btn" onclick="adjustZoom(0.25)" title="Zoom In">＋</button>
+                            <button class="zoom-btn" onclick="adjustZoom(-0.25)" title="Zoom Out">－</button>
+                            <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom">↺</button>
+                        </div>
+                        <div class="pdf-viewport">
+                            <div id="pdfZoomContainer" class="pdf-container-zoom">
+                                <iframe id="pdfFrame" src=""></iframe>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- KITTING VIEW -->
         <div id="kittingView" style="display: none;">
             <div class="kit-title-card">
                 <h3 id="kitDisplayName">KITS - 0021 Earthing & LA Kit</h3>
@@ -145,7 +177,7 @@
             <div class="calculator-box">
                 <div>
                     <label>🔢 Kit Multiplier / Target Sets</label>
-                    <div style="font-size: 12px; color: #15803d; font-weight: 600; margin-top: 2px;">Enter number of kits to calculate total required components</div>
+                    <div style="font-size: 11px; color: #15803d; font-weight: 600; margin-top: 2px;">Enter count to calculate total parts required</div>
                 </div>
                 <div>
                     <input type="number" id="kitCountInput" value="1" min="1" oninput="recalculateKitComponents()">
@@ -154,7 +186,7 @@
 
             <div class="panel-card">
                 <div class="panel-header">📦 Kit Component Breakdown</div>
-                <div class="panel-body" style="padding: 10px;">
+                <div class="panel-body" style="padding: 10px; overflow-x: auto;">
                     <table class="kit-table">
                         <thead>
                             <tr>
@@ -162,8 +194,8 @@
                                 <th style="width: 45%;">Component Description</th>
                                 <th style="width: 20%;">SKU Code</th>
                                 <th style="width: 10%;">UOM</th>
-                                <th style="width: 10%; text-align: center;">Per Kit Qty</th>
-                                <th style="width: 10%; text-align: center;">Total Required</th>
+                                <th style="width: 10%; text-align: center;">Per Kit</th>
+                                <th style="width: 10%; text-align: center;">Total</th>
                             </tr>
                         </thead>
                         <tbody id="kitComponentsTableBody"></tbody>
@@ -206,7 +238,40 @@
 
         let currentActiveKit = null;
         let currentFocus = -1;
+        let currentZoomLevel = 1.0;
         let searchInput = document.getElementById('searchQuery');
+
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            if(btnElement) btnElement.classList.add('active');
+        }
+
+        function adjustZoom(amount) {
+            currentZoomLevel += amount;
+            if (currentZoomLevel < 0.5) currentZoomLevel = 0.5;
+            if (currentZoomLevel > 3.0) currentZoomLevel = 3.0;
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoomLevel = 1.0;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            let container = document.getElementById('pdfZoomContainer');
+            container.style.transform = "scale(" + currentZoomLevel + ")";
+            if (currentZoomLevel > 1) {
+                container.style.width = (100 / currentZoomLevel) + "%";
+                container.style.height = (100 / currentZoomLevel) + "%";
+            } else {
+                container.style.width = "100%";
+                container.style.height = "100%";
+            }
+        }
 
         function resetOldViews() {
             document.getElementById('dashboardView').style.display = 'none';
@@ -215,6 +280,7 @@
             document.getElementById('specsGrid').innerHTML = '';
             document.getElementById('allSpecsBox').innerHTML = '';
             document.getElementById('kitComponentsTableBody').innerHTML = '';
+            resetZoom();
         }
 
         function onCategoryChange() {
@@ -227,7 +293,7 @@
             
             let msgBox = document.getElementById('msgBox');
             msgBox.style.display = 'block';
-            msgBox.innerHTML = 'Please select a category and enter an item code to load details.';
+            msgBox.innerHTML = 'Select a category and enter an item code to view details.';
             closeAllLists();
             searchInput.focus();
         }
@@ -370,7 +436,7 @@
                 }
             } else {
                 msgBox.style.display = 'block';
-                msgBox.innerHTML = '⚡ Loading data...';
+                msgBox.innerHTML = '⚡ Fetching data...';
 
                 let url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(category) + "&query=" + encodeURIComponent(query);
 
@@ -378,7 +444,7 @@
                     .then(response => response.json())
                     .then(resData => {
                         if (resData.error || !resData.data || resData.data.length <= 1) {
-                            msgBox.innerHTML = '<span class="error">⚠️ Wrong category selected or item "' + query + '" not found in ' + category + '!</span>';
+                            msgBox.innerHTML = '<span class="error">⚠️ Item "' + query + '" not found in ' + category + '!</span>';
                             searchInput.focus();
                             searchInput.select();
                             return;
@@ -386,6 +452,9 @@
 
                         msgBox.style.display = 'none';
                         document.getElementById('dashboardView').style.display = 'block';
+                        
+                        // Default open Specifications tab
+                        switchTab('specsTab', document.querySelectorAll('.tab-btn')[0]);
 
                         let data = resData.data;
                         let rowIndex = resData.rowIndex;
