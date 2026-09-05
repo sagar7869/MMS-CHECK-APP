@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e3a8a">
+<link rel="apple-touch-icon" href="icon-192.png">
+    
     <title>Rafter, Column & Kitting Master Data Portal</title>
     <style>
         :root {
@@ -575,6 +579,15 @@
                     console.error('Error loading PDF: ' + err.message);
                 });
         }
+        
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then((reg) => console.log('Service Worker Registered successfully! Scope:', reg.scope))
+                .catch((err) => console.log('Service Worker registration failed:', err));
+        });
+    }
+    
     </script>
 </body>
 </html>
