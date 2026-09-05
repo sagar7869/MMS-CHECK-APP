@@ -27,7 +27,7 @@
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 15px; padding-bottom: 75px; }
         .container { max-width: 1200px; margin: 0 auto; }
         
-        /* Compact Header */
+        /* Header */
         .header-card { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 18px 24px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15); margin-bottom: 15px; }
         .header-card h2 { margin: 0; font-size: 20px; font-weight: 700; }
         .header-card p { margin: 0; opacity: 0.8; font-size: 11px; }
@@ -50,30 +50,27 @@
         .autocomplete-items div { padding: 8px 12px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #f1f5f9; }
         .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #eff6ff; color: var(--accent); }
 
-        /* Main Dashboard Grid layout */
+        /* Dashboard Grid layout */
         .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         
         .panel-card { background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); overflow: hidden; display: flex; flex-direction: column; }
         .panel-header { background: #f8fafc; padding: 10px 15px; font-weight: 700; font-size: 12px; color: #334155; border-bottom: 1px solid var(--border); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
         .panel-body { padding: 15px; flex: 1; }
 
-        /* Compact Data Grid */
         .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .spec-box { background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #f1f5f9; }
         .spec-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 13px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        /* Expand section */
         .expand-section { margin-top: 12px; }
         .expand-btn { background: #f1f5f9; color: #334155; border: 1px solid var(--border); width: 100%; padding: 8px; border-radius: 6px; font-weight: 700; cursor: pointer; text-align: center; font-size: 12px; }
         .expand-btn:hover { background: #e2e8f0; }
         .all-specs-box { display: none; margin-top: 8px; max-height: 160px; overflow-y: auto; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 8px; }
 
-        /* PDF Frame Container */
         .pdf-container { width: 100%; height: 350px; background: #e2e8f0; position: relative; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        /* Kitting View Design */
+        /* Kitting View */
         .kit-title-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 15px; margin-bottom: 15px; }
         .kit-title-card h3 { margin: 0 0 4px 0; color: #1e40af; font-size: 16px; }
         .kit-title-card p { margin: 0; font-size: 12px; color: #3b82f6; font-weight: 600; }
@@ -89,18 +86,14 @@
         .badge-code { background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-family: monospace; }
         .qty-badge { background: #dcfce7; color: #166534; font-weight: 800; text-align: center; border-radius: 4px; padding: 3px 8px; }
 
-        /* Messages & States */
         .msg-box { background: var(--card-bg); padding: 30px; border-radius: 10px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
         .error { color: #dc2626; font-weight: 700; }
 
-        /* Footer */
         .footer { text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 15px; }
         .footer strong { color: var(--text-main); background: linear-gradient(135deg, #1e3a8a, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* Bottom Mobile Navigation Bar */
         .bottom-nav { display: none; }
 
-        /* Mobile View Responsive Enhancements */
         @media(max-width: 900px) {
             body { padding-bottom: 80px; }
             .search-row { flex-direction: column; align-items: stretch; }
@@ -109,9 +102,7 @@
             .bottom-nav {
                 display: flex;
                 position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
+                bottom: 0; left: 0; right: 0;
                 height: 56px;
                 background: #1e3a8a;
                 justify-content: space-around;
@@ -121,30 +112,11 @@
             }
 
             .nav-item {
-                flex: 1;
-                text-align: center;
-                color: #93c5fd;
-                background: none;
-                border: none;
-                height: 100%;
-                font-size: 11px;
-                font-weight: 700;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                gap: 2px;
-                cursor: pointer;
+                flex: 1; text-align: center; color: #93c5fd; background: none; border: none; height: 100%; font-size: 11px; font-weight: 700; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; cursor: pointer;
             }
 
-            .nav-item.active {
-                color: #ffffff;
-                background: rgba(255, 255, 255, 0.12);
-            }
-
-            .pdf-container {
-                height: calc(100vh - 210px);
-            }
+            .nav-item.active { color: #ffffff; background: rgba(255, 255, 255, 0.12); }
+            .pdf-container { height: calc(100vh - 210px); }
         }
     </style>
 </head>
@@ -171,7 +143,7 @@
                 </div>
                 <div class="search-group" style="flex: 1.5;">
                     <label>Item / Kit Code</label>
-                    <input type="text" id="searchQuery" placeholder="Type e.g. 1620, KIT-0001, KIT-0027..." autocomplete="off">
+                    <input type="text" id="searchQuery" placeholder="Type e.g. 1620, KIT-0001, KIT-0022..." autocomplete="off">
                     <div id="autocompleteList" class="autocomplete-items"></div>
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -184,15 +156,13 @@
         <!-- Initial Message Box -->
         <div id="msgBox" class="msg-box">Please select a category and enter an item code to load details.</div>
 
-        <!-- Main Dashboard View for Rafters & Columns -->
+        <!-- Dashboard View for Rafters & Columns -->
         <div id="dashboardView" style="display: none;">
             <div class="dashboard-grid">
-                <!-- Left Panel: Specifications -->
                 <div class="panel-card" id="specsPanel">
                     <div class="panel-header">📌 Core Specifications</div>
                     <div class="panel-body">
                         <div id="specsGrid" class="specs-grid"></div>
-                        
                         <div class="expand-section">
                             <button class="expand-btn" id="toggleExpandBtn" onclick="toggleAllSpecs()">▼ View All Parameters</button>
                             <div id="allSpecsBox" class="all-specs-box"></div>
@@ -200,7 +170,6 @@
                     </div>
                 </div>
 
-                <!-- Right Panel: PDF Preview -->
                 <div class="panel-card" id="pdfPanel">
                     <div class="panel-header">📄 Engineering Drawing Preview</div>
                     <div class="pdf-container">
@@ -210,11 +179,11 @@
             </div>
         </div>
 
-        <!-- Dedicated Kitting Master & Calculator View -->
+        <!-- Kitting Master View -->
         <div id="kittingView" style="display: none;">
             <div class="kit-title-card">
-                <h3 id="kitDisplayName">KITS - 0021 Earthing & LA Kit</h3>
-                <p id="kitCodeSubtitle">SKU Code: KITS-0021</p>
+                <h3 id="kitDisplayName">KITS - 0001 Cable & Wire Consumables Kit</h3>
+                <p id="kitCodeSubtitle">SKU Code: KIT-0001</p>
             </div>
 
             <div class="calculator-box">
@@ -241,9 +210,7 @@
                                 <th style="width: 10%; text-align: center;">Total Required</th>
                             </tr>
                         </thead>
-                        <tbody id="kitComponentsTableBody">
-                            <!-- Injected via JavaScript -->
-                        </tbody>
+                        <tbody id="kitComponentsTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -255,7 +222,7 @@
         </div>
     </div>
 
-    <!-- Mobile Bottom Navigation Bar -->
+    <!-- Mobile Navigation Bar -->
     <div class="bottom-nav" id="mobileBottomNav">
         <button class="nav-item active" id="tabSpecsBtn" onclick="switchMobileTab('specs')">
             <span>📌 Specs</span>
@@ -270,21 +237,48 @@
         
         const sampleCodes = ["0101", "0102", "0103", "1323", "1620", "2811", "2621", "2612", "3811", "3621", "2812", "3613", "3813", "3821"];
         
+        // Full Complete Kitting Database
         const kittingDatabase = [
             { id: "KIT-0001", aliases: ["KIT-1", "KITS-0001"], name: "KITS - 0001 Cable & Wire Consumables Kit", components: [{ name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm", sku: "CNYC-0011", uom: "Packet", qty: 2 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm", sku: "CNYC-0009", uom: "Packet", qty: 2 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 30 }, { name: "PVC Electrical Insulation Tape 1.8cmx6.5m - Black", sku: "CINT-0001", uom: "Nos", qty: 2 }, { name: "Corrugated Box 5 ply", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
             { id: "KIT-0002", aliases: ["KIT-2", "KITS-0002"], name: "KITS - 0002 Earthing & LA Accessories Kit - 1", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 2 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 4 }] },
-            { id: "KIT-0021", aliases: ["KIT-21", "KITS-0021"], name: "KITS - 0021 Earthing & LA Kit", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "Single Spike SS316 Conventional LA", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set", sku: "LAKITS-0007", uom: "Nos", qty: 5 }] }
+            { id: "KIT-0003", aliases: ["KIT-3", "KITS-0003"], name: "KITS - 0003 Fasteners Set - Column & Base Plate", components: [{ name: "HDG M12x40 Hex Bolt Grade 8.8", sku: "FAST-0012", uom: "Nos", qty: 24 }, { name: "HDG M12 Hex Nut", sku: "FAST-0015", uom: "Nos", qty: 24 }, { name: "HDG M12 Plain Washer", sku: "FAST-0018", uom: "Nos", qty: 48 }, { name: "HDG M12 Spring Washer", sku: "FAST-0021", uom: "Nos", qty: 24 }] },
+            { id: "KIT-0004", aliases: ["KIT-4", "KITS-0004"], name: "KITS - 0004 Fasteners Set - Rafter Splicing", components: [{ name: "HDG M10x35 Hex Bolt Grade 8.8", sku: "FAST-0030", uom: "Nos", qty: 16 }, { name: "HDG M10 Hex Nut", sku: "FAST-0032", uom: "Nos", qty: 16 }, { name: "HDG M10 Washer Set", sku: "FAST-0035", uom: "Set", qty: 16 }] },
+            { id: "KIT-0005", aliases: ["KIT-5", "KITS-0005"], name: "KITS - 0005 Purlin & Bracing Mounting Hardware", components: [{ name: "HDG M8x25 Flange Bolt", sku: "FAST-0041", uom: "Nos", qty: 32 }, { name: "HDG M8 Serrated Flange Nut", sku: "FAST-0044", uom: "Nos", qty: 32 }] },
+            { id: "KIT-0006", aliases: ["KIT-6", "KITS-0006"], name: "KITS - 0006 Solar Module Mounting Clamp Set (End & Mid)", components: [{ name: "Mid Clamp Profile Assembly 35mm Aluminum", sku: "CLMP-0001", uom: "Nos", qty: 40 }, { name: "End Clamp Profile Assembly 35mm Aluminum", sku: "CLMP-0002", uom: "Nos", qty: 16 }, { name: "SS304 M8x25 Allen Cap Screw", sku: "FAST-0050", uom: "Nos", qty: 56 }, { name: "Aluminum Channel Nut M8", sku: "FAST-0055", uom: "Nos", qty: 56 }] },
+            { id: "KIT-0007", aliases: ["KIT-7", "KITS-0007"], name: "KITS - 0007 Cable Tray Joint & Bracket Hardware", components: [{ name: "GI Coupler Plate 50mm", sku: "CTRY-0010", uom: "Nos", qty: 10 }, { name: "HDG M6x15 Mushroom Head Square Neck Bolt", sku: "FAST-0062", uom: "Nos", qty: 40 }, { name: "HDG M6 Flange Nut", sku: "FAST-0065", uom: "Nos", qty: 40 }] },
+            { id: "KIT-0008", aliases: ["KIT-8", "KITS-0008"], name: "KITS - 0008 Rubber Grommets & Protection Bush Set", components: [{ name: "EPDM Rubber Grommet 25mm ID", sku: "BUSH-0001", uom: "Nos", qty: 20 }, { name: "EPDM Rubber Grommet 32mm ID", sku: "BUSH-0002", uom: "Nos", qty: 15 }, { name: "UV Resistant Edge Trim Profile 2m", sku: "TRIM-0005", uom: "Mtr", qty: 4 }] },
+            { id: "KIT-0009", aliases: ["KIT-9", "KITS-0009"], name: "KITS - 0009 Inverter Mounting Bracket & Fasteners", components: [{ name: "Heavy Duty GI Inverter Mounting Plate", sku: "INV-0001", uom: "Nos", qty: 1 }, { name: "SS304 Anchor Fastener M10x80", sku: "FAST-0070", uom: "Nos", qty: 6 }, { name: "Anti-Vibration Rubber Pad 50x50x10mm", sku: "RUBR-0012", uom: "Nos", qty: 4 }] },
+            { id: "KIT-0010", aliases: ["KIT-10", "KITS-0010"], name: "KITS - 0010 ACDB / DCDB Enclosure Mounting Kit", components: [{ name: "C-Channel Support Rail 500mm", sku: "RAIL-0003", uom: "Nos", qty: 2 }, { name: "HDG M8x40 Hex Bolt & Washer", sku: "FAST-0078", uom: "Set", qty: 8 }, { name: "Nylon Expansion Plug 12mm", sku: "PLUG-0004", uom: "Nos", qty: 8 }] },
+            { id: "KIT-0011", aliases: ["KIT-11", "KITS-0011"], name: "KITS - 0011 Walkway Mounting Hardware Set", components: [{ name: "Walkway Grating Fixation Clamp", sku: "WLK-0002", uom: "Nos", qty: 24 }, { name: "SS304 M8x50 Carriage Bolt Set", sku: "FAST-0082", uom: "Set", qty: 24 }] },
+            { id: "KIT-0012", aliases: ["KIT-12", "KITS-0012"], name: "KITS - 0012 MC4 Connector & Inline Fuse Kit", components: [{ name: "MC4 Male & Female Pair 1000V", sku: "ELEC-0001", uom: "Pair", qty: 10 }, { name: "MC4 Inline Fuse Holder 15A", sku: "ELEC-0005", uom: "Nos", qty: 4 }, { name: "MC4 Assembly Plastic Spanner Tool", sku: "TOOL-0001", uom: "Pair", qty: 1 }] },
+            { id: "KIT-0013", aliases: ["KIT-13", "KITS-0013"], name: "KITS - 0013 Cross Bracing Tensioner & Wire Rope Hardware", components: [{ name: "Galvanized Steel Wire Rope 6mm", sku: "ROPE-0001", uom: "Mtr", qty: 50 }, { name: "M10 Turnbuckle Hook & Eye HDG", sku: "FAST-0091", uom: "Nos", qty: 8 }, { name: "M6 Wire Rope Clip Clamp", sku: "FAST-0095", uom: "Nos", qty: 32 }] },
+            { id: "KIT-0014", aliases: ["KIT-14", "KITS-0014"], name: "KITS - 0014 Foundation Anchor Bolt Assembly Set", components: [{ name: "L-Type Anchor Bolt M16x450mm HDG", sku: "ANCH-0001", uom: "Nos", qty: 16 }, { name: "M16 Heavy Duty Hex Nut HDG", sku: "FAST-0101", uom: "Nos", qty: 32 }, { name: "M16 Thick Flat Washer HDG", sku: "FAST-0105", uom: "Nos", qty: 32 }] },
+            { id: "KIT-0015", aliases: ["KIT-15", "KITS-0015"], name: "KITS - 0015 Flexible Conduit & Connector Accessory Kit", components: [{ name: "UV Resistant Polyamide Flexible Conduit 25mm", sku: "CND-0001", uom: "Mtr", qty: 15 }, { name: "Straight Conduit Gland IP67 25mm", sku: "CND-0005", uom: "Nos", qty: 6 }, { name: "Conduit Clamping Saddle 25mm", sku: "CND-0008", uom: "Nos", qty: 12 }] },
+            { id: "KIT-0016", aliases: ["KIT-16", "KITS-0016"], name: "KITS - 0016 Tracker Motor Support Adapter Plate Kit", components: [{ name: "CNC Machined Adapter Plate 10mm", sku: "TRK-0001", uom: "Nos", qty: 1 }, { name: "High Tensile Bolt M14x50 Grade 10.9", sku: "FAST-0112", uom: "Nos", qty: 8 }, { name: "M14 Lock Nut Nylon Insert", sku: "FAST-0118", uom: "Nos", qty: 8 }] },
+            { id: "KIT-0017", aliases: ["KIT-17", "KITS-0017"], name: "KITS - 0017 Weather Monitoring Station Mounting Kit", components: [{ name: "Anemometer Extension Pole 1.5m", sku: "WMS-0001", uom: "Nos", qty: 1 }, { name: "Pyranometer Adjustable Bracket", sku: "WMS-0003", uom: "Nos", qty: 1 }, { name: "SS304 Hose Clamps 50-70mm", sku: "FAST-0125", uom: "Nos", qty: 4 }] },
+            { id: "KIT-0018", aliases: ["KIT-18", "KITS-0018"], name: "KITS - 0018 Solar Cable Identification Tag & Marker Kit", components: [{ name: "SS304 Cable Identification Marker Tags", sku: "TAG-0001", uom: "Nos", qty: 50 }, { name: "Custom Printed Polyimide Label Sheet", sku: "TAG-0005", uom: "Sheet", qty: 5 }, { name: "Clear Heat Shrink Sleeve 12mm", sku: "SLV-0002", uom: "Mtr", qty: 5 }] },
+            { id: "KIT-0019", aliases: ["KIT-19", "KITS-0019"], name: "KITS - 0019 Structure Bonding Jumper Wire Kit", components: [{ name: "Flexible Tinned Copper Braid Jumper 200mm", sku: "EARO-0010", uom: "Nos", qty: 20 }, { name: "SS304 M8x20 Serrated Head Screw Set", sku: "FAST-0131", uom: "Set", qty: 40 }] },
+            { id: "KIT-0020", aliases: ["KIT-20", "KITS-0020"], name: "KITS - 0020 Rafter Top Connection Gusset Hardware", components: [{ name: "HDG Gusset Plate 6mm Thick", sku: "PLATE-0002", uom: "Nos", qty: 4 }, { name: "HDG M12x35 Hex Bolt", sku: "FAST-0140", uom: "Nos", qty: 16 }, { name: "HDG M12 Flange Nut", sku: "FAST-0145", uom: "Nos", qty: 16 }] },
+            { id: "KIT-0021", aliases: ["KIT-21", "KITS-0021"], name: "KITS - 0021 Earthing & LA Kit", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "Single Spike SS316 Conventional LA", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set", sku: "LAKITS-0007", uom: "Nos", qty: 5 }] },
+            { id: "KIT-0022", aliases: ["KIT-22", "KITS-0022"], name: "KITS - 0022 Maintenance Tool & Spare Fasteners Kit", components: [{ name: "Torque Wrench 10-50 Nm 1/2 Drive", sku: "TOOL-0010", uom: "Nos", qty: 1 }, { name: "Deep Impact Socket 13mm, 17mm, 19mm", sku: "TOOL-0015", uom: "Set", qty: 1 }, { name: "Assorted Spare M8 & M10 HDG Nuts/Bolts Box", sku: "FAST-0200", uom: "Box", qty: 1 }] }
         ];
 
         let currentActiveKit = null;
         let currentFocus = -1;
         let searchInput = document.getElementById('searchQuery');
 
+        const searchCache = new Map();
+        let currentAbortController = null;
+
         function onCategoryChange() {
             clearSearch();
         }
 
         function clearSearch() {
+            if (currentAbortController) {
+                currentAbortController.abort();
+                currentAbortController = null;
+            }
             searchInput.value = '';
             document.getElementById('dashboardView').style.display = 'none';
             document.getElementById('kittingView').style.display = 'none';
@@ -383,6 +377,10 @@
             if(!query) { alert('Please enter a search code!'); searchInput.focus(); return; }
             closeAllLists();
 
+            if (currentAbortController) {
+                currentAbortController.abort();
+            }
+
             if (category === "Kitting") {
                 dashboardView.style.display = 'none';
                 let qLower = query.toLowerCase();
@@ -397,72 +395,101 @@
                     document.getElementById('kitCountInput').value = 1;
                     recalculateKitComponents();
                 } else {
-                    kittingView.style.display = 'none';
-                    msgBox.style.display = 'block';
-                    msgBox.innerHTML = '<span class="error">⚠️ Kit "' + query + '" not found in Master Data!</span>';
+                    fetchFromBackend(category, query);
                 }
             } else {
                 kittingView.style.display = 'none';
-                msgBox.style.display = 'block';
-                msgBox.innerHTML = '⚡ Loading data...';
-                dashboardView.style.display = 'none';
+                
+                let cacheKey = category + "_" + query.toLowerCase();
+                if (searchCache.has(cacheKey)) {
+                    renderSearchResult(searchCache.get(cacheKey), category);
+                    return;
+                }
 
-                let url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(category) + "&query=" + encodeURIComponent(query);
-
-                fetch(url)
-                    .then(response => response.json())
-                    .then(resData => {
-                        if (resData.error || !resData.data || resData.data.length <= 1) {
-                            msgBox.innerHTML = '<span class="error">⚠️ Item "' + query + '" not found in ' + category + '!</span>';
-                            return;
-                        }
-
-                        msgBox.style.display = 'none';
-                        dashboardView.style.display = 'block';
-
-                        let data = resData.data;
-                        let headers = data[0]; 
-                        let row = data[1];     
-                        
-                        let dataMap = {};
-                        for (let i = 0; i < headers.length; i++) {
-                            dataMap[headers[i].toString().trim().toLowerCase()] = row[i] !== undefined ? row[i] : '-';
-                        }
-
-                        function getVal(keyKeywords) {
-                            for (let key in dataMap) {
-                                for (let k = 0; k < keyKeywords.length; k++) {
-                                    if (key.indexOf(keyKeywords[k]) !== -1) return dataMap[key];
-                                }
-                            }
-                            return '-';
-                        }
-
-                        let specsHtml = '';
-                        specsHtml += createSpecBox('Item Code', getVal(['item code']));
-                        specsHtml += createSpecBox('Length', getVal(['length']));
-                        specsHtml += createSpecBox('Thickness', getVal(['thickness']));
-                        specsHtml += createSpecBox('Section Size', getVal(['section size']));
-
-                        document.getElementById('specsGrid').innerHTML = specsHtml;
-
-                        let allHtml = '';
-                        for (let j = 0; j < headers.length; j++) {
-                            let h = headers[j];
-                            let v = row[j] !== undefined ? row[j] : '-';
-                            if (h.toLowerCase().indexOf('pdf') === -1) {
-                                allHtml += '<div class="spec-box"><div class="spec-label">' + h + '</div><div class="spec-val">' + (v !== '' ? v : '-') + '</div></div>';
-                            }
-                        }
-                        document.getElementById('allSpecsBox').style.display = 'none';
-                        document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Parameters';
-                        document.getElementById('allSpecsBox').innerHTML = allHtml;
-
-                        if (resData.rowIndex) { fetchAndShowPdf(category, resData.rowIndex); }
-                        switchMobileTab('specs');
-                    })
-                    .catch(err => { msgBox.innerHTML = '<span class="error">Connection Error: ' + err.message + '</span>'; });
+                fetchFromBackend(category, query);
             }
+        }
+
+        function fetchFromBackend(category, query) {
+            let msgBox = document.getElementById('msgBox');
+            let dashboardView = document.getElementById('dashboardView');
+            let kittingView = document.getElementById('kittingView');
+
+            msgBox.style.display = 'block';
+            msgBox.innerHTML = '⚡ Loading data...';
+            dashboardView.style.display = 'none';
+            kittingView.style.display = 'none';
+
+            currentAbortController = new AbortController();
+            let signal = currentAbortController.signal;
+
+            let url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(category) + "&query=" + encodeURIComponent(query);
+
+            fetch(url, { signal: signal })
+                .then(response => response.json())
+                .then(resData => {
+                    if (resData.error || !resData.data || resData.data.length <= 1) {
+                        msgBox.innerHTML = '<span class="error">⚠️ Item "' + query + '" not found in ' + category + '!</span>';
+                        return;
+                    }
+
+                    let cacheKey = category + "_" + query.toLowerCase();
+                    searchCache.set(cacheKey, resData);
+                    renderSearchResult(resData, category);
+                })
+                .catch(err => {
+                    if (err.name === 'AbortError') return;
+                    msgBox.innerHTML = '<span class="error">Connection Error: ' + err.message + '</span>';
+                });
+        }
+
+        function renderSearchResult(resData, category) {
+            let msgBox = document.getElementById('msgBox');
+            let dashboardView = document.getElementById('dashboardView');
+
+            msgBox.style.display = 'none';
+            dashboardView.style.display = 'block';
+
+            let data = resData.data;
+            let headers = data[0]; 
+            let row = data[1];     
+            
+            let dataMap = {};
+            for (let i = 0; i < headers.length; i++) {
+                dataMap[headers[i].toString().trim().toLowerCase()] = row[i] !== undefined ? row[i] : '-';
+            }
+
+            function getVal(keyKeywords) {
+                for (let key in dataMap) {
+                    for (let k = 0; k < keyKeywords.length; k++) {
+                        if (key.indexOf(keyKeywords[k]) !== -1) return dataMap[key];
+                    }
+                }
+                return '-';
+            }
+
+            let specsHtml = '';
+            specsHtml += createSpecBox('Item Code', getVal(['item code']));
+            specsHtml += createSpecBox('Length', getVal(['length']));
+            specsHtml += createSpecBox('Thickness', getVal(['thickness']));
+            specsHtml += createSpecBox('Section Size', getVal(['section size']));
+
+            document.getElementById('specsGrid').innerHTML = specsHtml;
+
+            let allHtml = '';
+            for (let j = 0; j < headers.length; j++) {
+                let h = headers[j];
+                let v = row[j] !== undefined ? row[j] : '-';
+                if (h.toLowerCase().indexOf('pdf') === -1) {
+                    allHtml += '<div class="spec-box"><div class="spec-label">' + h + '</div><div class="spec-val">' + (v !== '' ? v : '-') + '</div></div>';
+                }
+            }
+            document.getElementById('allSpecsBox').style.display = 'none';
+            document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Parameters';
+            document.getElementById('allSpecsBox').innerHTML = allHtml;
+
+            if (resData.rowIndex) { fetchAndShowPdf(category, resData.rowIndex); }
+            switchMobileTab('specs');
         }
 
         function recalculateKitComponents() {
@@ -512,9 +539,8 @@
                 });
         }
 
-        /* Mobile Bottom Tab Switcher Function */
         function switchMobileTab(tabName) {
-            if (window.innerWidth > 900) return; // Deskop logic untouched
+            if (window.innerWidth > 900) return;
 
             let specsPanel = document.getElementById('specsPanel');
             let pdfPanel = document.getElementById('pdfPanel');
