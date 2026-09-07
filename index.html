@@ -118,10 +118,13 @@
         .expand-btn { background: #EEEEEE; color: #424242; border: 1px solid var(--border); width: 100%; padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 11px; box-shadow: none; }
         .all-specs-box { display: none; margin-top: 8px; max-height: 200px; overflow-y: auto; background: #F5F5F5; padding: 8px; border-radius: 8px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 6px; }
 
-        /* FULL DISPLAY PDF & ZOOM CONTROLS */
+        /* FULL DISPLAY PDF & ZOOM CONTROLS WITH NATIVE FULLSCREEN OPTION */
         .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 220px); min-height: 420px; background: #424242; border-radius: 8px; overflow: hidden; }
-        .pdf-toolbar { position: absolute; top: 8px; right: 8px; z-index: 10; display: flex; gap: 6px; background: rgba(0, 0, 0, 0.7); padding: 4px 6px; border-radius: 8px; }
-        .zoom-btn { background: var(--accent); color: #ffffff; border: none; width: 32px; height: 32px; border-radius: 6px; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: none; }
+        .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
+        
+        .pdf-toolbar { position: absolute; top: 8px; right: 8px; z-index: 10; display: flex; gap: 6px; background: rgba(0, 0, 0, 0.75); padding: 4px 6px; border-radius: 8px; }
+        .zoom-btn { background: var(--accent); color: #ffffff; border: none; height: 32px; padding: 0 8px; border-radius: 6px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; }
+        
         .pdf-viewport { width: 100%; height: 100%; overflow: auto; display: flex; justify-content: center; align-items: flex-start; }
         .pdf-container-zoom { width: 100%; height: 100%; transform-origin: top center; transition: transform 0.2s ease-out; }
         iframe { width: 100%; height: 100%; border: none; }
@@ -135,14 +138,16 @@
         .calculator-box label { margin-bottom: 0; color: #1B5E20; font-size: 11px; font-weight: 800; }
         .calculator-box input { width: 85px; border-color: #81C784; text-align: center; font-size: 15px; color: #1B5E20; font-weight: 800; padding: 6px; }
 
-        /* AUTO-FIT RESPONSIVE MOBILE TABLE (NO SCROLL REQUIRED FOR TOTAL COLUMN) */
+        /* UPDATED FIT-TO-SCREEN TABLE WITH PREVENTED QTY BREAKING */
         .table-container { width: 100%; overflow-x: hidden; }
-        .kit-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
-        .kit-table th { background: #F5F5F5; text-align: left; padding: 8px 4px; font-size: 9px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); font-weight: 800; }
-        .kit-table td { padding: 8px 4px; border-bottom: 1px solid var(--border); font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; }
+        .kit-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10.5px; }
+        .kit-table th { background: #F5F5F5; text-align: left; padding: 8px 3px; font-size: 8.5px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); font-weight: 800; }
+        .kit-table td { padding: 8px 3px; border-bottom: 1px solid var(--border); font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; }
         
-        .badge-code { background: #EDE7F6; color: #4527A0; padding: 2px 4px; border-radius: 4px; font-size: 10px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-        .qty-badge { background: #C8E6C9; color: #1B5E20; font-weight: 800; text-align: center; border-radius: 4px; padding: 3px 2px; display: block; width: 100%; }
+        .badge-code { background: #EDE7F6; color: #4527A0; padding: 2px 3px; border-radius: 4px; font-size: 9.5px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* FIX FOR TOTAL COLUMN MULTI-DIGIT NUMBERS (500, 1000+) */
+        .qty-badge { background: #C8E6C9; color: #1B5E20; font-weight: 800; text-align: center; border-radius: 4px; padding: 3px 2px; display: block; width: 100%; white-space: nowrap; font-size: 10px; }
 
         .msg-box { background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
         .error { color: #D32F2F; font-weight: 700; }
@@ -205,12 +210,13 @@
                 </div>
             </div>
 
-            <!-- TAB 2: FULL DISPLAY PDF WITH ZOOM -->
+            <!-- TAB 2: FULL DISPLAY PDF WITH FULLSCREEN & ZOOM -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
                     <div class="panel-header">📄 Engineering Drawing (Full View)</div>
-                    <div class="pdf-wrapper">
+                    <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
+                            <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
                             <button class="zoom-btn" onclick="adjustZoom(0.25)">＋</button>
                             <button class="zoom-btn" onclick="adjustZoom(-0.25)">－</button>
                             <button class="zoom-btn" onclick="resetZoom()">↺</button>
@@ -244,17 +250,17 @@
 
             <div class="panel-card">
                 <div class="panel-header">📦 Kit Component Breakdown</div>
-                <div class="panel-body" style="padding: 6px;">
+                <div class="panel-body" style="padding: 6px 4px;">
                     <div class="table-container">
                         <table class="kit-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 6%; text-align: center;">#</th>
-                                    <th style="width: 44%;">Component</th>
-                                    <th style="width: 24%;">SKU Code</th>
-                                    <th style="width: 10%; text-align: center;">Unit</th>
+                                    <th style="width: 5%; text-align: center;">#</th>
+                                    <th style="width: 39%;">Component</th>
+                                    <th style="width: 25%;">SKU Code</th>
+                                    <th style="width: 9%; text-align: center;">Unit</th>
                                     <th style="width: 7%; text-align: center;">Set</th>
-                                    <th style="width: 9%; text-align: center;">Total</th>
+                                    <th style="width: 15%; text-align: center;">Total</th>
                                 </tr>
                             </thead>
                             <tbody id="kitComponentsTableBody"></tbody>
@@ -300,6 +306,7 @@
         let currentActiveKit = null;
         let currentFocus = -1;
         let currentZoomLevel = 1.0;
+        let isFullscreenMode = false;
         let searchInput = document.getElementById('searchQuery');
 
         function switchTab(tabId, btnElement) {
@@ -308,6 +315,21 @@
             
             document.getElementById(tabId).classList.add('active');
             if(btnElement) btnElement.classList.add('active');
+        }
+
+        // FULLSCREEN TOGGLE FOR PDF DRAWING
+        function toggleFullscreen() {
+            let wrapper = document.getElementById('pdfWrapper');
+            let btn = document.getElementById('fsToggleBtn');
+            
+            isFullscreenMode = !isFullscreenMode;
+            if (isFullscreenMode) {
+                wrapper.classList.add('is-fullscreen');
+                btn.innerHTML = "❌ Exit Full Screen";
+            } else {
+                wrapper.classList.remove('is-fullscreen');
+                btn.innerHTML = "⛶ Full Screen";
+            }
         }
 
         function adjustZoom(amount) {
@@ -335,6 +357,7 @@
         }
 
         function resetOldViews() {
+            if (isFullscreenMode) toggleFullscreen();
             document.getElementById('dashboardView').style.display = 'none';
             document.getElementById('kittingView').style.display = 'none';
             document.getElementById('pdfFrame').src = '';
@@ -583,7 +606,7 @@
             }
         }
 
-        // PERFECT MOBILE AUTO-FIT RECALCULATION
+        // PERFECT MOBILE AUTO-FIT RECALCULATION WITH FIXED TOTAL QTY DISPLAY
         function recalculateKitComponents() {
             if (!currentActiveKit) return;
             
