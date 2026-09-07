@@ -9,94 +9,146 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#1e3a8a">
+    <meta name="theme-color" content="#1565C0">
     
     <style>
         :root {
-            --primary: #1e3a8a;
-            --primary-light: #3b82f6;
-            --bg-body: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --accent: #2563eb;
-            --success: #16a34a;
+            --primary: #1565C0;
+            --primary-dark: #0D47A1;
+            --bg-body: #F4F6F9;
+            --card-bg: #FFFFFF;
+            --text-main: #212121;
+            --text-muted: #616161;
+            --border: #E0E0E0;
+            --accent: #1E88E5;
+            --success: #2E7D32;
         }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 12px; box-sizing: border-box; }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 8px; 
+        }
+        
         .container { max-width: 1200px; margin: 0 auto; padding-bottom: 20px; }
         
-        .header-card { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 16px 20px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15); margin-bottom: 12px; }
-        .header-card h2 { margin: 0; font-size: 18px; font-weight: 700; }
-        .header-card p { margin: 0; opacity: 0.8; font-size: 11px; }
+        /* ANDROID NATIVE HEADER CARD */
+        .header-card { 
+            background: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%); 
+            color: white; 
+            padding: 14px 16px; 
+            border-radius: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 10px rgba(21, 101, 192, 0.25); 
+            margin-bottom: 10px; 
+        }
+        .header-card h2 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: 0.3px; }
+        .header-card p { margin: 2px 0 0 0; opacity: 0.9; font-size: 11px; }
 
-        .search-card { background: var(--card-bg); padding: 12px 16px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 12px; border: 1px solid var(--border); }
-        .search-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
-        .search-group { flex: 1; min-width: 150px; position: relative; }
+        /* ANDROID MATERIAL INPUT CARD */
+        .search-card { 
+            background: var(--card-bg); 
+            padding: 12px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06); 
+            margin-bottom: 10px; 
+            border: 1px solid var(--border); 
+        }
+        .search-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+        .search-group { flex: 1; min-width: 140px; position: relative; }
         label { display: block; font-weight: 700; margin-bottom: 4px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        select, input { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: #fff; box-sizing: border-box; font-weight: 600; color: var(--text-main); }
-        select:focus, input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        select, input { 
+            width: 100%; 
+            padding: 10px 12px; 
+            border: 1.5px solid var(--border); 
+            border-radius: 8px; 
+            font-size: 13px; 
+            background: #fff; 
+            font-weight: 600; 
+            color: var(--text-main); 
+            transition: all 0.2s;
+        }
+        select:focus, input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15); }
         
-        button { background: var(--accent); color: white; border: none; padding: 9px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 13px; transition: background 0.2s; height: 38px; }
-        button:hover { background: #1d4ed8; }
-        .btn-clear { background: #64748b; }
-        .btn-clear:hover { background: #475569; }
+        button { 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 10px 14px; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            font-size: 13px; 
+            height: 40px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:active { transform: scale(0.97); }
+        .btn-clear { background: #757575; }
 
-        /* SUGGESTION DROPDOWN - SHOWS ALL KITS WITH SCROLL */
-        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 999; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 6px 6px; max-height: 280px; overflow-y: auto; box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
+        /* AUTOCOMPLETE DROPDOWN */
+        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 999; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 8px 8px; max-height: 280px; overflow-y: auto; box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
         .autocomplete-items div { padding: 10px 12px; cursor: pointer; font-size: 12px; font-weight: 600; border-bottom: 1px solid #f1f5f9; line-height: 1.4; }
-        .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #eff6ff; color: var(--accent); }
+        .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #E3F2FD; color: var(--primary); }
 
         /* TAB NAVIGATION STYLES */
-        .tab-bar { display: flex; background: #e2e8f0; border-radius: 8px; padding: 4px; margin-bottom: 12px; gap: 4px; }
-        .tab-btn { flex: 1; padding: 10px; background: transparent; color: var(--text-muted); border: none; font-weight: 700; font-size: 13px; border-radius: 6px; cursor: pointer; text-align: center; height: auto; }
-        .tab-btn.active { background: #ffffff; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+        .tab-bar { display: flex; background: #E0E0E0; border-radius: 10px; padding: 3px; margin-bottom: 10px; gap: 4px; }
+        .tab-btn { flex: 1; padding: 8px; background: transparent; color: var(--text-muted); border: none; font-weight: 700; font-size: 12px; border-radius: 8px; cursor: pointer; text-align: center; height: auto; box-shadow: none; }
+        .tab-btn.active { background: #ffffff; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .panel-card { background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); overflow: hidden; display: flex; flex-direction: column; }
-        .panel-header { background: #f8fafc; padding: 10px 15px; font-weight: 700; font-size: 12px; color: #334155; border-bottom: 1px solid var(--border); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
-        .panel-body { padding: 15px; flex: 1; }
+        .panel-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 10px; }
+        .panel-header { background: #FAFAFA; padding: 10px 12px; font-weight: 700; font-size: 12px; color: #424242; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+        .panel-body { padding: 12px; }
 
-        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .spec-box { background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #f1f5f9; }
-        .spec-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-        .spec-val { font-size: 13px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
+        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .spec-box { background: #F5F5F5; padding: 8px 10px; border-radius: 8px; border: 1px solid #EEEEEE; }
+        .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        .expand-section { margin-top: 12px; }
-        .expand-btn { background: #f1f5f9; color: #334155; border: 1px solid var(--border); width: 100%; padding: 8px; border-radius: 6px; font-weight: 700; cursor: pointer; text-align: center; font-size: 12px; }
-        .expand-btn:hover { background: #e2e8f0; }
-        .all-specs-box { display: none; margin-top: 8px; max-height: 200px; overflow-y: auto; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .expand-section { margin-top: 10px; }
+        .expand-btn { background: #EEEEEE; color: #424242; border: 1px solid var(--border); width: 100%; padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 11px; box-shadow: none; }
+        .all-specs-box { display: none; margin-top: 8px; max-height: 200px; overflow-y: auto; background: #F5F5F5; padding: 8px; border-radius: 8px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 6px; }
 
         /* FULL DISPLAY PDF & ZOOM CONTROLS */
-        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 220px); min-height: 480px; background: #525659; border-radius: 8px; overflow: hidden; }
-        .pdf-toolbar { position: absolute; top: 10px; right: 10px; z-index: 10; display: flex; gap: 6px; background: rgba(15, 23, 42, 0.85); padding: 6px; border-radius: 8px; backdrop-filter: blur(4px); }
-        .zoom-btn { background: #2563eb; color: #ffffff; border: none; width: 34px; height: 34px; border-radius: 6px; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
-        .zoom-btn:active { background: #1d4ed8; transform: scale(0.95); }
+        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 220px); min-height: 420px; background: #424242; border-radius: 8px; overflow: hidden; }
+        .pdf-toolbar { position: absolute; top: 8px; right: 8px; z-index: 10; display: flex; gap: 6px; background: rgba(0, 0, 0, 0.7); padding: 4px 6px; border-radius: 8px; }
+        .zoom-btn { background: var(--accent); color: #ffffff; border: none; width: 32px; height: 32px; border-radius: 6px; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: none; }
         .pdf-viewport { width: 100%; height: 100%; overflow: auto; display: flex; justify-content: center; align-items: flex-start; }
         .pdf-container-zoom { width: 100%; height: 100%; transform-origin: top center; transition: transform 0.2s ease-out; }
         iframe { width: 100%; height: 100%; border: none; }
 
-        .kit-title-card { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 15px; margin-bottom: 12px; }
-        .kit-title-card h3 { margin: 0 0 4px 0; color: #1e40af; font-size: 15px; }
-        .kit-title-card p { margin: 0; font-size: 12px; color: #3b82f6; font-weight: 600; }
+        /* MOBILE APP NATIVE CARD LOOK FOR KITTING */
+        .kit-title-card { background: #E3F2FD; border: 1px solid #BBDEFB; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+        .kit-title-card h3 { margin: 0 0 2px 0; color: #0D47A1; font-size: 14px; font-weight: 800; }
+        .kit-title-card p { margin: 0; font-size: 11px; color: #1E88E5; font-weight: 700; }
         
-        .calculator-box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-        .calculator-box label { margin-bottom: 0; color: #166534; font-size: 11px; }
-        .calculator-box input { width: 100px; border-color: #86efac; text-align: center; font-size: 15px; color: #14532d; }
+        .calculator-box { background: #E8F5E9; border: 1px solid #C8E6C9; padding: 10px 12px; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .calculator-box label { margin-bottom: 0; color: #1B5E20; font-size: 11px; font-weight: 800; }
+        .calculator-box input { width: 85px; border-color: #81C784; text-align: center; font-size: 15px; color: #1B5E20; font-weight: 800; padding: 6px; }
 
-        .kit-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 12px; }
-        .kit-table th { background: #f1f5f9; text-align: left; padding: 8px 10px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); }
-        .kit-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); font-weight: 600; }
-        .badge-code { background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-family: monospace; }
-        .qty-badge { background: #dcfce7; color: #166534; font-weight: 800; text-align: center; border-radius: 4px; padding: 3px 8px; }
+        /* AUTO-FIT RESPONSIVE MOBILE TABLE (NO SCROLL REQUIRED FOR TOTAL COLUMN) */
+        .table-container { width: 100%; overflow-x: hidden; }
+        .kit-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
+        .kit-table th { background: #F5F5F5; text-align: left; padding: 8px 4px; font-size: 9px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); font-weight: 800; }
+        .kit-table td { padding: 8px 4px; border-bottom: 1px solid var(--border); font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; }
+        
+        .badge-code { background: #EDE7F6; color: #4527A0; padding: 2px 4px; border-radius: 4px; font-size: 10px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+        .qty-badge { background: #C8E6C9; color: #1B5E20; font-weight: 800; text-align: center; border-radius: 4px; padding: 3px 2px; display: block; width: 100%; }
 
-        .msg-box { background: var(--card-bg); padding: 25px; border-radius: 10px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
-        .error { color: #dc2626; font-weight: 700; }
+        .msg-box { background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
+        .error { color: #D32F2F; font-weight: 700; }
 
-        .footer { text-align: center; margin-top: 15px; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 12px; }
-        .footer strong { color: var(--text-main); background: linear-gradient(135deg, #1e3a8a, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .footer { text-align: center; margin-top: 15px; font-size: 10px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 10px; }
+        .footer strong { color: var(--primary); }
     </style>
 </head>
 <body>
@@ -120,7 +172,7 @@
                 </div>
                 <div class="search-group" style="flex: 1.5;">
                     <label>Item / Kit Code</label>
-                    <input type="text" id="searchQuery" placeholder="Tap to see all kits or type..." autocomplete="off">
+                    <input type="text" id="searchQuery" placeholder="Tap to see all kits..." autocomplete="off">
                     <div id="autocompleteList" class="autocomplete-items"></div>
                 </div>
                 <div style="display: flex; gap: 6px;">
@@ -132,7 +184,7 @@
 
         <div id="msgBox" class="msg-box">Select a category and enter an item code to view details.</div>
 
-        <!-- MAIN DATA DISPLAY WITH SWIPE/TAB SWITCHER -->
+        <!-- MAIN DATA DISPLAY -->
         <div id="dashboardView" style="display: none;">
             <div class="tab-bar">
                 <button class="tab-btn active" onclick="switchTab('specsTab', this)">📋 Specifications</button>
@@ -156,14 +208,12 @@
             <!-- TAB 2: FULL DISPLAY PDF WITH ZOOM -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
-                    <div class="panel-header">
-                        <span>📄 Engineering Drawing (Full View)</span>
-                    </div>
+                    <div class="panel-header">📄 Engineering Drawing (Full View)</div>
                     <div class="pdf-wrapper">
                         <div class="pdf-toolbar">
-                            <button class="zoom-btn" onclick="adjustZoom(0.25)" title="Zoom In">＋</button>
-                            <button class="zoom-btn" onclick="adjustZoom(-0.25)" title="Zoom Out">－</button>
-                            <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom">↺</button>
+                            <button class="zoom-btn" onclick="adjustZoom(0.25)">＋</button>
+                            <button class="zoom-btn" onclick="adjustZoom(-0.25)">－</button>
+                            <button class="zoom-btn" onclick="resetZoom()">↺</button>
                         </div>
                         <div class="pdf-viewport">
                             <div id="pdfZoomContainer" class="pdf-container-zoom">
@@ -175,7 +225,7 @@
             </div>
         </div>
 
-        <!-- KITTING VIEW -->
+        <!-- KITTING VIEW FIT-TO-SCREEN NO HORIZONTAL SCROLL -->
         <div id="kittingView" style="display: none;">
             <div class="kit-title-card">
                 <h3 id="kitDisplayName">KITS - 0021 Earthing & LA Kit</h3>
@@ -184,8 +234,8 @@
 
             <div class="calculator-box">
                 <div>
-                    <label>🔢 Kit Multiplier / Target Sets</label>
-                    <div style="font-size: 11px; color: #15803d; font-weight: 600; margin-top: 2px;">Enter count to calculate total parts required</div>
+                    <label>🔢 Kit Multiplier Sets</label>
+                    <div style="font-size: 10px; color: #2E7D32; font-weight: 600; margin-top: 1px;">Enter qty (e.g. 100) to auto-calculate</div>
                 </div>
                 <div>
                     <input type="number" id="kitCountInput" value="1" min="1" oninput="recalculateKitComponents()">
@@ -194,20 +244,22 @@
 
             <div class="panel-card">
                 <div class="panel-header">📦 Kit Component Breakdown</div>
-                <div class="panel-body" style="padding: 10px; overflow-x: auto;">
-                    <table class="kit-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 5%;">#</th>
-                                <th style="width: 45%;">Component Description</th>
-                                <th style="width: 20%;">SKU Code</th>
-                                <th style="width: 10%;">UOM</th>
-                                <th style="width: 10%; text-align: center;">Per Kit</th>
-                                <th style="width: 10%; text-align: center;">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="kitComponentsTableBody"></tbody>
-                    </table>
+                <div class="panel-body" style="padding: 6px;">
+                    <div class="table-container">
+                        <table class="kit-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 6%; text-align: center;">#</th>
+                                    <th style="width: 44%;">Component</th>
+                                    <th style="width: 24%;">SKU Code</th>
+                                    <th style="width: 10%; text-align: center;">Unit</th>
+                                    <th style="width: 7%; text-align: center;">Set</th>
+                                    <th style="width: 9%; text-align: center;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kitComponentsTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -222,27 +274,27 @@
         
         const sampleCodes = ["0101", "0102", "0103", "1323", "1620", "2811", "2621", "2612", "3811", "3621", "2812", "3613", "3813", "3821"];
         
-        // COMPLETE KITTING MASTER DATABASE (ALL 19 KITS INCLUDED)
+        // COMPLETE KITTING MASTER DATABASE
         const kittingDatabase = [
-            { id: "KIT-0001", aliases: ["KIT-1", "KITS-0001", "CABLE & WIRE CONSUMABLES KIT"], name: "KITS - 0001 Cable & Wire Consumables Kit", components: [{ name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm", sku: "CNYC-0011", uom: "Packet", qty: 2 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm", sku: "CNYC-0009", uom: "Packet", qty: 2 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 30 }, { name: "PVC Electrical Insulation Tape 1.8cmx6.5m - Black", sku: "CINT-0001", uom: "Nos", qty: 2 }, { name: "Corrugated Box 5 ply", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0001", aliases: ["KIT-1", "KITS-0001", "CABLE & WIRE CONSUMABLES KIT"], name: "KITS - 0001 Cable & Wire Consumables Kit", components: [{ name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm", sku: "CNYC-0011", uom: "Pkt", qty: 2 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm", sku: "CNYC-0009", uom: "Pkt", qty: 2 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 30 }, { name: "PVC Electrical Insulation Tape 1.8cmx6.5m - Black", sku: "CINT-0001", uom: "Nos", qty: 2 }, { name: "Corrugated Box 5 ply", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
             { id: "KIT-0002", aliases: ["KIT-2", "KITS-0002", "EARTHING & LA ACCESSORIES KIT 1"], name: "KITS - 0002 Earthing & LA Accessories Kit - 1", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 2 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }] },
             { id: "KIT-0003", aliases: ["KIT-3", "KITS-0003", "STRUCTURE HARDWARE KIT 1"], name: "KITS - 0003 Structure Hardware Kit - 1", components: [{ name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 12 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 12 }, { name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 12 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 24 }, { name: "HDG Plate Washer 45x20x4.0 mm with 12mm Hole", sku: "FHDG-0050", uom: "Nos", qty: 12 }] },
             { id: "KIT-0004", aliases: ["KIT-4", "KITS-0004", "MODULE MOUNTING KIT 1"], name: "KITS - 0004 Module Mounting Hardware Kit - 1", components: [{ name: "SS304 Hex Bolt M8x25", sku: "FSSB-0081", uom: "Nos", qty: 20 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 20 }, { name: "Zn Flake Coated Plate Washer 50x16x2 mm", sku: "FSSW-0052", uom: "Nos", qty: 20 }, { name: "Nord-Lock Zn Coated Steel Washer M8", sku: "FSSW-0048", uom: "Nos", qty: 20 }] },
             { id: "KIT-0005", aliases: ["KIT-5", "KITS-0005", "ELECTRICAL ACCESSORIES KIT 1"], name: "KITS - 0005 Electrical Accessories Kit - 1", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 10 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug", sku: "CCUR-0012", uom: "Nos", qty: 10 }, { name: "MC4 Connector - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 4 }, { name: "MC4 Connector - MALE", sku: "CMCC-0002", uom: "Nos", qty: 4 }] },
             { id: "KIT-0006", aliases: ["KIT-6", "KITS-0006", "INVERTER MOUNTING KIT"], name: "KITS - 0006 Inverter Mounting Hardware Kit", components: [{ name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 6 }, { name: "SS304 Hex Bolt M6x30", sku: "FSSB-0030", uom: "Nos", qty: 6 }, { name: "SS304 Plain Washer M6", sku: "FSSW-0006", uom: "Nos", qty: 6 }, { name: "SS304 Hex Nut M6", sku: "FSSN-0004", uom: "Nos", qty: 6 }] },
-            { id: "KIT-0010", aliases: ["KIT-10", "KITS-0010", "I&C CONSUMABLES KIT"], name: "I&C Consumables Kit (KITS-0010)", components: [{ name: "HIT-RE 10 Cartridge - 580ml", sku: "GGCH-0001", uom: "Nos", qty: 3 }, { name: "Adhesive Mixing Nozzle-LOCAL MAKE", sku: "NOZZ-0002-LOCAL MAKE", uom: "Nos", qty: 3 }, { name: "PVC Electrical Insulation Tape 1.8cmx6.5mx0.125mm - Black-Steelgrip", sku: "CINT-0001-Steelgrip", uom: "Nos", qty: 3 }, { name: "Selsil Montage 750 PU Foam Can - Pale Yellow - 750 ml-SELSIL", sku: "CPUS-0007-SELSIL", uom: "Nos", qty: 1 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 50 }, { name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm-KSS", sku: "CNYC-0011-KSS", uom: "Packet", qty: 4 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm-KSS", sku: "CNYC-0009-KSS", uom: "Packet", qty: 4 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE - 32.0016P0001-UR-STAUBLI", sku: "CMCC-0001-STAUBLI", uom: "Nos", qty: 12 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE - 32.0017P0001-UR-STAUBLI", sku: "CMCC-0002-STAUBLI", uom: "Nos", qty: 12 }, { name: "Corrugated Box 5 ply 420x270x220 mm", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0021", aliases: ["KIT-21", "KITS-0021", "EARTHING & LA KIT"], name: "KITS - 0021 Earthing & LA Kit (with Gen 2 LA Stand & SS LA with Insulator Base)", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr - 150 micron", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia - 1 Mtr - With PVC Insulator Base", sku: "EALA-0031-RATNESHWAR METAL", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod, Structure Earthing & LA", sku: "LAKITS-0007", uom: "Nos", qty: 5 }, { name: "PVC Base 100x100X6 mm for SS316 Conventional LA - 8mm Dia", sku: "EALA-0038", uom: "Nos", qty: 1 }, { name: "HDG LA Stand for Gen 2 rafter for PVC with insulator base", sku: "EALA-0032", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }, { name: "SS304 Spring Washer M8", sku: "FSSW-0015", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }] },
-            { id: "KIT-0022", aliases: ["KIT-22", "KITS-0022", "ELECTRICAL ACCESSORIES KIT - 7"], name: "Electrical Accessories Kit - 7 (KITS-0022)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 8 }, { name: "2.5 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0021", uom: "Nos", qty: 18 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0012-DOWELL", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0013-DOWELL", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE - 32.0016P0001-UR-STAUBLI", sku: "CMCC-0001-STAUBLI", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE - 32.0017P0001-UR-STAUBLI", sku: "CMCC-0002-STAUBLI", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar inverter - Stickers Vinyl with Glass Lamination V3 (Current)", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-8mm)-DOWELL", sku: "CCUR-0014-DOWELL", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0023", aliases: ["KIT-23", "KITS-0023", "ELECTRICAL ACCESSORIES KIT - 8"], name: "Electrical Accessories Kit - 8 (KITS-0023)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 8 }, { name: "10 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0024", uom: "Nos", qty: 10 }, { name: "16 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0025", uom: "Nos", qty: 10 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0012-DOWELL", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0013-DOWELL", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE - 32.0016P0001-UR-STAUBLI", sku: "CMCC-0001-STAUBLI", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE - 32.0017P0001-UR-STAUBLI", sku: "CMCC-0002-STAUBLI", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar inverter - Stickers Vinyl with Glass Lamination V3 (Current)", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-8mm)-DOWELL", sku: "CCUR-0014-DOWELL", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0024", aliases: ["KIT-24", "KITS-0024", "ELECTRICAL ACCESSORIES KIT - 9"], name: "Electrical Accessories Kit - 9 (KITS-0024)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 3 }, { name: "2.5 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0021", uom: "Nos", qty: 10 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0012-DOWELL", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0013-DOWELL", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE - 32.0016P0001-UR-STAUBLI", sku: "CMCC-0001-STAUBLI", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE - 32.0017P0001-UR-STAUBLI", sku: "CMCC-0002-STAUBLI", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar inverter - Stickers Vinyl with Glass Lamination V3 (Current)", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-8mm)-DOWELL", sku: "CCUR-0014-DOWELL", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0027", aliases: ["KIT-27", "KITS-0027", "ELECTRICAL ACCESSORIES KIT - 12"], name: "Electrical Accessories Kit - 12 (KITS-0027)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 20 }, { name: "2.5 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0021", uom: "Nos", qty: 15 }, { name: "10 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0024", uom: "Nos", qty: 15 }, { name: "16 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0025", uom: "Nos", qty: 15 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0012-DOWELL", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-6mm)-DOWELL", sku: "CCUR-0013-DOWELL", uom: "Nos", qty: 1 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE - 32.0016P0001-UR-STAUBLI", sku: "CMCC-0001-STAUBLI", uom: "Nos", qty: 2 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE - 32.0017P0001-UR-STAUBLI", sku: "CMCC-0002-STAUBLI", uom: "Nos", qty: 2 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar inverter - Stickers Vinyl with Glass Lamination V3 (Current)", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug (ID-8mm)-DOWELL", sku: "CCUR-0014-DOWELL", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 4 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (2) - 6 sqmm", sku: "PFEV-0005", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 2 }] },
-            { id: "KIT-0042", aliases: ["KIT-42", "KITS-0042", "MODULE EARTHING"], name: "KIT-0042: SS304 M6x30 Nut-Bolt Set for Module Earthing", components: [{ name: "SS304 Hex Bolt M6x30", sku: "FSSB-0030", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M6 Standard OD", sku: "FSSW-0006", uom: "Nos", qty: 1 }, { name: "SS304 Spring Washer M6", sku: "FSSW-0012", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M6", sku: "FSSN-0004", uom: "Nos", qty: 1 }, { name: "SS304 Double Sided Star Washer M6", sku: "FSSW-0020", uom: "Nos", qty: 1 }] },
-            { id: "LAKITS-0007", aliases: ["KIT-0007", "KIT-7", "KITS-0007", "EARTHING NUT BOLT SET"], name: "LAKITS-0007: SS304 M6x30 Nut-Bolt Set for Earthing Rod, Structure Earthing & LA", components: [{ name: "SS304 Hex Bolt M6x30", sku: "FSSB-0030", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M6 Standard OD", sku: "FSSW-0006", uom: "Nos", qty: 1 }, { name: "SS304 Spring Washer M6", sku: "FSSW-0012", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M6", sku: "FSSN-0004", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0060", aliases: ["KIT-60", "KITS-0060", "EARTHING & LA KIT - 7"], name: "KITS - 0060 Earthing & LA Kit - 7 (SS LA with Insulator Base without LA stand)", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr - 150 micron", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia - 1 Mtr - With PVC Insulator Base", sku: "EALA-0031-RATNESHWAR METAL", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod, Structure Earthing & LA", sku: "LAKITS-0007", uom: "Nos", qty: 5 }, { name: "PVC Base 100x100X6 mm for SS316 Conventional LA - 8mm Dia", sku: "EALA-0038", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }, { name: "SS304 Spring Washer M8", sku: "FSSW-0015", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }] },
-            { id: "KIT-0071", aliases: ["KIT-71", "KITS-0071", "MODULE MOUNTING SET"], name: "KIT-0071: SS304 M8x20 Nut-Bolt Set with NordLock & Zn Flake Plate Washers for Module Mounting", components: [{ name: "SS304 Hex Bolt M8x25", sku: "FSSB-0081", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 1 }, { name: "Zn Flake Coated Plate Washer 50x16x2 mm with 9mm Hole-Dilip Engg", sku: "FSSW-0052-Dilip Engg", uom: "Nos", qty: 1 }, { name: "SS304 Plate Washer 50x32x2 mm with 9mm Hole", sku: "FSSW-0055", uom: "Nos", qty: 1 }, { name: "Nord-Lock Zn Coated Steel Washer M8-NL8 ID 8.7, OD 13.5, Thick 2.5mm-Nord-Lock", sku: "FSSW-0048-Nord-Lock", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0072", aliases: ["KIT-72", "KITS-0072", "PURLIN TO RAFTER JOINTING"], name: "KIT-0072: SS304 M10x30 Nut-Bolt Set with HDG Plate Washers for Purlin to Rafter Jointing", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 1 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x20x4.0 mm with 12mm Hole (80 micron)", sku: "FHDG-0050", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x28x4.0 mm with 12mm Hole (80 micron)", sku: "FHDG-0051", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0073", aliases: ["KIT-73", "KITS-0073", "RAFTER TO COLUMN JOINTING"], name: "KIT-0073: Rafter to Column Jointing Set with HDG Plate Washers & 4 nos SS304 M10x30 Nut-Bolts", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 4 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 4 }, { name: "HDG Plate Washer 74x68x4.0 mm with 12mm Hole (80 micron)", sku: "FHDG-0041", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0074", aliases: ["KIT-74", "KITS-0074", "BRACING JOINTING KIT"], name: "KIT-0074: SS304 M10x30 Nut-Bolt Set with HDG Plate Washers for 1P Front & Back Bracing to Rafter & Column Jointing Kit", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 1 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x20x4.0 mm with 12mm Hole (80 micron)", sku: "FHDG-0050", uom: "Nos", qty: 1 }] }
+            { id: "KIT-0010", aliases: ["KIT-10", "KITS-0010", "I&C CONSUMABLES KIT"], name: "I&C Consumables Kit (KITS-0010)", components: [{ name: "HIT-RE 10 Cartridge - 580ml", sku: "GGCH-0001", uom: "Nos", qty: 3 }, { name: "Adhesive Mixing Nozzle-LOCAL MAKE", sku: "NOZZ-0002", uom: "Nos", qty: 3 }, { name: "PVC Electrical Insulation Tape - Black", sku: "CINT-0001", uom: "Nos", qty: 3 }, { name: "Selsil Montage 750 PU Foam Can - 750 ml", sku: "CPUS-0007", uom: "Nos", qty: 1 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 50 }, { name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm", sku: "CNYC-0011", uom: "Pkt", qty: 4 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm", sku: "CNYC-0009", uom: "Pkt", qty: 4 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 12 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE", sku: "CMCC-0002", uom: "Nos", qty: 12 }, { name: "Corrugated Box 5 ply 420x270x220 mm", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0021", aliases: ["KIT-21", "KITS-0021", "EARTHING & LA KIT"], name: "KITS - 0021 Earthing & LA Kit", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 5 }, { name: "PVC Base 100x100X6 mm for SS316 LA", sku: "EALA-0038", uom: "Nos", qty: 1 }, { name: "HDG LA Stand for Gen 2 rafter", sku: "EALA-0032", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }, { name: "SS304 Spring Washer M8", sku: "FSSW-0015", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }] },
+            { id: "KIT-0022", aliases: ["KIT-22", "KITS-0022", "ELECTRICAL ACCESSORIES KIT - 7"], name: "Electrical Accessories Kit - 7 (KITS-0022)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 8 }, { name: "2.5 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0021", uom: "Nos", qty: 18 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug", sku: "CCUR-0012", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug", sku: "CCUR-0013", uom: "Nos", qty: 1 }, { name: "MC4 Connector 4 sqmm DC Cable - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 1 }, { name: "MC4 Connector 4 sqmm DC Cable - MALE", sku: "CMCC-0002", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar inverter Stickers Vinyl V3", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu PVC Ring Lug (ID-8mm)", sku: "CCUR-0014", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0023", aliases: ["KIT-23", "KITS-0023", "ELECTRICAL ACCESSORIES KIT - 8"], name: "Electrical Accessories Kit - 8 (KITS-0023)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 8 }, { name: "10 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0024", uom: "Nos", qty: 10 }, { name: "16 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0025", uom: "Nos", qty: 10 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Lug", sku: "CCUR-0012", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Lug", sku: "CCUR-0013", uom: "Nos", qty: 1 }, { name: "MC4 Connector - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 1 }, { name: "MC4 Connector - MALE", sku: "CMCC-0002", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar Inverter Stickers Vinyl V3", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu Ring Lug (ID-8mm)", sku: "CCUR-0014", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0024", aliases: ["KIT-24", "KITS-0024", "ELECTRICAL ACCESSORIES KIT - 9"], name: "Electrical Accessories Kit - 9 (KITS-0024)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 3 }, { name: "2.5 sqmm Cu PVC Insulated Pin Lug", sku: "CALP-0021", uom: "Nos", qty: 10 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Lug", sku: "CCUR-0012", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Lug", sku: "CCUR-0013", uom: "Nos", qty: 1 }, { name: "MC4 Connector - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 1 }, { name: "MC4 Connector - MALE", sku: "CMCC-0002", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar Inverter Stickers Vinyl V3", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu Ring Lug (ID-8mm)", sku: "CCUR-0014", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0027", aliases: ["KIT-27", "KITS-0027", "ELECTRICAL ACCESSORIES KIT - 12"], name: "Electrical Accessories Kit - 12 (KITS-0027)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Lug", sku: "CALP-0023", uom: "Nos", qty: 20 }, { name: "2.5 sqmm Cu PVC Insulated Pin Lug", sku: "CALP-0021", uom: "Nos", qty: 15 }, { name: "10 sqmm Cu PVC Insulated Pin Lug", sku: "CALP-0024", uom: "Nos", qty: 15 }, { name: "16 sqmm Cu PVC Insulated Pin Lug", sku: "CALP-0025", uom: "Nos", qty: 15 }, { name: "4 sqmm Cu PVC Ring Lug (ID-6mm)", sku: "CCUR-0012", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Ring Lug (ID-6mm)", sku: "CCUR-0013", uom: "Nos", qty: 1 }, { name: "MC4 Connector - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 2 }, { name: "MC4 Connector - MALE", sku: "CMCC-0002", uom: "Nos", qty: 2 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar Inverter Stickers Vinyl V3", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu Ring Lug (ID-8mm)", sku: "CCUR-0014", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 4 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (2) - 6 sqmm", sku: "PFEV-0005", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 2 }] },
+            { id: "KIT-0042", aliases: ["KIT-42", "KITS-0042", "MODULE EARTHING"], name: "KIT-0042: SS304 M6x30 Nut-Bolt Set for Module Earthing", components: [{ name: "SS304 Hex Bolt M6x30", sku: "FSSB-0030", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M6", sku: "FSSW-0006", uom: "Nos", qty: 1 }, { name: "SS304 Spring Washer M6", sku: "FSSW-0012", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M6", sku: "FSSN-0004", uom: "Nos", qty: 1 }, { name: "SS304 Double Sided Star Washer M6", sku: "FSSW-0020", uom: "Nos", qty: 1 }] },
+            { id: "LAKITS-0007", aliases: ["KIT-0007", "KIT-7", "KITS-0007", "EARTHING NUT BOLT SET"], name: "LAKITS-0007: SS304 M6x30 Nut-Bolt Set for Earthing Rod & LA", components: [{ name: "SS304 Hex Bolt M6x30", sku: "FSSB-0030", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M6 Standard OD", sku: "FSSW-0006", uom: "Nos", qty: 1 }, { name: "SS304 Spring Washer M6", sku: "FSSW-0012", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M6", sku: "FSSN-0004", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0060", aliases: ["KIT-60", "KITS-0060", "EARTHING & LA KIT - 7"], name: "KITS - 0060 Earthing & LA Kit - 7", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 5 }, { name: "PVC Base 100x100X6 mm for SS316 LA", sku: "EALA-0038", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }, { name: "SS304 Spring Washer M8", sku: "FSSW-0015", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }] },
+            { id: "KIT-0071", aliases: ["KIT-71", "KITS-0071", "MODULE MOUNTING SET"], name: "KIT-0071: SS304 M8x20 Nut-Bolt Set for Module Mounting", components: [{ name: "SS304 Hex Bolt M8x25", sku: "FSSB-0081", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 1 }, { name: "Zn Flake Coated Plate Washer 50x16x2 mm", sku: "FSSW-0052", uom: "Nos", qty: 1 }, { name: "SS304 Plate Washer 50x32x2 mm", sku: "FSSW-0055", uom: "Nos", qty: 1 }, { name: "Nord-Lock Zn Coated Steel Washer M8", sku: "FSSW-0048", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0072", aliases: ["KIT-72", "KITS-0072", "PURLIN TO RAFTER JOINTING"], name: "KIT-0072: SS304 M10x30 Nut-Bolt Set for Purlin to Rafter Jointing", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 1 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x20x4.0 mm", sku: "FHDG-0050", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x28x4.0 mm", sku: "FHDG-0051", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0073", aliases: ["KIT-73", "KITS-0073", "RAFTER TO COLUMN JOINTING"], name: "KIT-0073: Rafter to Column Jointing Set", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 4 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 4 }, { name: "HDG Plate Washer 74x68x4.0 mm", sku: "FHDG-0041", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0074", aliases: ["KIT-74", "KITS-0074", "BRACING JOINTING KIT"], name: "KIT-0074: SS304 M10x30 Nut-Bolt Set for Bracing", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 1 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x20x4.0 mm", sku: "FHDG-0050", uom: "Nos", qty: 1 }] }
         ];
 
         let currentActiveKit = null;
@@ -317,7 +369,6 @@
             showSuggestions(this.value);
         });
 
-        // ENHANCED AUTOCOMPLETE - SHOWS ALL KITS IN FULL LIST
         function showSuggestions(val) {
             let cat = document.getElementById('sheetSelect').value;
             closeAllLists();
@@ -329,7 +380,6 @@
             if (cat === 'Kitting') {
                 let valLower = (val || '').trim().toLowerCase();
                 
-                // Show ALL kits if input is empty, otherwise filter matching kits
                 let matches = kittingDatabase.filter(kit => {
                     if (!valLower) return true;
                     return kit.id.toLowerCase().includes(valLower) || 
@@ -533,6 +583,7 @@
             }
         }
 
+        // PERFECT MOBILE AUTO-FIT RECALCULATION
         function recalculateKitComponents() {
             if (!currentActiveKit) return;
             
@@ -546,10 +597,10 @@
             currentActiveKit.components.forEach((comp, idx) => {
                 let totalQty = comp.qty * multiplier;
                 html += '<tr>' +
-                    '<td>' + (idx + 1) + '</td>' +
+                    '<td style="text-align: center;">' + (idx + 1) + '</td>' +
                     '<td>' + comp.name + '</td>' +
                     '<td><span class="badge-code">' + comp.sku + '</span></td>' +
-                    '<td>' + comp.uom + '</td>' +
+                    '<td style="text-align: center;">' + comp.uom + '</td>' +
                     '<td style="text-align: center;">' + comp.qty + '</td>' +
                     '<td style="text-align: center;"><span class="qty-badge">' + totalQty + '</span></td>' +
                 '</tr>';
