@@ -309,6 +309,28 @@
         let isFullscreenMode = false;
         let searchInput = document.getElementById('searchQuery');
 
+        // PERFORMANCE / RELIABILITY
+        let activeSearchController = null;
+        let activePdfController = null;
+        let searchCache = new Map();
+        let pdfCache = new Map();
+        let lastSearchKey = '';
+        let lastSearchTime = 0;
+        const REQUEST_TIMEOUT = 12000;
+        const DUPLICATE_SEARCH_GUARD_MS = 500;
+
+        function fetchJsonWithTimeout(url, controller) {
+            return Promise.race([
+                fetch(url, { signal: controller.signal, cache: 'no-store' }).then(response => {
+                    if (!response.ok) throw new Error('Server error (' + response.status + ')');
+                    return response.json();
+                }),
+                new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Request timed out. Please try again.')), REQUEST_TIMEOUT);
+                })
+            ]);
+        }
+
         function switchTab(tabId, btnElement) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -358,6 +380,17 @@
 
         function resetOldViews() {
             if (isFullscreenMode) toggleFullscreen();
+
+            // Cancel any older network request when starting a new search/category.
+            if (activeSearchController) {
+                activeSearchController.abort();
+                activeSearchController = null;
+            }
+            if (activePdfController) {
+                activePdfController.abort();
+                activePdfController = null;
+            }
+
             document.getElementById('dashboardView').style.display = 'none';
             document.getElementById('kittingView').style.display = 'none';
             document.getElementById('pdfFrame').src = '';
@@ -455,8 +488,10 @@
                 addActive(x);
             } else if (e.keyCode == 13) {
                 e.preventDefault();
-                if (currentFocus > -1) {
-                    if (x) x[currentFocus].click();
+                e.stopPropagation();
+
+                if (currentFocus > -1 && x && x[currentFocus]) {
+                    x[currentFocus].click();
                 } else {
                     closeAllLists();
                     runSearch();
@@ -496,20 +531,30 @@
             let category = document.getElementById('sheetSelect').value;
             let query = searchInput.value.trim();
             let msgBox = document.getElementById('msgBox');
-            
-            if(!query) {
+
+            if (!query) {
                 alert('Please enter a search code or name!');
                 searchInput.focus();
                 return;
             }
 
             closeAllLists();
+
+            // Prevent accidental double-trigger from Enter + click/tap.
+            let searchKey = category + '|' + query.toLowerCase();
+            let now = Date.now();
+            if (searchKey === lastSearchKey && (now - lastSearchTime) < DUPLICATE_SEARCH_GUARD_MS) {
+                return;
+            }
+            lastSearchKey = searchKey;
+            lastSearchTime = now;
+
             resetOldViews();
 
             if (category === "Kitting") {
                 let qLower = query.toLowerCase();
-                let foundKit = kittingDatabase.find(kit => 
-                    kit.id.toLowerCase() === qLower || 
+                let foundKit = kittingDatabase.find(kit =>
+                    kit.id.toLowerCase() === qLower ||
                     kit.aliases.some(a => a.toLowerCase() === qLower) ||
                     kit.name.toLowerCase().includes(qLower)
                 );
@@ -526,84 +571,106 @@
                     msgBox.style.display = 'block';
                     msgBox.innerHTML = '<span class="error">⚠️ Kit "' + query + '" not found in Kitting Master!</span>';
                 }
-            } else {
-                msgBox.style.display = 'block';
-                msgBox.innerHTML = '⚡ Fetching data...';
-
-                let url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(category) + "&query=" + encodeURIComponent(query);
-
-                fetch(url)
-                    .then(response => response.json())
-                    .then(resData => {
-                        if (resData.error || !resData.data || resData.data.length <= 1) {
-                            msgBox.innerHTML = '<span class="error">⚠️ Item "' + query + '" not found in ' + category + '!</span>';
-                            searchInput.focus();
-                            searchInput.select();
-                            return;
-                        }
-
-                        msgBox.style.display = 'none';
-                        document.getElementById('dashboardView').style.display = 'block';
-                        
-                        switchTab('specsTab', document.querySelectorAll('.tab-btn')[0]);
-
-                        let data = resData.data;
-                        let rowIndex = resData.rowIndex;
-                        let headers = data[0]; 
-                        let row = data[1];     
-                        
-                        let dataMap = {};
-                        for (let i = 0; i < headers.length; i++) {
-                            dataMap[headers[i].toString().trim().toLowerCase()] = row[i] !== undefined ? row[i] : '-';
-                        }
-
-                        function getVal(keyKeywords) {
-                            for (let key in dataMap) {
-                                for (let k = 0; k < keyKeywords.length; k++) {
-                                    if (key.indexOf(keyKeywords[k]) !== -1) {
-                                        return dataMap[key];
-                                    }
-                                }
-                            }
-                            return '-';
-                        }
-
-                        let specsHtml = '';
-                        specsHtml += createSpecBox('Item Code', getVal(['item code']));
-                        specsHtml += createSpecBox('Length', getVal(['length']));
-                        specsHtml += createSpecBox('Thickness', getVal(['thickness']));
-                        specsHtml += createSpecBox('Section Size', getVal(['section size']));
-                        specsHtml += createSpecBox('Top Cee', getVal(['top cee']));
-                        specsHtml += createSpecBox('Bottom Cee', getVal(['bottom cee']));
-                        specsHtml += createSpecBox('Rib Size', getVal(['rib size']));
-                        specsHtml += createSpecBox('Base Plate', getVal(['base plate size']));
-
-                        document.getElementById('specsGrid').innerHTML = specsHtml;
-
-                        let allHtml = '';
-                        for (let j = 0; j < headers.length; j++) {
-                            let h = headers[j];
-                            let v = row[j] !== undefined ? row[j] : '-';
-                            if (h.toLowerCase().indexOf('pdf') === -1) {
-                                allHtml += '<div class="spec-box"><div class="spec-label">' + h + '</div><div class="spec-val">' + (v !== '' ? v : '-') + '</div></div>';
-                            }
-                        }
-                        document.getElementById('allSpecsBox').style.display = 'none';
-                        document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Parameters';
-                        document.getElementById('allSpecsBox').innerHTML = allHtml;
-
-                        if (rowIndex) {
-                            fetchAndShowPdf(category, rowIndex);
-                        }
-                        
-                        searchInput.focus();
-                        searchInput.select();
-                    })
-                    .catch(err => {
-                        msgBox.innerHTML = '<span class="error">Connection Error: ' + err.message + '</span>';
-                        searchInput.focus();
-                    });
+                return;
             }
+
+            msgBox.style.display = 'block';
+            msgBox.innerHTML = '⚡ Fetching data...';
+
+            let cacheKey = category + '|' + query.toLowerCase();
+            let cached = searchCache.get(cacheKey);
+            if (cached) {
+                renderSearchResult(cached, category, query, msgBox);
+                return;
+            }
+
+            if (activeSearchController) activeSearchController.abort();
+            activeSearchController = new AbortController();
+
+            let url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(category) + "&query=" + encodeURIComponent(query);
+
+            fetchJsonWithTimeout(url, activeSearchController)
+                .then(resData => {
+                    if (activeSearchController && activeSearchController.signal.aborted) return;
+                    if (resData && !resData.error && resData.data && resData.data.length > 1) {
+                        searchCache.set(cacheKey, resData);
+                    }
+                    renderSearchResult(resData, category, query, msgBox);
+                })
+                .catch(err => {
+                    if (err.name === 'AbortError') return;
+                    msgBox.innerHTML = '<span class="error">Connection Error: ' + err.message + '</span>';
+                    searchInput.focus();
+                })
+                .finally(() => {
+                    activeSearchController = null;
+                });
+        }
+
+        function renderSearchResult(resData, category, query, msgBox) {
+            if (!resData || resData.error || !resData.data || resData.data.length <= 1) {
+                msgBox.style.display = 'block';
+                msgBox.innerHTML = '<span class="error">⚠️ Item "' + query + '" not found in ' + category + '!</span>';
+                searchInput.focus();
+                searchInput.select();
+                return;
+            }
+
+            msgBox.style.display = 'none';
+            document.getElementById('dashboardView').style.display = 'block';
+
+            switchTab('specsTab', document.querySelectorAll('.tab-btn')[0]);
+
+            let data = resData.data;
+            let rowIndex = resData.rowIndex;
+            let headers = data[0];
+            let row = data[1];
+
+            let dataMap = {};
+            for (let i = 0; i < headers.length; i++) {
+                dataMap[String(headers[i]).trim().toLowerCase()] = row[i] !== undefined ? row[i] : '-';
+            }
+
+            function getVal(keyKeywords) {
+                for (let key in dataMap) {
+                    for (let k = 0; k < keyKeywords.length; k++) {
+                        if (key.indexOf(keyKeywords[k]) !== -1) return dataMap[key];
+                    }
+                }
+                return '-';
+            }
+
+            let specsHtml = '';
+            specsHtml += createSpecBox('Item Code', getVal(['item code']));
+            specsHtml += createSpecBox('Length', getVal(['length']));
+            specsHtml += createSpecBox('Thickness', getVal(['thickness']));
+            specsHtml += createSpecBox('Section Size', getVal(['section size']));
+            specsHtml += createSpecBox('Top Cee', getVal(['top cee']));
+            specsHtml += createSpecBox('Bottom Cee', getVal(['bottom cee']));
+            specsHtml += createSpecBox('Rib Size', getVal(['rib size']));
+            specsHtml += createSpecBox('Base Plate', getVal(['base plate size']));
+
+            document.getElementById('specsGrid').innerHTML = specsHtml;
+
+            let allHtml = '';
+            for (let j = 0; j < headers.length; j++) {
+                let h = headers[j];
+                let v = row[j] !== undefined ? row[j] : '-';
+                if (String(h).toLowerCase().indexOf('pdf') === -1) {
+                    allHtml += '<div class="spec-box"><div class="spec-label">' + h + '</div><div class="spec-val">' + (v !== '' ? v : '-') + '</div></div>';
+                }
+            }
+            document.getElementById('allSpecsBox').style.display = 'none';
+            document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Parameters';
+            document.getElementById('allSpecsBox').innerHTML = allHtml;
+
+            // Keep current behavior, but let the specs paint first before the PDF request.
+            if (rowIndex) {
+                setTimeout(() => fetchAndShowPdf(category, rowIndex), 50);
+            }
+
+            searchInput.focus();
+            searchInput.select();
         }
 
         // PERFECT MOBILE AUTO-FIT RECALCULATION WITH FIXED TOTAL QTY DISPLAY
@@ -649,23 +716,42 @@
         }
 
         function fetchAndShowPdf(sheetName, rowIndex) {
+            let cacheKey = sheetName + '|' + rowIndex;
+            let cachedUrl = pdfCache.get(cacheKey);
+
+            if (cachedUrl) {
+                applyPdfUrl(cachedUrl);
+                return;
+            }
+
+            if (activePdfController) activePdfController.abort();
+            activePdfController = new AbortController();
+
             let url = WEB_APP_URL + "?action=pdf&sheet=" + encodeURIComponent(sheetName) + "&row=" + rowIndex;
-            
-            fetch(url)
-                .then(response => response.json())
+
+            fetchJsonWithTimeout(url, activePdfController)
                 .then(res => {
-                    if (res && res.pdfUrl) {
-                        let pdfFrame = document.getElementById('pdfFrame');
-                        let embedUrl = res.pdfUrl;
-                        if (embedUrl.indexOf('drive.google.com') !== -1) {
-                            embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view', '/preview');
-                        }
-                        pdfFrame.src = embedUrl;
-                    }
+                    if (!res || !res.pdfUrl) return;
+                    pdfCache.set(cacheKey, res.pdfUrl);
+                    applyPdfUrl(res.pdfUrl);
                 })
                 .catch(err => {
-                    console.error('Error loading PDF: ' + err.message);
+                    if (err.name !== 'AbortError') {
+                        console.error('Error loading PDF: ' + err.message);
+                    }
+                })
+                .finally(() => {
+                    activePdfController = null;
                 });
+        }
+
+        function applyPdfUrl(pdfUrl) {
+            let pdfFrame = document.getElementById('pdfFrame');
+            let embedUrl = pdfUrl;
+            if (embedUrl.indexOf('drive.google.com') !== -1) {
+                embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view', '/preview');
+            }
+            pdfFrame.src = embedUrl;
         }
     </script>
 </body>
