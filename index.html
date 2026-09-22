@@ -197,6 +197,7 @@
                         <option value="Columns">Columns</option>
                         <option value="Purline">Purlins</option>
                         <option value="LA">LA Components</option>
+                        <option value="Jointer">Jointer</option>
                         <option value="Kitting" selected>Kitting Sets</option>
                     </select>
                 </div>
@@ -308,6 +309,7 @@
         // PURLINE MASTER CODES (from Purline sheet)
         const purlineCodes = ["PURL-0012", "PURL-0011", "PURL-0042", "PURL-0024", "PURL-0023", "PURL-0022"];
         const laCodes = ["EALA-0046", "EALA-0032"];
+        const jointerCodes = ["RAFT-0332", "RAFT-0331"];
         
         // COMPLETE KITTING MASTER DATABASE
         const kittingDatabase = [
@@ -488,7 +490,10 @@
                 }
             } else {
                 let valLower = (val || '').toLowerCase();
-                let codeList = cat === 'Purline' ? purlineCodes : (cat === 'LA' ? laCodes : sampleCodes);
+                let codeList =
+                    cat === 'Purline' ? purlineCodes :
+                    (cat === 'LA' ? laCodes :
+                    (cat === 'Jointer' ? jointerCodes : sampleCodes));
                 let matches = codeList.filter(item => !valLower || item.toLowerCase().includes(valLower));
                 matches.forEach(match => {
                     let itemDiv = document.createElement('div');
@@ -652,7 +657,7 @@
                         document.getElementById('allSpecsBox').innerHTML = allHtml;
 
                         // Purline: show ALL parameters directly instead of Core Specifications.
-                        if (category === 'Purline' || category === 'LA') {
+                        if (category === 'Purline' || category === 'LA' || category === 'Jointer') {
                             let filteredHtml = '';
                             for (let j = 0; j < headers.length; j++) {
                                 let h = headers[j];
@@ -663,7 +668,8 @@
                             }
 
                             document.querySelector('#specsTab .panel-header').innerHTML =
-                                category === 'LA' ? '📌 LA Component Parameters' : '📌 All Parameters';
+                                category === 'LA' ? '📌 LA Component Parameters' :
+                                (category === 'Jointer' ? '📌 Jointer Parameters' : '📌 All Parameters');
                             document.getElementById('specsGrid').style.display = 'none';
                             document.getElementById('allSpecsBox').style.display = 'grid';
                             document.getElementById('allSpecsBox').style.maxHeight = 'none';
