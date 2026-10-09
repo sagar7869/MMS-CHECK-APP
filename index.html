@@ -11,6 +11,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1565C0">
     
+    <!-- SUPABASE OFFICIAL JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         :root {
             --primary: #1565C0;
@@ -138,7 +141,6 @@
         }
         .zoom-btn { background: var(--accent); color: #ffffff; border: none; height: 32px; padding: 0 8px; border-radius: 6px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; }
 
-        /* PDF starts below the controls; no part of the drawing is hidden behind buttons. */
         .pdf-viewport {
             width: 100%;
             height: calc(100% - 46px);
@@ -169,7 +171,6 @@
         
         .badge-code { background: #EDE7F6; color: #4527A0; padding: 2px 3px; border-radius: 4px; font-size: 9.5px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
         
-        /* FIX FOR TOTAL COLUMN MULTI-DIGIT NUMBERS (500, 1000+) */
         .qty-badge { background: #C8E6C9; color: #1B5E20; font-weight: 800; text-align: center; border-radius: 4px; padding: 3px 2px; display: block; width: 100%; white-space: nowrap; font-size: 10px; }
 
         .msg-box { background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
@@ -302,16 +303,27 @@
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxjnM58NxITtap_ewWL_RzJomDv4L78x4X9iI5j55XRmyDqYaH4QcVh66uPZAnkviopdw/exec";
+        // --- SUPABASE CONFIGURATION ---
+        const SUPABASE_URL = "https://ncwufmoahvvqumdudhzm.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0
+"; // Put your anon public key here
         
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // MAP CATEGORIES TO SUPABASE TABLES
+        const tableMapping = {
+            'Sheet1': 'sheet1',
+            'Columns': 'columns',
+            'Purline': 'purline',
+            'LA': 'la',
+            'Jointer': 'jointer'
+        };
+
         const sampleCodes = ["0101", "0102", "0103", "1323", "1620", "2811", "2621", "2612", "3811", "3621", "2812", "3613", "3813", "3821"];
-        
-        // PURLINE MASTER CODES (from Purline sheet)
         const purlineCodes = ["PURL-0012", "PURL-0011", "PURL-0042", "PURL-0024", "PURL-0023", "PURL-0022"];
         const laCodes = ["EALA-0046", "EALA-0032"];
         const jointerCodes = ["RAFT-0332", "RAFT-0331"];
         
-        // COMPLETE KITTING MASTER DATABASE
         const kittingDatabase = [
             { id: "KIT-0001", aliases: ["KIT-1", "KITS-0001", "CABLE & WIRE CONSUMABLES KIT"], name: "KITS - 0001 Cable & Wire Consumables Kit", components: [{ name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm", sku: "CNYC-0011", uom: "Pkt", qty: 2 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm", sku: "CNYC-0009", uom: "Pkt", qty: 2 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 30 }, { name: "PVC Electrical Insulation Tape 1.8cmx6.5m - Black", sku: "CINT-0001", uom: "Nos", qty: 2 }, { name: "Corrugated Box 5 ply", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
             { id: "KIT-0002", aliases: ["KIT-2", "KITS-0002", "EARTHING & LA ACCESSORIES KIT 1"], name: "KITS - 0002 Earthing & LA Accessories Kit - 1", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 2 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }] },
@@ -348,7 +360,6 @@
             if(btnElement) btnElement.classList.add('active');
         }
 
-        // MOBILE NATIVE FULLSCREEN FOR PDF DRAWING
         async function toggleFullscreen() {
             const wrapper = document.getElementById('pdfWrapper');
             const btn = document.getElementById('fsToggleBtn');
@@ -557,7 +568,8 @@
             closeAllLists(e.target);
         });
 
-        function runSearch() {
+        // --- DIRECT SUPABASE QUERY SEARCH FUNCTION ---
+        async function runSearch() {
             let category = document.getElementById('sheetSelect').value;
             let query = searchInput.value.trim();
             let msgBox = document.getElementById('msgBox');
@@ -593,113 +605,132 @@
                 }
             } else {
                 msgBox.style.display = 'block';
-                msgBox.innerHTML = '⚡ Fetching data...';
+                msgBox.innerHTML = '⚡ Fetching data directly from Supabase...';
 
-                let url = WEB_APP_URL + "?action=search&sheet=" + encodeURIComponent(category) + "&query=" + encodeURIComponent(query);
+                const tableName = tableMapping[category] || category.toLowerCase();
 
-                fetch(url)
-                    .then(response => response.json())
-                    .then(resData => {
-                        if (resData.error || !resData.data || resData.data.length <= 1) {
-                            msgBox.innerHTML = '<span class="error">⚠️ Item "' + query + '" not found in ' + category + '!</span>';
-                            searchInput.focus();
-                            searchInput.select();
-                            return;
-                        }
+                try {
+                    // Query Supabase directly
+                    const { data, error } = await supabaseClient
+                        .from(tableName)
+                        .select('*')
+                        .eq('item_code', query);
 
-                        msgBox.style.display = 'none';
-                        document.getElementById('dashboardView').style.display = 'block';
-                        
-                        switchTab('specsTab', document.querySelectorAll('.tab-btn')[0]);
+                    if (error) {
+                        console.error('Supabase Query Error:', error);
+                        msgBox.innerHTML = '<span class="error">⚠️ Error loading data: ' + error.message + '</span>';
+                        return;
+                    }
 
-                        let data = resData.data;
-                        let rowIndex = resData.rowIndex;
-                        let headers = data[0]; 
-                        let row = data[1];     
-                        
-                        let dataMap = {};
-                        for (let i = 0; i < headers.length; i++) {
-                            dataMap[headers[i].toString().trim().toLowerCase()] = row[i] !== undefined ? row[i] : '-';
-                        }
-
-                        function getVal(keyKeywords) {
-                            for (let key in dataMap) {
-                                for (let k = 0; k < keyKeywords.length; k++) {
-                                    if (key.indexOf(keyKeywords[k]) !== -1) {
-                                        return dataMap[key];
-                                    }
-                                }
-                            }
-                            return '-';
-                        }
-
-                        let specsHtml = '';
-                        specsHtml += createSpecBox('Item Code', getVal(['item code']));
-                        specsHtml += createSpecBox('Length', getVal(['length']));
-                        specsHtml += createSpecBox('Thickness', getVal(['thickness']));
-                        specsHtml += createSpecBox('Section Size', getVal(['section size']));
-                        specsHtml += createSpecBox('Top Cee', getVal(['top cee']));
-                        specsHtml += createSpecBox('Bottom Cee', getVal(['bottom cee']));
-                        specsHtml += createSpecBox('Rib Size', getVal(['rib size']));
-                        specsHtml += createSpecBox('Base Plate', getVal(['base plate size']));
-
-                        document.getElementById('specsGrid').innerHTML = specsHtml;
-
-                        let allHtml = '';
-                        for (let j = 0; j < headers.length; j++) {
-                            let h = headers[j];
-                            let v = row[j] !== undefined ? row[j] : '-';
-                            if (h.toLowerCase().indexOf('pdf') === -1) {
-                                allHtml += '<div class="spec-box"><div class="spec-label">' + h + '</div><div class="spec-val">' + (v !== '' ? v : '-') + '</div></div>';
-                            }
-                        }
-
-                        document.getElementById('allSpecsBox').innerHTML = allHtml;
-
-                        // Purline: show ALL parameters directly instead of Core Specifications.
-                        if (category === 'Purline' || category === 'LA' || category === 'Jointer') {
-                            let filteredHtml = '';
-                            for (let j = 0; j < headers.length; j++) {
-                                let h = headers[j];
-                                let v = row[j];
-                                if (h.toLowerCase().indexOf('pdf') !== -1) continue;
-                                if (v === null || v === undefined || String(v).trim() === '') continue;
-                                filteredHtml += '<div class="spec-box"><div class="spec-label">' + h + '</div><div class="spec-val">' + v + '</div></div>';
-                            }
-
-                            document.querySelector('#specsTab .panel-header').innerHTML =
-                                category === 'LA' ? '📌 LA Component Parameters' :
-                                (category === 'Jointer' ? '📌 Jointer Parameters' : '📌 All Parameters');
-                            document.getElementById('specsGrid').style.display = 'none';
-                            document.getElementById('allSpecsBox').style.display = 'grid';
-                            document.getElementById('allSpecsBox').style.maxHeight = 'none';
-                            document.getElementById('allSpecsBox').style.overflowY = 'visible';
-                            document.getElementById('allSpecsBox').style.overflowX = 'visible';
-                            document.getElementById('allSpecsBox').innerHTML = filteredHtml;
-                            document.getElementById('toggleExpandBtn').style.display = 'none';
-                        } else {
-                            document.querySelector('#specsTab .panel-header').innerHTML = '📌 Core Specifications';
-                            document.getElementById('specsGrid').style.display = 'grid';
-                            document.getElementById('allSpecsBox').style.display = 'none';
-                            document.getElementById('toggleExpandBtn').style.display = 'inline-block';
-                            document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Parameters';
-                        }
-
-                        if (rowIndex) {
-                            fetchAndShowPdf(category, rowIndex);
-                        }
-                        
+                    if (!data || data.length === 0) {
+                        msgBox.innerHTML = '<span class="error">⚠️ Item "' + query + '" not found in ' + category + '!</span>';
                         searchInput.focus();
                         searchInput.select();
-                    })
-                    .catch(err => {
-                        msgBox.innerHTML = '<span class="error">Connection Error: ' + err.message + '</span>';
-                        searchInput.focus();
-                    });
+                        return;
+                    }
+
+                    msgBox.style.display = 'none';
+                    document.getElementById('dashboardView').style.display = 'block';
+                    
+                    switchTab('specsTab', document.querySelectorAll('.tab-btn')[0]);
+
+                    let rowData = data[0]; 
+                    
+                    // Normalize keys to lowercase for flexible field matching
+                    let dataMap = {};
+                    for (let key in rowData) {
+                        dataMap[key.toString().trim().toLowerCase()] = rowData[key] !== null && rowData[key] !== undefined ? rowData[key] : '-';
+                    }
+
+                    function getVal(keyKeywords) {
+                        for (let key in dataMap) {
+                            for (let k = 0; k < keyKeywords.length; k++) {
+                                if (key.indexOf(keyKeywords[k]) !== -1) {
+                                    return dataMap[key];
+                                }
+                            }
+                        }
+                        return '-';
+                    }
+
+                    let specsHtml = '';
+                    specsHtml += createSpecBox('Item Code', getVal(['item_code', 'item code']));
+                    specsHtml += createSpecBox('Length', getVal(['length']));
+                    specsHtml += createSpecBox('Thickness', getVal(['thickness']));
+                    specsHtml += createSpecBox('Section Size', getVal(['section_size', 'section size']));
+                    specsHtml += createSpecBox('Top Cee', getVal(['top_cee', 'top cee']));
+                    specsHtml += createSpecBox('Bottom Cee', getVal(['bottom_cee', 'bottom cee']));
+                    specsHtml += createSpecBox('Rib Size', getVal(['rib_size', 'rib size']));
+                    specsHtml += createSpecBox('Base Plate', getVal(['base_plate_size', 'base plate size']));
+
+                    document.getElementById('specsGrid').innerHTML = specsHtml;
+
+                    let allHtml = '';
+                    let pdfUrlFound = null;
+
+                    for (let key in rowData) {
+                        let h = key;
+                        let v = rowData[key] !== null && rowData[key] !== undefined ? rowData[key] : '-';
+                        
+                        if (h.toLowerCase().indexOf('pdf') !== -1 || h.toLowerCase().indexOf('drawing') !== -1) {
+                            if (v && v !== '-') pdfUrlFound = v;
+                            continue;
+                        }
+                        if (h.toLowerCase() === 'id' || h.toLowerCase() === 'created_at') continue;
+
+                        allHtml += '<div class="spec-box"><div class="spec-label">' + h.replace(/_/g, ' ') + '</div><div class="spec-val">' + (v !== '' ? v : '-') + '</div></div>';
+                    }
+
+                    document.getElementById('allSpecsBox').innerHTML = allHtml;
+
+                    if (category === 'Purline' || category === 'LA' || category === 'Jointer') {
+                        let filteredHtml = '';
+                        for (let key in rowData) {
+                            let h = key;
+                            let v = rowData[key];
+                            if (h.toLowerCase().indexOf('pdf') !== -1 || h.toLowerCase() === 'id' || h.toLowerCase() === 'created_at') continue;
+                            if (v === null || v === undefined || String(v).trim() === '') continue;
+                            filteredHtml += '<div class="spec-box"><div class="spec-label">' + h.replace(/_/g, ' ') + '</div><div class="spec-val">' + v + '</div></div>';
+                        }
+
+                        document.querySelector('#specsTab .panel-header').innerHTML =
+                            category === 'LA' ? '📌 LA Component Parameters' :
+                            (category === 'Jointer' ? '📌 Jointer Parameters' : '📌 All Parameters');
+                        document.getElementById('specsGrid').style.display = 'none';
+                        document.getElementById('allSpecsBox').style.display = 'grid';
+                        document.getElementById('allSpecsBox').style.maxHeight = 'none';
+                        document.getElementById('allSpecsBox').style.overflowY = 'visible';
+                        document.getElementById('allSpecsBox').style.overflowX = 'visible';
+                        document.getElementById('allSpecsBox').innerHTML = filteredHtml;
+                        document.getElementById('toggleExpandBtn').style.display = 'none';
+                    } else {
+                        document.querySelector('#specsTab .panel-header').innerHTML = '📌 Core Specifications';
+                        document.getElementById('specsGrid').style.display = 'grid';
+                        document.getElementById('allSpecsBox').style.display = 'none';
+                        document.getElementById('toggleExpandBtn').style.display = 'inline-block';
+                        document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Parameters';
+                    }
+
+                    // Load PDF directly if link exists in row
+                    if (pdfUrlFound) {
+                        let pdfFrame = document.getElementById('pdfFrame');
+                        let embedUrl = pdfUrlFound;
+                        if (embedUrl.indexOf('drive.google.com') !== -1) {
+                            embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view', '/preview');
+                        }
+                        pdfFrame.src = embedUrl;
+                    }
+                    
+                    searchInput.focus();
+                    searchInput.select();
+
+                } catch (err) {
+                    msgBox.innerHTML = '<span class="error">Unexpected Error: ' + err.message + '</span>';
+                    searchInput.focus();
+                }
             }
         }
 
-        // PERFECT MOBILE AUTO-FIT RECALCULATION WITH FIXED TOTAL QTY DISPLAY
         function recalculateKitComponents() {
             if (!currentActiveKit) return;
             
@@ -739,26 +770,6 @@
                 box.style.display = 'grid';
                 btn.innerHTML = '▲ Hide Parameters';
             }
-        }
-
-        function fetchAndShowPdf(sheetName, rowIndex) {
-            let url = WEB_APP_URL + "?action=pdf&sheet=" + encodeURIComponent(sheetName) + "&row=" + rowIndex;
-            
-            fetch(url)
-                .then(response => response.json())
-                .then(res => {
-                    if (res && res.pdfUrl) {
-                        let pdfFrame = document.getElementById('pdfFrame');
-                        let embedUrl = res.pdfUrl;
-                        if (embedUrl.indexOf('drive.google.com') !== -1) {
-                            embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view', '/preview');
-                        }
-                        pdfFrame.src = embedUrl;
-                    }
-                })
-                .catch(err => {
-                    console.error('Error loading PDF: ' + err.message);
-                });
         }
     </script>
 </body>
