@@ -9,18 +9,18 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0D47A1">
+    <meta name="theme-color" content="#0F172A">
     
     <!-- SUPABASE OFFICIAL JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         :root {
-            --primary: #0D47A1;
-            --primary-light: #1565C0;
-            --bg-body: #F4F7FC;
+            --primary: #0F172A;
+            --primary-light: #1E293B;
+            --bg-body: #F8FAFC;
             --card-bg: #FFFFFF;
-            --text-main: #1A202C;
+            --text-main: #0F172A;
             --text-muted: #64748B;
             --border: #E2E8F0;
             --accent: #2563EB;
@@ -34,108 +34,108 @@
             background-color: var(--bg-body); 
             color: var(--text-main); 
             margin: 0; 
-            padding: 12px; 
+            padding: 16px; 
         }
         
-        .container { max-width: 1200px; margin: 0 auto; padding-bottom: 30px; }
+        .container { max-width: 1280px; margin: 0 auto; padding-bottom: 40px; }
         
-        /* PREMIUM SOLAR SQUARE HEADER CARD */
+        /* MODERN HEADER DESIGN */
         .header-card { 
             background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); 
             color: white; 
-            padding: 18px 20px; 
-            border-radius: 14px; 
+            padding: 22px 24px; 
+            border-radius: 16px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            box-shadow: 0 6px 15px rgba(15, 23, 42, 0.15); 
-            margin-bottom: 14px; 
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2); 
+            margin-bottom: 16px; 
         }
-        .header-card h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: 0.4px; }
-        .header-card p { margin: 4px 0 0 0; opacity: 0.85; font-size: 12px; font-weight: 500; }
+        .header-card h2 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
+        .header-card p { margin: 6px 0 0 0; opacity: 0.85; font-size: 13px; font-weight: 500; }
 
-        /* SEARCH & FILTER CARD */
+        /* SEARCH & FILTER GLASS CARD */
         .search-card { 
             background: var(--card-bg); 
-            padding: 16px; 
-            border-radius: 14px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
-            margin-bottom: 14px; 
+            padding: 20px; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+            margin-bottom: 16px; 
             border: 1px solid var(--border); 
         }
-        .search-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
-        .search-group { flex: 1; min-width: 160px; position: relative; }
-        label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
+        .search-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .search-group { flex: 1; min-width: 180px; position: relative; }
+        label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
         select, input { 
             width: 100%; 
-            padding: 11px 14px; 
+            padding: 12px 16px; 
             border: 1.5px solid var(--border); 
-            border-radius: 10px; 
+            border-radius: 12px; 
             font-size: 14px; 
             background: #F8FAFC; 
             font-weight: 600; 
             color: var(--text-main); 
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
-        select:focus, input:focus { border-color: var(--accent); background: #fff; outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+        select:focus, input:focus { border-color: var(--accent); background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
         
         button { 
             background: var(--accent); 
             color: white; 
             border: none; 
-            padding: 11px 18px; 
-            border-radius: 10px; 
+            padding: 12px 22px; 
+            border-radius: 12px; 
             font-weight: 700; 
             cursor: pointer; 
-            font-size: 13px; 
-            height: 44px; 
-            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
-            transition: background 0.2s, transform 0.1s;
+            font-size: 14px; 
+            height: 48px; 
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+            transition: all 0.2s;
         }
-        button:hover { background: #1D4ED8; }
-        button:active { transform: scale(0.97); }
-        .btn-clear { background: #64748B; box-shadow: 0 2px 6px rgba(100, 116, 139, 0.2); }
+        button:hover { background: #1D4ED8; transform: translateY(-1px); }
+        button:active { transform: scale(0.98); }
+        .btn-clear { background: #64748B; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2); }
         .btn-clear:hover { background: #475569; }
 
         /* AUTOCOMPLETE DROPDOWN */
-        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 999; top: 105%; left: 0; right: 0; background: #fff; border-radius: 10px; max-height: 280px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .autocomplete-items div { padding: 11px 14px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #F1F5F9; line-height: 1.4; color: #334155; }
+        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 999; top: 108%; left: 0; right: 0; background: #fff; border-radius: 12px; max-height: 320px; overflow-y: auto; box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+        .autocomplete-items div { padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #F1F5F9; color: #334155; transition: background 0.15s; }
         .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #EFF6FF; color: var(--accent); }
 
         /* TAB NAVIGATION STYLES */
-        .tab-bar { display: flex; background: #E2E8F0; border-radius: 12px; padding: 4px; margin-bottom: 14px; gap: 6px; }
-        .tab-btn { flex: 1; padding: 10px; background: transparent; color: var(--text-muted); border: none; font-weight: 700; font-size: 13px; border-radius: 9px; cursor: pointer; text-align: center; height: auto; box-shadow: none; }
-        .tab-btn.active { background: #ffffff; color: var(--accent); box-shadow: 0 3px 8px rgba(0,0,0,0.06); }
+        .tab-bar { display: flex; background: #E2E8F0; border-radius: 14px; padding: 5px; margin-bottom: 16px; gap: 8px; }
+        .tab-btn { flex: 1; padding: 12px; background: transparent; color: var(--text-muted); border: none; font-weight: 700; font-size: 13px; border-radius: 10px; cursor: pointer; text-align: center; height: auto; box-shadow: none; transition: all 0.2s; }
+        .tab-btn.active { background: #ffffff; color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .panel-card { background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); overflow: hidden; margin-bottom: 14px; }
-        .panel-header { background: #F8FAFC; padding: 12px 16px; font-weight: 800; font-size: 12px; color: #334155; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
-        .panel-body { padding: 16px; }
+        .panel-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.02); overflow: hidden; margin-bottom: 16px; }
+        .panel-header { background: #F8FAFC; padding: 14px 20px; font-weight: 800; font-size: 13px; color: #334155; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.6px; }
+        .panel-body { padding: 20px; }
 
-        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .spec-box { background: #F8FAFC; padding: 10px 12px; border-radius: 10px; border: 1px solid #E2E8F0; }
-        .spec-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
-        .spec-val { font-size: 13px; color: var(--text-main); font-weight: 800; margin-top: 3px; }
+        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .spec-box { background: #F8FAFC; padding: 12px 16px; border-radius: 12px; border: 1px solid #E2E8F0; }
+        .spec-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .spec-val { font-size: 14px; color: var(--text-main); font-weight: 800; margin-top: 4px; }
 
-        .expand-section { margin-top: 12px; }
-        .expand-btn { background: #F1F5F9; color: #475569; border: 1px solid var(--border); width: 100%; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; font-size: 12px; box-shadow: none; }
+        .expand-section { margin-top: 14px; }
+        .expand-btn { background: #F1F5F9; color: #475569; border: 1px solid var(--border); width: 100%; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; box-shadow: none; transition: background 0.2s; }
         .expand-btn:hover { background: #E2E8F0; }
-        .all-specs-box { display: none; margin-top: 10px; max-height: 250px; overflow-y: auto; background: #F8FAFC; padding: 10px; border-radius: 10px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .all-specs-box { display: none; margin-top: 12px; max-height: 300px; overflow-y: auto; background: #F8FAFC; padding: 12px; border-radius: 12px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 10px; }
 
         /* FULL DISPLAY PDF & ZOOM CONTROLS */
-        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 240px); min-height: 450px; background: #334155; border-radius: 10px; overflow: hidden; }
+        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 260px); min-height: 500px; background: #1E293B; border-radius: 12px; overflow: hidden; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         .pdf-toolbar {
             position: absolute; top: 0; left: 0; right: 0; z-index: 20;
             display: flex; gap: 8px; justify-content: flex-end; align-items: center;
-            background: rgba(15, 23, 42, 0.9); padding: 8px 12px; min-height: 50px; border-radius: 0;
+            background: rgba(15, 23, 42, 0.95); padding: 10px 16px; min-height: 54px; border-radius: 0;
         }
-        .zoom-btn { background: var(--accent); color: #ffffff; border: none; height: 34px; padding: 0 10px; border-radius: 8px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; }
+        .zoom-btn { background: var(--accent); color: #ffffff; border: none; height: 36px; padding: 0 12px; border-radius: 9px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; }
 
         .pdf-viewport {
-            width: 100%; height: calc(100% - 50px); margin-top: 50px;
+            width: 100%; height: calc(100% - 54px); margin-top: 54px;
             overflow: auto; display: flex; justify-content: center; align-items: flex-start;
             -webkit-overflow-scrolling: touch;
         }
@@ -143,26 +143,26 @@
         iframe { width: 100%; height: 100%; border: none; display: block; }
 
         /* KITTING VIEW */
-        .kit-title-card { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 14px; padding: 14px; margin-bottom: 14px; }
-        .kit-title-card h3 { margin: 0 0 3px 0; color: #1E40AF; font-size: 15px; font-weight: 800; }
-        .kit-title-card p { margin: 0; font-size: 12px; color: #2563EB; font-weight: 700; }
+        .kit-title-card { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 16px; padding: 18px; margin-bottom: 16px; }
+        .kit-title-card h3 { margin: 0 0 4px 0; color: #1E40AF; font-size: 17px; font-weight: 800; }
+        .kit-title-card p { margin: 0; font-size: 13px; color: #2563EB; font-weight: 700; }
         
-        .calculator-box { background: #F0FDF4; border: 1px solid #BBF7D0; padding: 12px 16px; border-radius: 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .calculator-box label { margin-bottom: 0; color: #166534; font-size: 12px; font-weight: 800; }
-        .calculator-box input { width: 95px; border-color: #86EFAC; text-align: center; font-size: 16px; color: #166534; font-weight: 800; padding: 8px; background: #fff; }
+        .calculator-box { background: #F0FDF4; border: 1px solid #BBF7D0; padding: 16px 20px; border-radius: 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .calculator-box label { margin-bottom: 0; color: #166534; font-size: 13px; font-weight: 800; }
+        .calculator-box input { width: 110px; border-color: #86EFAC; text-align: center; font-size: 18px; color: #166534; font-weight: 800; padding: 10px; background: #fff; }
 
         .table-container { width: 100%; overflow-x: hidden; }
-        .kit-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
-        .kit-table th { background: #F8FAFC; text-align: left; padding: 10px 6px; font-size: 9.5px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); font-weight: 800; }
-        .kit-table td { padding: 10px 6px; border-bottom: 1px solid var(--border); font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; color: #334155; }
+        .kit-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12px; }
+        .kit-table th { background: #F8FAFC; text-align: left; padding: 12px 8px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); font-weight: 800; }
+        .kit-table td { padding: 12px 8px; border-bottom: 1px solid var(--border); font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; color: #334155; }
         
-        .badge-code { background: #F3E8FF; color: #6B21A8; padding: 3px 6px; border-radius: 6px; font-size: 10px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-        .qty-badge { background: #DCFCE7; color: #166534; font-weight: 800; text-align: center; border-radius: 6px; padding: 4px 6px; display: block; width: 100%; white-space: nowrap; font-size: 11px; }
+        .badge-code { background: #F3E8FF; color: #6B21A8; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+        .qty-badge { background: #DCFCE7; color: #166534; font-weight: 800; text-align: center; border-radius: 8px; padding: 6px 8px; display: block; width: 100%; white-space: nowrap; font-size: 12px; }
 
-        .msg-box { background: var(--card-bg); padding: 25px; border-radius: 14px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); font-size: 14px; }
+        .msg-box { background: var(--card-bg); padding: 30px; border-radius: 16px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); font-size: 14px; }
         .error { color: #DC2626; font-weight: 700; }
 
-        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 14px; font-weight: 600; }
+        .footer { text-align: center; margin-top: 25px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 16px; font-weight: 600; }
         .footer strong { color: var(--primary); }
     </style>
 </head>
@@ -182,8 +182,8 @@
                 <div class="search-group" style="flex: 0.9;">
                     <label>Category</label>
                     <select id="sheetSelect" onchange="onCategoryChange()">
-                        <option value="Rafter">Rafters</option>
-                        <option value="Columns" selected>Columns</option>
+                        <option value="Rafter" selected>Rafters</option>
+                        <option value="Columns">Columns</option>
                         <option value="Purline">Purlins</option>
                         <option value="LA">LA Components</option>
                         <option value="Jointer">Jointer</option>
@@ -192,7 +192,7 @@
                 </div>
                 <div class="search-group" style="flex: 1.6;">
                     <label>Item / Kit Code</label>
-                    <input type="text" id="searchQuery" placeholder="Type 1620, P2H, KIT-0021..." autocomplete="off">
+                    <input type="text" id="searchQuery" placeholder="Type RAFT, COLU, 2621, KIT-0021..." autocomplete="off">
                     <div id="autocompleteList" class="autocomplete-items"></div>
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -202,7 +202,7 @@
             </div>
         </div>
 
-        <div id="msgBox" class="msg-box">Select a category and enter an item code or shortcut to view specifications.</div>
+        <div id="msgBox" class="msg-box">Select a category and type any code, prefix or keyword to view specifications.</div>
 
         <!-- MAIN DATA DISPLAY -->
         <div id="dashboardView" style="display: none;">
@@ -295,8 +295,9 @@
         const SUPABASE_URL = "https://ncwufmoahvvqumdudhzm.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
         
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // Correct Table Mapping matching Supabase schema
         const tableMapping = {
             'Rafter': 'rafter',
             'Columns': 'columns',
@@ -306,8 +307,8 @@
         };
 
         const tablePrefixes = {
-            'Columns': 'COLU-',
             'Rafter': 'RAFT-',
+            'Columns': 'COLU-',
             'Purline': 'PURL-',
             'LA': 'EALA-',
             'Jointer': 'RAFT-'
@@ -322,12 +323,15 @@
             'P3H': 'PURL-0022'
         };
 
-        const sampleCodes = ["0101", "0102", "1620", "2811", "2621", "2612", "3811", "3621"];
-        const purlineCodes = ["PURL-0012", "PURL-0011", "PURL-0042", "PURL-0024", "PURL-0023", "PURL-0022", "P2L", "P2M", "P2H", "P3L", "P3M", "P3H"];
-        const laCodes = ["EALA-0046", "EALA-0032"];
-        const jointerCodes = ["RAFT-0332", "RAFT-0331"];
-        
-        // FULL KITTING DATABASE (All 19+ Kits Included)
+        // Complete Master Code Lists for robust auto-complete
+        const masterCodes = {
+            'Rafter': ["RAFT-0101", "RAFT-0102", "RAFT-0103", "RAFT-0201", "RAFT-0202", "RAFT-0203", "RAFT-0311", "RAFT-0312", "RAFT-0313", "RAFT-0321", "RAFT-1620", "RAFT-2621", "RAFT-2811"],
+            'Columns': ["COLU-1620", "COLU-1820", "COLU-2612", "COLU-2613", "COLU-2621", "COLU-2622", "COLU-2811", "COLU-2812", "COLU-3621", "COLU-3811", "COLU-3812"],
+            'Purline': ["PURL-0011", "PURL-0012", "PURL-0022", "PURL-0023", "PURL-0024", "PURL-0042", "P2L", "P2M", "P2H", "P3L", "P3M", "P3H"],
+            'LA': ["EALA-0031", "EALA-0032", "EALA-0038", "EALA-0046"],
+            'Jointer': ["RAFT-0331", "RAFT-0332"]
+        };
+
         const kittingDatabase = [
             { id: "KIT-0001", aliases: ["KIT-1", "KITS-0001", "CABLE & WIRE CONSUMABLES KIT"], name: "KITS - 0001 Cable & Wire Consumables Kit", components: [{ name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm", sku: "CNYC-0011", uom: "Pkt", qty: 2 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm", sku: "CNYC-0009", uom: "Pkt", qty: 2 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 30 }, { name: "PVC Electrical Insulation Tape 1.8cmx6.5m - Black", sku: "CINT-0001", uom: "Nos", qty: 2 }, { name: "Corrugated Box 5 ply", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
             { id: "KIT-0002", aliases: ["KIT-2", "KITS-0002", "EARTHING & LA ACCESSORIES KIT 1"], name: "KITS - 0002 Earthing & LA Accessories Kit - 1", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 2 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }] },
@@ -447,7 +451,7 @@
             resetOldViews();
             let msgBox = document.getElementById('msgBox');
             msgBox.style.display = 'block';
-            msgBox.innerHTML = 'Select a category and enter an item code or shortcut to view specifications.';
+            msgBox.innerHTML = 'Select a category and type any code, prefix or keyword to view specifications.';
             closeAllLists();
             searchInput.focus();
         }
@@ -482,20 +486,28 @@
                     listContainer.appendChild(itemDiv);
                 });
             } else {
-                let valLower = (val || '').toLowerCase();
-                let codeList = cat === 'Purline' ? purlineCodes : (cat === 'LA' ? laCodes : (cat === 'Jointer' ? jointerCodes : sampleCodes));
+                let valLower = (val || '').toLowerCase().trim();
+                let codeList = masterCodes[cat] || [];
+                // Filter items where code includes search string (e.g. typing '26' or 'RAFT' or 'COLU')
                 let matches = codeList.filter(item => !valLower || item.toLowerCase().includes(valLower));
-                matches.forEach(match => {
-                    let itemDiv = document.createElement('div');
-                    let resolvedDisplay = resolveItemCode(cat, match);
-                    itemDiv.innerHTML = "<strong>" + match + "</strong>" + (match !== resolvedDisplay ? " <span style='color:#64748B; font-size:11px;'>(" + resolvedDisplay + ")</span>" : "");
-                    itemDiv.addEventListener('click', function() {
-                        searchInput.value = match;
-                        closeAllLists();
-                        runSearch();
+                
+                if (matches.length === 0) {
+                    let noMatchDiv = document.createElement('div');
+                    noMatchDiv.style.color = '#DC2626';
+                    noMatchDiv.innerHTML = "❌ No matching code found (Press Enter to search directly)";
+                    listContainer.appendChild(noMatchDiv);
+                } else {
+                    matches.forEach(match => {
+                        let itemDiv = document.createElement('div');
+                        itemDiv.innerHTML = "<strong>" + match + "</strong>";
+                        itemDiv.addEventListener('click', function() {
+                            searchInput.value = match;
+                            closeAllLists();
+                            runSearch();
+                        });
+                        listContainer.appendChild(itemDiv);
                     });
-                    listContainer.appendChild(itemDiv);
-                });
+                }
             }
         }
 
@@ -544,7 +556,7 @@
             let msgBox = document.getElementById('msgBox');
             
             if(!rawQuery) {
-                alert('Please enter an item code or shortcut!');
+                alert('Please enter an item code or keyword!');
                 searchInput.focus();
                 return;
             }
