@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rafter-portal-v1';
+const CACHE_NAME = 'rafter-portal-v2';
 const urlsToCache = [
   './',
   './index.html',
