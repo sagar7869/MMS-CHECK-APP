@@ -300,7 +300,7 @@
         const tableMapping = {
             'Rafter': 'rafter',
             'Columns': 'columns',
-            'Purline': 'Purline',
+            'Purline': 'purline',
             'LA': 'la',
             'Jointer': 'jointer'
         };
@@ -322,7 +322,6 @@
             'P3H': 'PURL-0022'
         };
 
-        // Fallback Master Lists for instant autocomplete without relying solely on empty table fetches
         const fallbackMasterCodes = {
             'Rafter': ["RAFT-0101", "RAFT-0102", "RAFT-0103", "RAFT-0201", "RAFT-0202", "RAFT-0203", "RAFT-0311", "RAFT-0312", "RAFT-0313", "RAFT-0321", "RAFT-0322", "RAFT-0323", "RAFT-1202", "RAFT-1203", "RAFT-1204", "RAFT-1312", "RAFT-1313", "RAFT-1322", "RAFT-1323"],
             'Columns': ["COLU-1620", "COLU-1820", "COLU-2611", "COLU-2612", "COLU-2613", "COLU-2621", "COLU-2622", "COLU-2623", "COLU-2811", "COLU-2812", "COLU-2813", "COLU-2821", "COLU-2822", "COLU-2823", "COLU-3611", "COLU-3612", "COLU-3613", "COLU-3621", "COLU-3622", "COLU-3623", "COLU-3811", "COLU-3812", "COLU-3813", "COLU-3821", "COLU-3822", "COLU-3823"],
@@ -457,14 +456,12 @@
             searchInput.focus();
         }
 
-        // --- FETCH MASTER CODES WITH FALLBACK SAFETY ---
         async function fetchMasterCodesForCategory(category) {
             if (masterCache[category]) return masterCache[category];
             const tableName = tableMapping[category] || category.toLowerCase();
             try {
                 const { data, error } = await supabaseClient.from(tableName).select('item_code');
                 if (error || !data || data.length === 0) {
-                    console.warn('Using fallback codes for:', category);
                     return fallbackMasterCodes[category] || [];
                 }
                 let codes = data.map(row => row.item_code).filter(Boolean);
@@ -567,7 +564,6 @@
 
         document.addEventListener('click', function (e) { closeAllLists(e.target); });
 
-        // --- DIRECT SUPABASE SEARCH WITH SMART PREFIX RESOLUTION ---
         async function runSearch() {
             let category = document.getElementById('sheetSelect').value;
             let rawQuery = searchInput.value.trim();
@@ -615,7 +611,6 @@
                         .eq('item_code', query);
 
                     if (error) {
-                        console.error('Supabase Query Error:', error);
                         msgBox.innerHTML = '<span class="error">⚠️ Error: ' + error.message + '</span>';
                         return;
                     }
