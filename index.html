@@ -316,8 +316,25 @@
             'Jointer': 'jointer'
         };
 
+        const tablePrefixes = {
+            'Columns': 'COLU-',
+            'Sheet1': 'RAFT-',
+            'Purline': 'PURL-',
+            'LA': 'EALA-',
+            'Jointer': 'RAFT-'
+        };
+
+        const purlineShortcuts = {
+            'P2L': 'PURL-0012',
+            'P2M': 'PURL-0011',
+            'P2H': 'PURL-0042',
+            'P3L': 'PURL-0024',
+            'P3M': 'PURL-0023',
+            'P3H': 'PURL-0022'
+        };
+
         const sampleCodes = ["0101", "0102", "0103", "1323", "1620", "2811", "2621", "2612", "3811", "3621", "2812", "3613", "3813", "3821"];
-        const purlineCodes = ["PURL-0012", "PURL-0011", "PURL-0042", "PURL-0024", "PURL-0023", "PURL-0022"];
+        const purlineCodes = ["PURL-0012", "PURL-0011", "PURL-0042", "PURL-0024", "PURL-0023", "PURL-0022", "P2L", "P2M", "P2H", "P3L", "P3M", "P3H"];
         const laCodes = ["EALA-0046", "EALA-0032"];
         const jointerCodes = ["RAFT-0332", "RAFT-0331"];
         
@@ -348,6 +365,18 @@
         let currentZoomLevel = 1.0;
         let isFullscreenMode = false;
         let searchInput = document.getElementById('searchQuery');
+
+        function resolveItemCode(category, rawVal) {
+            let clean = rawVal.trim().toUpperCase();
+            if (category === 'Purline' && purlineShortcuts[clean]) {
+                return purlineShortcuts[clean];
+            }
+            const prefix = tablePrefixes[category] || '';
+            if (prefix && clean && !clean.startsWith(prefix) && !isNaN(clean)) {
+                return prefix + clean;
+            }
+            return clean;
+        }
 
         function switchTab(tabId, btnElement) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -469,7 +498,6 @@
 
             if (cat === 'Kitting') {
                 let valLower = (val || '').trim().toLowerCase();
-                
                 let matches = kittingDatabase.filter(kit => {
                     if (!valLower) return true;
                     return kit.id.toLowerCase().includes(valLower) || 
@@ -526,8 +554,8 @@
                 addActive(x);
             } else if (e.keyCode == 13) {
                 e.preventDefault();
-                if (currentFocus > -1) {
-                    if (x) x[currentFocus].click();
+                if (currentFocus > -1 && x && x[currentFocus]) {
+                    x[currentFocus].click();
                 } else {
                     closeAllLists();
                     runSearch();
@@ -563,13 +591,13 @@
             closeAllLists(e.target);
         });
 
-        // --- DIRECT SUPABASE SEARCH ---
+        // --- DIRECT SUPABASE SEARCH WITH RESOLUTION & BLANK FILTER ---
         async function runSearch() {
             let category = document.getElementById('sheetSelect').value;
-            let query = searchInput.value.trim();
+            let rawQuery = searchInput.value.trim();
             let msgBox = document.getElementById('msgBox');
             
-            if(!query) {
+            if(!rawQuery) {
                 alert('Please enter a search code or name!');
                 searchInput.focus();
                 return;
@@ -579,7 +607,7 @@
             resetOldViews();
 
             if (category === "Kitting") {
-                let qLower = query.toLowerCase();
+                let qLower = rawQuery.toLowerCase();
                 let foundKit = kittingDatabase.find(kit => 
                     kit.id.toLowerCase() === qLower || 
                     kit.aliases.some(a => a.toLowerCase() === qLower) ||
@@ -596,9 +624,10 @@
                     recalculateKitComponents();
                 } else {
                     msgBox.style.display = 'block';
-                    msgBox.innerHTML = '<span class="error">⚠️ Kit "' + query + '" not found in Kitting Master!</span>';
+                    msgBox.innerHTML = '<span class="error">⚠️ Kit "' + rawQuery + '" not found in Kitting Master!</span>';
                 }
             } else {
+                let query = resolveItemCode(category, rawQuery);
                 msgBox.style.display = 'block';
                 msgBox.innerHTML = '⚡ Fetching data directly from Supabase...';
 
@@ -617,7 +646,7 @@
                     }
 
                     if (!data || data.length === 0) {
-                        msgBox.innerHTML = '<span class="error">⚠️ Item "' + query + '" not found in ' + category + '!</span>';
+                        msgBox.innerHTML = '<span class="error">⚠️ Item "' + rawQuery + '" (Resolved: ' + query + ') not found in ' + category + '!</span>';
                         searchInput.focus();
                         searchInput.select();
                         return;
@@ -663,32 +692,34 @@
 
                     for (let key in rowData) {
                         let h = key;
-                        let v = rowData[key] !== null && rowData[key] !== undefined ? rowData[key] : '-';
+                        let v = rowData[key];
                         
                         if (h.toLowerCase().indexOf('pdf') !== -1 || h.toLowerCase().indexOf('drawing') !== -1) {
-                            if (v && v !== '-') pdfUrlFound = v;
+                            if (v && v !== '-' && v !== '') pdfUrlFound = v;
                             continue;
                         }
                         if (h.toLowerCase() === 'id' || h.toLowerCase() === 'created_at') continue;
+                        if (v === null || v === undefined || String(v).trim() === '' || v === '-' || v === 'NaN') continue;
 
-                        allHtml += '<div class="spec-box"><div class="spec-label">' + h.replace(/_/g, ' ') + '</div><div class="spec-val">' + (v !== '' ? v : '-') + '</div></div>';
+                        allHtml += '<div class="spec-box"><div class="spec-label">' + h.replace(/_/g, ' ') + '</div><div class="spec-val">' + v + '</div></div>';
                     }
 
                     document.getElementById('allSpecsBox').innerHTML = allHtml;
 
-                    if (category === 'Purline' || category === 'LA' || category === 'Jointer') {
+                    if (category === 'Purline' || category === 'LA' || category === 'Jointer' || category === 'Columns') {
                         let filteredHtml = '';
                         for (let key in rowData) {
                             let h = key;
                             let v = rowData[key];
-                            if (h.toLowerCase().indexOf('pdf') !== -1 || h.toLowerCase() === 'id' || h.toLowerCase() === 'created_at') continue;
-                            if (v === null || v === undefined || String(v).trim() === '') continue;
+                            if (h.toLowerCase().indexOf('pdf') !== -1 || h.toLowerCase().indexOf('drawing') !== -1 || h.toLowerCase() === 'id' || h.toLowerCase() === 'created_at') continue;
+                            if (v === null || v === undefined || String(v).trim() === '' || v === '-' || v === 'NaN') continue;
                             filteredHtml += '<div class="spec-box"><div class="spec-label">' + h.replace(/_/g, ' ') + '</div><div class="spec-val">' + v + '</div></div>';
                         }
 
                         document.querySelector('#specsTab .panel-header').innerHTML =
                             category === 'LA' ? '📌 LA Component Parameters' :
-                            (category === 'Jointer' ? '📌 Jointer Parameters' : '📌 All Parameters');
+                            (category === 'Jointer' ? '📌 Jointer Parameters' : 
+                            (category === 'Purline' ? '📌 Purlin Parameters' : '📌 All Parameters'));
                         document.getElementById('specsGrid').style.display = 'none';
                         document.getElementById('allSpecsBox').style.display = 'grid';
                         document.getElementById('allSpecsBox').style.maxHeight = 'none';
@@ -708,7 +739,7 @@
                         let pdfFrame = document.getElementById('pdfFrame');
                         let embedUrl = pdfUrlFound;
                         if (embedUrl.indexOf('drive.google.com') !== -1) {
-                            embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view', '/preview');
+                            embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view?usp=drive_link', '/preview').replace('/view', '/preview');
                         }
                         pdfFrame.src = embedUrl;
                     }
@@ -749,7 +780,7 @@
         }
 
         function createSpecBox(label, val) {
-            return '<div class="spec-box"><div class="spec-label">' + label + '</div><div class="spec-val">' + (val !== '' ? val : '-') + '</div></div>';
+            return '<div class="spec-box"><div class="spec-label">' + label + '</div><div class="spec-val">' + (val !== '' && val !== null && val !== undefined ? val : '-') + '</div></div>';
         }
 
         function toggleAllSpecs() {
