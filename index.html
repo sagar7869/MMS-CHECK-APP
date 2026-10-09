@@ -163,7 +163,6 @@
         .calculator-box label { margin-bottom: 0; color: #1B5E20; font-size: 11px; font-weight: 800; }
         .calculator-box input { width: 85px; border-color: #81C784; text-align: center; font-size: 15px; color: #1B5E20; font-weight: 800; padding: 6px; }
 
-        /* UPDATED FIT-TO-SCREEN TABLE WITH PREVENTED QTY BREAKING */
         .table-container { width: 100%; overflow-x: hidden; }
         .kit-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10.5px; }
         .kit-table th { background: #F5F5F5; text-align: left; padding: 8px 3px; font-size: 8.5px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); font-weight: 800; }
@@ -208,7 +207,7 @@
                     <div id="autocompleteList" class="autocomplete-items"></div>
                 </div>
                 <div style="display: flex; gap: 6px;">
-                    <button id="searchBtn">Search</button>
+                    <button id="searchBtn" onclick="runSearch()">Search</button>
                     <button class="btn-clear" onclick="clearSearch()">Clear</button>
                 </div>
             </div>
@@ -305,12 +304,10 @@
     <script>
         // --- SUPABASE CONFIGURATION ---
         const SUPABASE_URL = "https://ncwufmoahvvqumdudhzm.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0
-"; // Put your anon public key here
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // MAP CATEGORIES TO SUPABASE TABLES
         const tableMapping = {
             'Sheet1': 'sheet1',
             'Columns': 'columns',
@@ -454,8 +451,6 @@
             searchInput.focus();
         }
 
-        document.getElementById('searchBtn').addEventListener('click', runSearch);
-
         searchInput.addEventListener('focus', function() {
             showSuggestions(this.value);
         });
@@ -568,7 +563,7 @@
             closeAllLists(e.target);
         });
 
-        // --- DIRECT SUPABASE QUERY SEARCH FUNCTION ---
+        // --- DIRECT SUPABASE SEARCH ---
         async function runSearch() {
             let category = document.getElementById('sheetSelect').value;
             let query = searchInput.value.trim();
@@ -610,7 +605,6 @@
                 const tableName = tableMapping[category] || category.toLowerCase();
 
                 try {
-                    // Query Supabase directly
                     const { data, error } = await supabaseClient
                         .from(tableName)
                         .select('*')
@@ -636,7 +630,6 @@
 
                     let rowData = data[0]; 
                     
-                    // Normalize keys to lowercase for flexible field matching
                     let dataMap = {};
                     for (let key in rowData) {
                         dataMap[key.toString().trim().toLowerCase()] = rowData[key] !== null && rowData[key] !== undefined ? rowData[key] : '-';
@@ -711,7 +704,6 @@
                         document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Parameters';
                     }
 
-                    // Load PDF directly if link exists in row
                     if (pdfUrlFound) {
                         let pdfFrame = document.getElementById('pdfFrame');
                         let embedUrl = pdfUrlFound;
