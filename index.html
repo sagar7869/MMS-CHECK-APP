@@ -184,17 +184,12 @@
                 <div class="search-group" style="flex: 0.9;">
                     <label>Category</label>
                     <select id="sheetSelect" onchange="onCategoryChange()">
-                        <option value="Rafter" selected>Rafters</option>
-                        <option value="Columns">Columns</option>
-                        <option value="Purline">Purlins</option>
-                        <option value="LA">LA Components</option>
-                        <option value="Jointer">Jointer</option>
-                        <option value="Kitting">Kitting Sets</option>
+                        <option value="Rafter" selected>Rafter</option>
                     </select>
                 </div>
                 <div class="search-group" style="flex: 1.6;">
                     <label>Item / Kit Code</label>
-                    <input type="text" id="searchQuery" placeholder="Type RAFT, COLU, PURL, P2L, P2H, KIT-0021..." autocomplete="off">
+                    <input type="text" id="searchQuery" placeholder="Type code, prefix or shortcut (e.g. P2L, P2H)..." autocomplete="off">
                     <div id="autocompleteList" class="autocomplete-items"></div>
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -204,7 +199,7 @@
             </div>
         </div>
 
-        <div id="msgBox" class="msg-box">Select a category and type any code, prefix or shortcut to view specifications.</div>
+        <div id="msgBox" class="msg-box">Loading categories automatically from database...</div>
 
         <!-- MAIN DATA DISPLAY -->
         <div id="dashboardView" style="display: none;">
@@ -299,20 +294,13 @@
         
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const tableMapping = {
-            'Rafter': 'rafter',
-            'Columns': 'columns',
-            'Purline': 'purline',
-            'LA': 'la',
-            'Jointer': 'jointer'
-        };
-
-        const tablePrefixes = {
-            'Rafter': 'RAFT-',
-            'Columns': 'COLU-',
-            'Purline': 'PURL-',
-            'LA': 'EALA-',
-            'Jointer': 'RAFT-'
+        let tableMapping = {};
+        let tablePrefixes = {
+            'rafter': 'RAFT-',
+            'columns': 'COLU-',
+            'purline': 'PURL-',
+            'la': 'EALA-',
+            'jointer': 'RAFT-'
         };
 
         const purlineShortcuts = {
@@ -325,11 +313,11 @@
         };
 
         const fallbackMasterCodes = {
-            'Rafter': ["RAFT-0101", "RAFT-0102", "RAFT-0103", "RAFT-0201", "RAFT-0202", "RAFT-0203", "RAFT-0311", "RAFT-0312", "RAFT-0313", "RAFT-0321", "RAFT-0322", "RAFT-0323", "RAFT-1202", "RAFT-1203", "RAFT-1204", "RAFT-1312", "RAFT-1313", "RAFT-1322", "RAFT-1323"],
-            'Columns': ["COLU-1620", "COLU-1820", "COLU-2611", "COLU-2612", "COLU-2613", "COLU-2621", "COLU-2622", "COLU-2623", "COLU-2811", "COLU-2812", "COLU-2813", "COLU-2821", "COLU-2822", "COLU-2823", "COLU-3611", "COLU-3612", "COLU-3613", "COLU-3621", "COLU-3622", "COLU-3623", "COLU-3811", "COLU-3812", "COLU-3813", "COLU-3821", "COLU-3822", "COLU-3823"],
-            'Purline': ["PURL-0011", "PURL-0012", "PURL-0022", "PURL-0023", "PURL-0024", "PURL-0042", "P2L", "P2M", "P2H", "P3L", "P3M", "P3H"],
-            'LA': ["EALA-0031", "EALA-0032", "EALA-0038", "EALA-0046"],
-            'Jointer': ["RAFT-0331", "RAFT-0332"]
+            'rafter': ["RAFT-0101", "RAFT-0102", "RAFT-0103", "RAFT-0201", "RAFT-0202", "RAFT-0203", "RAFT-0311", "RAFT-0312", "RAFT-0313", "RAFT-0321", "RAFT-0322", "RAFT-0323", "RAFT-1202", "RAFT-1203", "RAFT-1204", "RAFT-1312", "RAFT-1313", "RAFT-1322", "RAFT-1323"],
+            'columns': ["COLU-1620", "COLU-1820", "COLU-2611", "COLU-2612", "COLU-2613", "COLU-2621", "COLU-2622", "COLU-2623", "COLU-2811", "COLU-2812", "COLU-2813", "COLU-2821", "COLU-2822", "COLU-2823", "COLU-3611", "COLU-3612", "COLU-3613", "COLU-3621", "COLU-3622", "COLU-3623", "COLU-3811", "COLU-3812", "COLU-3813", "COLU-3821", "COLU-3822", "COLU-3823"],
+            'purline': ["PURL-0011", "PURL-0012", "PURL-0022", "PURL-0023", "PURL-0024", "PURL-0042", "P2L", "P2M", "P2H", "P3L", "P3M", "P3H"],
+            'la': ["EALA-0031", "EALA-0032", "EALA-0038", "EALA-0046"],
+            'jointer': ["RAFT-0331", "RAFT-0332"]
         };
 
         let masterCache = {};
@@ -362,13 +350,82 @@
         let isFullscreenMode = false;
         let searchInput = document.getElementById('searchQuery');
 
+        // Automatically load all tables from Supabase public schema
+        async function loadDynamicTables() {
+            let selectDropdown = document.getElementById('sheetSelect');
+            let msgBox = document.getElementById('msgBox');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('information_schema.tables')
+                    .select('table_name')
+                    .eq('table_schema', 'public');
+
+                if (error || !data || data.length === 0) {
+                    throw new Error("Could not fetch tables schema");
+                }
+
+                selectDropdown.innerHTML = '';
+                tableMapping = {};
+
+                data.forEach(row => {
+                    let tableName = row.table_name;
+                    // Skip system tables if any
+                    if (tableName === 'spatial_ref_sys' || tableName.startsWith('_')) return;
+
+                    let displayName = tableName.charAt(0).toUpperCase() + tableName.slice(1);
+                    tableMapping[displayName] = tableName;
+
+                    let option = document.createElement('option');
+                    option.value = displayName;
+                    option.textContent = displayName;
+                    selectDropdown.appendChild(option);
+                });
+
+                // Always append Kitting
+                let kitOption = document.createElement('option');
+                kitOption.value = 'Kitting';
+                kitOption.textContent = 'Kitting Sets';
+                selectDropdown.appendChild(kitOption);
+
+                msgBox.innerHTML = 'Select a category and type any code, prefix or shortcut to view specifications.';
+            } catch (err) {
+                console.warn('Fallback to static table mapping due to RLS/Schema restriction:', err);
+                // Fallback static mapping if information_schema is restricted
+                tableMapping = {
+                    'Rafter': 'rafter',
+                    'Columns': 'columns',
+                    'Purline': 'purline',
+                    'LA': 'la',
+                    'Jointer': 'jointer'
+                };
+                selectDropdown.innerHTML = '';
+                for (let key in tableMapping) {
+                    let opt = document.createElement('option');
+                    opt.value = key;
+                    opt.textContent = key;
+                    selectDropdown.appendChild(opt);
+                }
+                let kitOpt = document.createElement('option');
+                kitOpt.value = 'Kitting';
+                kitOpt.textContent = 'Kitting Sets';
+                selectDropdown.appendChild(kitOpt);
+
+                msgBox.innerHTML = 'Select a category and type any code, prefix or shortcut to view specifications.';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadDynamicTables();
+        });
+
         function resolveItemCode(category, rawVal) {
             let clean = rawVal.trim().toUpperCase();
             if (!clean) return '';
             if (category === 'Purline' && purlineShortcuts[clean]) {
                 return purlineShortcuts[clean];
             }
-            const prefix = tablePrefixes[category] || '';
+            let tableName = tableMapping[category] || category.toLowerCase();
+            const prefix = tablePrefixes[tableName] || '';
             if (prefix && !clean.startsWith(prefix)) {
                 return prefix + clean;
             }
@@ -464,13 +521,13 @@
             try {
                 const { data, error } = await supabaseClient.from(tableName).select('item_code');
                 if (error || !data || data.length === 0) {
-                    return fallbackMasterCodes[category] || [];
+                    return fallbackMasterCodes[tableName] || [];
                 }
                 let codes = data.map(row => row.item_code).filter(Boolean);
                 masterCache[category] = codes;
                 return codes;
             } catch (err) {
-                return fallbackMasterCodes[category] || [];
+                return fallbackMasterCodes[tableName] || [];
             }
         }
 
