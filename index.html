@@ -117,14 +117,11 @@
         .panel-header { background: #FAFAFA; padding: 10px 12px; font-weight: 700; font-size: 12px; color: #424242; border-bottom: 1px solid var(--border); text-transform: uppercase; }
         .panel-body { padding: 12px; }
 
+        /* SPECIFICATION GRID WITHOUT SCROLL */
         .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .spec-box { background: #F5F5F5; padding: 8px 10px; border-radius: 8px; border: 1px solid #EEEEEE; }
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
-
-        .expand-section { margin-top: 10px; }
-        .expand-btn { background: #EEEEEE; color: #424242; border: 1px solid var(--border); width: 100%; padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 11px; box-shadow: none; }
-        .all-specs-box { display: none; margin-top: 8px; max-height: 200px; overflow-y: auto; background: #F5F5F5; padding: 8px; border-radius: 8px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 6px; }
 
         /* FULL DISPLAY PDF & ZOOM CONTROLS WITH NATIVE FULLSCREEN OPTION */
         .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 220px); min-height: 420px; background: #424242; border-radius: 8px; overflow: hidden; }
@@ -226,13 +223,9 @@
             <!-- TAB 1: SPECIFICATIONS -->
             <div id="specsTab" class="tab-content active">
                 <div class="panel-card">
-                    <div class="panel-header">📌 Core Specifications</div>
+                    <div class="panel-header">📌 Specifications</div>
                     <div class="panel-body">
                         <div id="specsGrid" class="specs-grid"></div>
-                        <div class="expand-section">
-                            <button class="expand-btn" id="toggleExpandBtn" onclick="toggleAllSpecs()">▼ View All Parameters</button>
-                            <div id="allSpecsBox" class="all-specs-box"></div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -505,12 +498,6 @@
             document.getElementById('kittingView').style.display = 'none';
             document.getElementById('pdfFrame').src = '';
             document.getElementById('specsGrid').innerHTML = '';
-            document.getElementById('allSpecsBox').innerHTML = '';
-            document.getElementById('specsGrid').style.display = 'grid';
-            document.getElementById('allSpecsBox').style.display = 'none';
-            document.getElementById('toggleExpandBtn').style.display = 'inline-block';
-            document.getElementById('toggleExpandBtn').innerHTML = '▼ View All Parameters';
-            document.querySelector('#specsTab .panel-header').innerHTML = '📌 Core Specifications';
             document.getElementById('kitComponentsTableBody').innerHTML = '';
             resetZoom();
         }
@@ -700,51 +687,30 @@
                     switchTab('specsTab', document.querySelectorAll('.tab-btn')[0]);
 
                     let rowData = data[0]; 
-                    let dataMap = {};
-                    for (let key in rowData) {
-                        dataMap[key.toString().trim().toLowerCase()] = rowData[key] !== null && rowData[key] !== undefined ? rowData[key] : '-';
-                    }
-
-                    function getVal(keyKeywords) {
-                        for (let key in dataMap) {
-                            for (let k = 0; k < keyKeywords.length; k++) {
-                                if (key.indexOf(keyKeywords[k]) !== -1) return dataMap[key];
-                            }
-                        }
-                        return '-';
-                    }
-
                     let specsHtml = '';
-                    specsHtml += createSpecBox('Item Code', getVal(['item_code', 'item code']));
-                    specsHtml += createSpecBox('Length', getVal(['length']));
-                    specsHtml += createSpecBox('Thickness', getVal(['thickness']));
-                    specsHtml += createSpecBox('Section Size', getVal(['section_size', 'section size']));
-                    specsHtml += createSpecBox('Top Cee', getVal(['top_cee', 'top cee']));
-                    specsHtml += createSpecBox('Bottom Cee', getVal(['bottom_cee', 'bottom cee']));
-                    specsHtml += createSpecBox('Rib Size', getVal(['rib_size', 'rib size']));
-                    specsHtml += createSpecBox('Base Plate', getVal(['base_plate_size', 'base plate size']));
-
-                    document.getElementById('specsGrid').innerHTML = specsHtml;
-
-                    let allHtml = '';
                     let pdfUrlFound = null;
 
+                    // Collect fields with available valid data
+                    let validEntries = [];
                     for (let key in rowData) {
                         let h = key;
                         let v = rowData[key];
                         if (h.toLowerCase().indexOf('pdf') !== -1 || h.toLowerCase().indexOf('drawing') !== -1) {
-                            if (v && v !== '-' && v !== '') pdfUrlFound = v;
+                            if (v && v !== '-' && v !== '' && v !== null) pdfUrlFound = v;
                             continue;
                         }
                         if (h.toLowerCase() === 'id' || h.toLowerCase() === 'created_at') continue;
-                        if (v === null || v === undefined || String(v).trim() === '' || v === '-' || v === 'NaN') continue;
+                        if (v === null || v === undefined || String(v).trim() === '' || String(v).trim() === '-' || String(v).trim().toLowerCase() === 'nan') continue;
 
-                        allHtml += '<div class="spec-box"><div class="spec-label">' + h.replace(/_/g, ' ') + '</div><div class="spec-val">' + v + '</div></div>';
+                        validEntries.push({ label: h.replace(/_/g, ' '), val: v });
                     }
 
-                    document.getElementById('allSpecsBox').innerHTML = allHtml;
-                    document.getElementById('specsGrid').style.display = 'grid';
-                    document.getElementById('allSpecsBox').style.display = 'none';
+                    // Render fields directly without scroll/expand button
+                    validEntries.forEach(item => {
+                        specsHtml += '<div class="spec-box"><div class="spec-label">' + item.label + '</div><div class="spec-val">' + item.val + '</div></div>';
+                    });
+
+                    document.getElementById('specsGrid').innerHTML = specsHtml;
 
                     if (pdfUrlFound) {
                         let pdfFrame = document.getElementById('pdfFrame');
@@ -777,20 +743,8 @@
             tbody.innerHTML = html;
         }
 
-        function createSpecBox(label, val) {
-            return '<div class="spec-box"><div class="spec-label">' + label + '</div><div class="spec-val">' + (val !== '' && val !== null && val !== undefined ? val : '-') + '</div></div>';
-        }
-
         function toggleAllSpecs() {
-            let box = document.getElementById('allSpecsBox');
-            let btn = document.getElementById('toggleExpandBtn');
-            if (box.style.display === 'grid') {
-                box.style.display = 'none';
-                btn.innerHTML = '▼ View All Parameters';
-            } else {
-                box.style.display = 'grid';
-                btn.innerHTML = '▲ Hide Parameters';
-            }
+            // Not used anymore as all parameters are directly displayed cleanly without scroll/expand.
         }
     </script>
 </body>
