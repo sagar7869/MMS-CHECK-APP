@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rafter, Column & Kitting Master Data Portal</title>
+    <title>SolarSquare Structure Design Portal</title>
     
     <!-- PWA MOBILE APP HEADERS -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#1565C0">
+    <meta name="theme-color" content="#0D47A1">
     
     <!-- SUPABASE OFFICIAL JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         :root {
-            --primary: #1565C0;
-            --primary-dark: #0D47A1;
-            --bg-body: #F4F6F9;
+            --primary: #0D47A1;
+            --primary-light: #1565C0;
+            --bg-body: #F4F7FC;
             --card-bg: #FFFFFF;
-            --text-main: #212121;
-            --text-muted: #616161;
-            --border: #E0E0E0;
-            --accent: #1E88E5;
-            --success: #2E7D32;
+            --text-main: #1A202C;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --accent: #2563EB;
+            --success: #16A34A;
         }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -34,166 +34,155 @@
             background-color: var(--bg-body); 
             color: var(--text-main); 
             margin: 0; 
-            padding: 8px; 
+            padding: 12px; 
         }
         
-        .container { max-width: 1200px; margin: 0 auto; padding-bottom: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; padding-bottom: 30px; }
         
-        /* ANDROID NATIVE HEADER CARD */
+        /* PREMIUM SOLAR SQUARE HEADER CARD */
         .header-card { 
-            background: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%); 
+            background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); 
             color: white; 
-            padding: 14px 16px; 
-            border-radius: 12px; 
+            padding: 18px 20px; 
+            border-radius: 14px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            box-shadow: 0 4px 10px rgba(21, 101, 192, 0.25); 
-            margin-bottom: 10px; 
+            box-shadow: 0 6px 15px rgba(15, 23, 42, 0.15); 
+            margin-bottom: 14px; 
         }
-        .header-card h2 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: 0.3px; }
-        .header-card p { margin: 2px 0 0 0; opacity: 0.9; font-size: 11px; }
+        .header-card h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: 0.4px; }
+        .header-card p { margin: 4px 0 0 0; opacity: 0.85; font-size: 12px; font-weight: 500; }
 
-        /* ANDROID MATERIAL INPUT CARD */
+        /* SEARCH & FILTER CARD */
         .search-card { 
             background: var(--card-bg); 
-            padding: 12px; 
-            border-radius: 12px; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06); 
-            margin-bottom: 10px; 
+            padding: 16px; 
+            border-radius: 14px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+            margin-bottom: 14px; 
             border: 1px solid var(--border); 
         }
-        .search-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
-        .search-group { flex: 1; min-width: 140px; position: relative; }
-        label { display: block; font-weight: 700; margin-bottom: 4px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .search-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+        .search-group { flex: 1; min-width: 160px; position: relative; }
+        label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
         select, input { 
             width: 100%; 
-            padding: 10px 12px; 
+            padding: 11px 14px; 
             border: 1.5px solid var(--border); 
-            border-radius: 8px; 
-            font-size: 13px; 
-            background: #fff; 
+            border-radius: 10px; 
+            font-size: 14px; 
+            background: #F8FAFC; 
             font-weight: 600; 
             color: var(--text-main); 
             transition: all 0.2s;
         }
-        select:focus, input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15); }
+        select:focus, input:focus { border-color: var(--accent); background: #fff; outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
         
         button { 
             background: var(--accent); 
             color: white; 
             border: none; 
-            padding: 10px 14px; 
-            border-radius: 8px; 
+            padding: 11px 18px; 
+            border-radius: 10px; 
             font-weight: 700; 
             cursor: pointer; 
             font-size: 13px; 
-            height: 40px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+            height: 44px; 
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
             transition: background 0.2s, transform 0.1s;
         }
+        button:hover { background: #1D4ED8; }
         button:active { transform: scale(0.97); }
-        .btn-clear { background: #757575; }
+        .btn-clear { background: #64748B; box-shadow: 0 2px 6px rgba(100, 116, 139, 0.2); }
+        .btn-clear:hover { background: #475569; }
 
         /* AUTOCOMPLETE DROPDOWN */
-        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 999; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 8px 8px; max-height: 280px; overflow-y: auto; box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
-        .autocomplete-items div { padding: 10px 12px; cursor: pointer; font-size: 12px; font-weight: 600; border-bottom: 1px solid #f1f5f9; line-height: 1.4; }
-        .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #E3F2FD; color: var(--primary); }
+        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 999; top: 105%; left: 0; right: 0; background: #fff; border-radius: 10px; max-height: 280px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .autocomplete-items div { padding: 11px 14px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #F1F5F9; line-height: 1.4; color: #334155; }
+        .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #EFF6FF; color: var(--accent); }
 
         /* TAB NAVIGATION STYLES */
-        .tab-bar { display: flex; background: #E0E0E0; border-radius: 10px; padding: 3px; margin-bottom: 10px; gap: 4px; }
-        .tab-btn { flex: 1; padding: 8px; background: transparent; color: var(--text-muted); border: none; font-weight: 700; font-size: 12px; border-radius: 8px; cursor: pointer; text-align: center; height: auto; box-shadow: none; }
-        .tab-btn.active { background: #ffffff; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tab-bar { display: flex; background: #E2E8F0; border-radius: 12px; padding: 4px; margin-bottom: 14px; gap: 6px; }
+        .tab-btn { flex: 1; padding: 10px; background: transparent; color: var(--text-muted); border: none; font-weight: 700; font-size: 13px; border-radius: 9px; cursor: pointer; text-align: center; height: auto; box-shadow: none; }
+        .tab-btn.active { background: #ffffff; color: var(--accent); box-shadow: 0 3px 8px rgba(0,0,0,0.06); }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .panel-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 10px; }
-        .panel-header { background: #FAFAFA; padding: 10px 12px; font-weight: 700; font-size: 12px; color: #424242; border-bottom: 1px solid var(--border); text-transform: uppercase; }
-        .panel-body { padding: 12px; }
+        .panel-card { background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); overflow: hidden; margin-bottom: 14px; }
+        .panel-header { background: #F8FAFC; padding: 12px 16px; font-weight: 800; font-size: 12px; color: #334155; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
+        .panel-body { padding: 16px; }
 
-        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .spec-box { background: #F5F5F5; padding: 8px 10px; border-radius: 8px; border: 1px solid #EEEEEE; }
-        .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-        .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
+        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .spec-box { background: #F8FAFC; padding: 10px 12px; border-radius: 10px; border: 1px solid #E2E8F0; }
+        .spec-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+        .spec-val { font-size: 13px; color: var(--text-main); font-weight: 800; margin-top: 3px; }
 
-        .expand-section { margin-top: 10px; }
-        .expand-btn { background: #EEEEEE; color: #424242; border: 1px solid var(--border); width: 100%; padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 11px; box-shadow: none; }
-        .all-specs-box { display: none; margin-top: 8px; max-height: 200px; overflow-y: auto; background: #F5F5F5; padding: 8px; border-radius: 8px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .expand-section { margin-top: 12px; }
+        .expand-btn { background: #F1F5F9; color: #475569; border: 1px solid var(--border); width: 100%; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer; text-align: center; font-size: 12px; box-shadow: none; }
+        .expand-btn:hover { background: #E2E8F0; }
+        .all-specs-box { display: none; margin-top: 10px; max-height: 250px; overflow-y: auto; background: #F8FAFC; padding: 10px; border-radius: 10px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 8px; }
 
-        /* FULL DISPLAY PDF & ZOOM CONTROLS WITH NATIVE FULLSCREEN OPTION */
-        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 220px); min-height: 420px; background: #424242; border-radius: 8px; overflow: hidden; }
+        /* FULL DISPLAY PDF & ZOOM CONTROLS */
+        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 240px); min-height: 450px; background: #334155; border-radius: 10px; overflow: hidden; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         .pdf-toolbar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 20;
-            display: flex;
-            gap: 6px;
-            justify-content: flex-end;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.82);
-            padding: 6px 8px;
-            min-height: 46px;
-            border-radius: 0;
+            position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+            display: flex; gap: 8px; justify-content: flex-end; align-items: center;
+            background: rgba(15, 23, 42, 0.9); padding: 8px 12px; min-height: 50px; border-radius: 0;
         }
-        .zoom-btn { background: var(--accent); color: #ffffff; border: none; height: 32px; padding: 0 8px; border-radius: 6px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; }
+        .zoom-btn { background: var(--accent); color: #ffffff; border: none; height: 34px; padding: 0 10px; border-radius: 8px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; }
 
         .pdf-viewport {
-            width: 100%;
-            height: calc(100% - 46px);
-            margin-top: 46px;
-            overflow: auto;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            width: 100%; height: calc(100% - 50px); margin-top: 50px;
+            overflow: auto; display: flex; justify-content: center; align-items: flex-start;
             -webkit-overflow-scrolling: touch;
         }
         .pdf-container-zoom { width: 100%; height: 100%; transform-origin: top center; transition: transform 0.2s ease-out; }
         iframe { width: 100%; height: 100%; border: none; display: block; }
 
-        /* MOBILE APP NATIVE CARD LOOK FOR KITTING */
-        .kit-title-card { background: #E3F2FD; border: 1px solid #BBDEFB; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
-        .kit-title-card h3 { margin: 0 0 2px 0; color: #0D47A1; font-size: 14px; font-weight: 800; }
-        .kit-title-card p { margin: 0; font-size: 11px; color: #1E88E5; font-weight: 700; }
+        /* KITTING VIEW */
+        .kit-title-card { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+        .kit-title-card h3 { margin: 0 0 3px 0; color: #1E40AF; font-size: 15px; font-weight: 800; }
+        .kit-title-card p { margin: 0; font-size: 12px; color: #2563EB; font-weight: 700; }
         
-        .calculator-box { background: #E8F5E9; border: 1px solid #C8E6C9; padding: 10px 12px; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .calculator-box label { margin-bottom: 0; color: #1B5E20; font-size: 11px; font-weight: 800; }
-        .calculator-box input { width: 85px; border-color: #81C784; text-align: center; font-size: 15px; color: #1B5E20; font-weight: 800; padding: 6px; }
+        .calculator-box { background: #F0FDF4; border: 1px solid #BBF7D0; padding: 12px 16px; border-radius: 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .calculator-box label { margin-bottom: 0; color: #166534; font-size: 12px; font-weight: 800; }
+        .calculator-box input { width: 95px; border-color: #86EFAC; text-align: center; font-size: 16px; color: #166534; font-weight: 800; padding: 8px; background: #fff; }
 
         .table-container { width: 100%; overflow-x: hidden; }
-        .kit-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10.5px; }
-        .kit-table th { background: #F5F5F5; text-align: left; padding: 8px 3px; font-size: 8.5px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); font-weight: 800; }
-        .kit-table td { padding: 8px 3px; border-bottom: 1px solid var(--border); font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; }
+        .kit-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11px; }
+        .kit-table th { background: #F8FAFC; text-align: left; padding: 10px 6px; font-size: 9.5px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); font-weight: 800; }
+        .kit-table td { padding: 10px 6px; border-bottom: 1px solid var(--border); font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; color: #334155; }
         
-        .badge-code { background: #EDE7F6; color: #4527A0; padding: 2px 3px; border-radius: 4px; font-size: 9.5px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-        
-        .qty-badge { background: #C8E6C9; color: #1B5E20; font-weight: 800; text-align: center; border-radius: 4px; padding: 3px 2px; display: block; width: 100%; white-space: nowrap; font-size: 10px; }
+        .badge-code { background: #F3E8FF; color: #6B21A8; padding: 3px 6px; border-radius: 6px; font-size: 10px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+        .qty-badge { background: #DCFCE7; color: #166534; font-weight: 800; text-align: center; border-radius: 6px; padding: 4px 6px; display: block; width: 100%; white-space: nowrap; font-size: 11px; }
 
-        .msg-box { background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
-        .error { color: #D32F2F; font-weight: 700; }
+        .msg-box { background: var(--card-bg); padding: 25px; border-radius: 14px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); font-size: 14px; }
+        .error { color: #DC2626; font-weight: 700; }
 
-        .footer { text-align: center; margin-top: 15px; font-size: 10px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 10px; }
+        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 14px; font-weight: 600; }
         .footer strong { color: var(--primary); }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- HEADER -->
         <div class="header-card">
             <div>
-                <h2>Rafter, Column & Kitting Portal</h2>
-                <p>Instant Specification, Full Drawing & Kit Calculator</p>
+                <h2>SolarSquare Structure Design Portal</h2>
+                <p>Master Specifications, Engineering Drawings & Kit Calculator</p>
             </div>
         </div>
 
+        <!-- SEARCH CARD -->
         <div class="search-card">
             <div class="search-row">
-                <div class="search-group" style="flex: 0.8;">
+                <div class="search-group" style="flex: 0.9;">
                     <label>Category</label>
                     <select id="sheetSelect" onchange="onCategoryChange()">
-                        <option value="Sheet1">Rafters</option>
+                        <option value="Rafter">Rafters</option>
                         <option value="Columns" selected>Columns</option>
                         <option value="Purline">Purlins</option>
                         <option value="LA">LA Components</option>
@@ -201,25 +190,25 @@
                         <option value="Kitting">Kitting Sets</option>
                     </select>
                 </div>
-                <div class="search-group" style="flex: 1.5;">
+                <div class="search-group" style="flex: 1.6;">
                     <label>Item / Kit Code</label>
-                    <input type="text" id="searchQuery" placeholder="Type 1620 or COLU-1620..." autocomplete="off">
+                    <input type="text" id="searchQuery" placeholder="Type 1620, P2H, KIT-0021..." autocomplete="off">
                     <div id="autocompleteList" class="autocomplete-items"></div>
                 </div>
-                <div style="display: flex; gap: 6px;">
+                <div style="display: flex; gap: 8px;">
                     <button id="searchBtn" onclick="runSearch()">Search</button>
                     <button class="btn-clear" onclick="clearSearch()">Clear</button>
                 </div>
             </div>
         </div>
 
-        <div id="msgBox" class="msg-box">Select a category and enter an item code to view details.</div>
+        <div id="msgBox" class="msg-box">Select a category and enter an item code or shortcut to view specifications.</div>
 
         <!-- MAIN DATA DISPLAY -->
         <div id="dashboardView" style="display: none;">
             <div class="tab-bar">
                 <button class="tab-btn active" onclick="switchTab('specsTab', this)">📋 Specifications</button>
-                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Full Drawing (PDF)</button>
+                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Engineering Drawing (PDF)</button>
             </div>
 
             <!-- TAB 1: SPECIFICATIONS -->
@@ -239,13 +228,13 @@
             <!-- TAB 2: FULL DISPLAY PDF WITH FULLSCREEN & ZOOM -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
-                    <div class="panel-header">📄 Engineering Drawing (Full View)</div>
+                    <div class="panel-header">📄 Engineering Drawing Viewer</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
-                            <button class="zoom-btn" onclick="adjustZoom(0.25)">＋</button>
-                            <button class="zoom-btn" onclick="adjustZoom(-0.25)">－</button>
-                            <button class="zoom-btn" onclick="resetZoom()">↺</button>
+                            <button class="zoom-btn" onclick="adjustZoom(0.25)">＋ Zoom In</button>
+                            <button class="zoom-btn" onclick="adjustZoom(-0.25)">－ Zoom Out</button>
+                            <button class="zoom-btn" onclick="resetZoom()">↺ Reset</button>
                         </div>
                         <div class="pdf-viewport">
                             <div id="pdfZoomContainer" class="pdf-container-zoom">
@@ -267,7 +256,7 @@
             <div class="calculator-box">
                 <div>
                     <label>🔢 Kit Multiplier Sets</label>
-                    <div style="font-size: 10px; color: #2E7D32; font-weight: 600; margin-top: 1px;">Enter qty to auto-calculate</div>
+                    <div style="font-size: 11px; color: #166534; font-weight: 600; margin-top: 2px;">Enter total quantity to auto-calculate components</div>
                 </div>
                 <div>
                     <input type="number" id="kitCountInput" value="1" min="1" oninput="recalculateKitComponents()">
@@ -281,12 +270,12 @@
                         <table class="kit-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 5%; text-align: center;">#</th>
-                                    <th style="width: 39%;">Component</th>
-                                    <th style="width: 25%;">SKU Code</th>
-                                    <th style="width: 9%; text-align: center;">Unit</th>
-                                    <th style="width: 7%; text-align: center;">Set</th>
-                                    <th style="width: 15%; text-align: center;">Total</th>
+                                    <th style="width: 6%; text-align: center;">#</th>
+                                    <th style="width: 40%;">Component Name</th>
+                                    <th style="width: 24%;">SKU Code</th>
+                                    <th style="width: 10%; text-align: center;">Unit</th>
+                                    <th style="width: 8%; text-align: center;">Set</th>
+                                    <th style="width: 12%; text-align: center;">Total</th>
                                 </tr>
                             </thead>
                             <tbody id="kitComponentsTableBody"></tbody>
@@ -297,7 +286,7 @@
         </div>
 
         <div class="footer">
-            Developed by <strong>Sagar Herole</strong>
+            SolarSquare Structure Design Portal &bull; Developed by <strong>Sagar Herole</strong> (2026)
         </div>
     </div>
 
@@ -309,23 +298,21 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const tableMapping = {
-            'Sheet1': 'sheet1',
+            'Rafter': 'rafter',
             'Columns': 'columns',
-            'Purline': 'purline',
+            'Purline': 'Purline',
             'LA': 'la',
             'Jointer': 'jointer'
         };
 
-        // Table ke official prefixes jo excel mein hain
         const tablePrefixes = {
             'Columns': 'COLU-',
-            'Sheet1': 'RAFT-',
+            'Rafter': 'RAFT-',
             'Purline': 'PURL-',
             'LA': 'EALA-',
             'Jointer': 'RAFT-'
         };
 
-        // Purline Shortcuts mapping
         const purlineShortcuts = {
             'P2L': 'PURL-0012',
             'P2M': 'PURL-0011',
@@ -340,9 +327,27 @@
         const laCodes = ["EALA-0046", "EALA-0032"];
         const jointerCodes = ["RAFT-0332", "RAFT-0331"];
         
+        // FULL KITTING DATABASE (All 19+ Kits Included)
         const kittingDatabase = [
             { id: "KIT-0001", aliases: ["KIT-1", "KITS-0001", "CABLE & WIRE CONSUMABLES KIT"], name: "KITS - 0001 Cable & Wire Consumables Kit", components: [{ name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm", sku: "CNYC-0011", uom: "Pkt", qty: 2 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm", sku: "CNYC-0009", uom: "Pkt", qty: 2 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 30 }, { name: "PVC Electrical Insulation Tape 1.8cmx6.5m - Black", sku: "CINT-0001", uom: "Nos", qty: 2 }, { name: "Corrugated Box 5 ply", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
-            { id: "KIT-0021", aliases: ["KIT-21", "KITS-0021", "EARTHING & LA KIT"], name: "KITS - 0021 Earthing & LA Kit", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 5 }, { name: "PVC Base 100x100X6 mm for SS316 LA", sku: "EALA-0038", uom: "Nos", qty: 1 }, { name: "HDG LA Stand for Gen 2 rafter", sku: "EALA-0032", uom: "Nos", qty: 1 }] }
+            { id: "KIT-0002", aliases: ["KIT-2", "KITS-0002", "EARTHING & LA ACCESSORIES KIT 1"], name: "KITS - 0002 Earthing & LA Accessories Kit - 1", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 2 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }] },
+            { id: "KIT-0003", aliases: ["KIT-3", "KITS-0003", "STRUCTURE HARDWARE KIT 1"], name: "KITS - 0003 Structure Hardware Kit - 1", components: [{ name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 12 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 12 }, { name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 12 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 24 }, { name: "HDG Plate Washer 45x20x4.0 mm with 12mm Hole", sku: "FHDG-0050", uom: "Nos", qty: 12 }] },
+            { id: "KIT-0004", aliases: ["KIT-4", "KITS-0004", "MODULE MOUNTING KIT 1"], name: "KITS - 0004 Module Mounting Hardware Kit - 1", components: [{ name: "SS304 Hex Bolt M8x25", sku: "FSSB-0081", uom: "Nos", qty: 20 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 20 }, { name: "Zn Flake Coated Plate Washer 50x16x2 mm", sku: "FSSW-0052", uom: "Nos", qty: 20 }, { name: "Nord-Lock Zn Coated Steel Washer M8", sku: "FSSW-0048", uom: "Nos", qty: 20 }] },
+            { id: "KIT-0005", aliases: ["KIT-5", "KITS-0005", "ELECTRICAL ACCESSORIES KIT 1"], name: "KITS - 0005 Electrical Accessories Kit - 1", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 10 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug", sku: "CCUR-0012", uom: "Nos", qty: 10 }, { name: "MC4 Connector - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 4 }, { name: "MC4 Connector - MALE", sku: "CMCC-0002", uom: "Nos", qty: 4 }] },
+            { id: "KIT-0006", aliases: ["KIT-6", "KITS-0006", "INVERTER MOUNTING KIT"], name: "KITS - 0006 Inverter Mounting Hardware Kit", components: [{ name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 6 }, { name: "SS304 Hex Bolt M6x30", sku: "FSSB-0030", uom: "Nos", qty: 6 }, { name: "SS304 Plain Washer M6", sku: "FSSW-0006", uom: "Nos", qty: 6 }, { name: "SS304 Hex Nut M6", sku: "FSSN-0004", uom: "Nos", qty: 6 }] },
+            { id: "KIT-0010", aliases: ["KIT-10", "KITS-0010", "I&C CONSUMABLES KIT"], name: "I&C Consumables Kit (KITS-0010)", components: [{ name: "HIT-RE 10 Cartridge - 580ml", sku: "GGCH-0001", uom: "Nos", qty: 3 }, { name: "Adhesive Mixing Nozzle-LOCAL MAKE", sku: "NOZZ-0002", uom: "Nos", qty: 3 }, { name: "PVC Electrical Insulation Tape - Black", sku: "CINT-0001", uom: "Nos", qty: 3 }, { name: "Selsil Montage 750 PU Foam Can - 750 ml", sku: "CPUS-0007", uom: "Nos", qty: 1 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 50 }, { name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm", sku: "CNYC-0011", uom: "Pkt", qty: 4 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm", sku: "CNYC-0009", uom: "Pkt", qty: 4 }, { name: "MC4 Connector for 4 sqmm DC Cable - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 12 }, { name: "MC4 Connector for 4 sqmm DC Cable - MALE", sku: "CMCC-0002", uom: "Nos", qty: 12 }, { name: "Corrugated Box 5 ply 420x270x220 mm", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0021", aliases: ["KIT-21", "KITS-0021", "EARTHING & LA KIT"], name: "KITS - 0021 Earthing & LA Kit", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 5 }, { name: "PVC Base 100x100X6 mm for SS316 LA", sku: "EALA-0038", uom: "Nos", qty: 1 }, { name: "HDG LA Stand for Gen 2 rafter", sku: "EALA-0032", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }, { name: "SS304 Spring Washer M8", sku: "FSSW-0015", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }] },
+            { id: "KIT-0022", aliases: ["KIT-22", "KITS-0022", "ELECTRICAL ACCESSORIES KIT - 7"], name: "Electrical Accessories Kit - 7 (KITS-0022)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 8 }, { name: "2.5 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0021", uom: "Nos", qty: 18 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Type Lug", sku: "CCUR-0012", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Type Lug", sku: "CCUR-0013", uom: "Nos", qty: 1 }, { name: "MC4 Connector 4 sqmm DC Cable - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 1 }, { name: "MC4 Connector 4 sqmm DC Cable - MALE", sku: "CMCC-0002", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar inverter Stickers Vinyl V3", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu PVC Ring Lug (ID-8mm)", sku: "CCUR-0014", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0023", aliases: ["KIT-23", "KITS-0023", "ELECTRICAL ACCESSORIES KIT - 8"], name: "Electrical Accessories Kit - 8 (KITS-0023)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 8 }, { name: "10 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0024", uom: "Nos", qty: 10 }, { name: "16 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0025", uom: "Nos", qty: 10 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Lug", sku: "CCUR-0012", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Lug", sku: "CCUR-0013", uom: "Nos", qty: 1 }, { name: "MC4 Connector - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 1 }, { name: "MC4 Connector - MALE", sku: "CMCC-0002", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar Inverter Stickers Vinyl V3", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu Ring Lug (ID-8mm)", sku: "CCUR-0014", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0024", aliases: ["KIT-24", "KITS-0024", "ELECTRICAL ACCESSORIES KIT - 9"], name: "Electrical Accessories Kit - 9 (KITS-0024)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Type Lug", sku: "CALP-0023", uom: "Nos", qty: 3 }, { name: "2.5 sqmm Cu PVC Insulated Pin Lug", sku: "CALP-0021", uom: "Nos", qty: 10 }, { name: "4 sqmm Cu PVC Non-Insulated Ring Lug", sku: "CCUR-0012", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Non-Insulated Ring Lug", sku: "CCUR-0013", uom: "Nos", qty: 1 }, { name: "MC4 Connector - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 1 }, { name: "MC4 Connector - MALE", sku: "CMCC-0002", uom: "Nos", qty: 1 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar Inverter Stickers Vinyl V3", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu Ring Lug (ID-8mm)", sku: "CCUR-0014", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0027", aliases: ["KIT-27", "KITS-0027", "ELECTRICAL ACCESSORIES KIT - 12"], name: "Electrical Accessories Kit - 12 (KITS-0027)", components: [{ name: "6 sqmm Cu PVC Insulated Pin Lug", sku: "CALP-0023", uom: "Nos", qty: 20 }, { name: "2.5 sqmm Cu PVC Insulated Pin Lug", sku: "CALP-0021", uom: "Nos", qty: 15 }, { name: "10 sqmm Cu PVC Insulated Pin Lug", sku: "CALP-0024", uom: "Nos", qty: 15 }, { name: "16 sqmm Cu PVC Insulated Pin Lug", sku: "CALP-0025", uom: "Nos", qty: 15 }, { name: "4 sqmm Cu PVC Ring Lug (ID-6mm)", sku: "CCUR-0012", uom: "Nos", qty: 7 }, { name: "16 sqmm Cu PVC Ring Lug (ID-6mm)", sku: "CCUR-0013", uom: "Nos", qty: 1 }, { name: "MC4 Connector - FEMALE", sku: "CMCC-0001", uom: "Nos", qty: 2 }, { name: "MC4 Connector - MALE", sku: "CMCC-0002", uom: "Nos", qty: 2 }, { name: "Nylon Fastener M6x60", sku: "CNYF-0002", uom: "Nos", qty: 10 }, { name: "Solar Inverter Stickers Vinyl V3", sku: "STIC-0003", uom: "Nos", qty: 1 }, { name: "16 sqmm Cu Ring Lug (ID-8mm)", sku: "CCUR-0014", uom: "Nos", qty: 1 }, { name: "PVC Ferrules (S) - 6 sqmm", sku: "PFEV-0003", uom: "Nos", qty: 4 }, { name: "PVC Ferrules (1) - 6 sqmm", sku: "PFEV-0004", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (2) - 6 sqmm", sku: "PFEV-0005", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (+) - 6 sqmm", sku: "PFEV-0006", uom: "Nos", qty: 2 }, { name: "PVC Ferrules (-) - 6 sqmm", sku: "PFEV-0007", uom: "Nos", qty: 2 }] },
+            { id: "KIT-0042", aliases: ["KIT-42", "KITS-0042", "MODULE EARTHING"], name: "KIT-0042: SS304 M6x30 Nut-Bolt Set for Module Earthing", components: [{ name: "SS304 Hex Bolt M6x30", sku: "FSSB-0030", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M6", sku: "FSSW-0006", uom: "Nos", qty: 1 }, { name: "SS304 Spring Washer M6", sku: "FSSW-0012", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M6", sku: "FSSN-0004", uom: "Nos", qty: 1 }, { name: "SS304 Double Sided Star Washer M6", sku: "FSSW-0020", uom: "Nos", qty: 1 }] },
+            { id: "LAKITS-0007", aliases: ["KIT-0007", "KIT-7", "KITS-0007", "EARTHING NUT BOLT SET"], name: "LAKITS-0007: SS304 M6x30 Nut-Bolt Set for Earthing Rod & LA", components: [{ name: "SS304 Hex Bolt M6x30", sku: "FSSB-0030", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M6 Standard OD", sku: "FSSW-0006", uom: "Nos", qty: 1 }, { name: "SS304 Spring Washer M6", sku: "FSSW-0012", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M6", sku: "FSSN-0004", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0060", aliases: ["KIT-60", "KITS-0060", "EARTHING & LA KIT - 7"], name: "KITS - 0060 Earthing & LA Kit - 7", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 3 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 5 }, { name: "PVC Base 100x100X6 mm for SS316 LA", sku: "EALA-0038", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }, { name: "SS304 Spring Washer M8", sku: "FSSW-0015", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }] },
+            { id: "KIT-0071", aliases: ["KIT-71", "KITS-0071", "MODULE MOUNTING SET"], name: "KIT-0071: SS304 M8x20 Nut-Bolt Set for Module Mounting", components: [{ name: "SS304 Hex Bolt M8x25", sku: "FSSB-0081", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 1 }, { name: "Zn Flake Coated Plate Washer 50x16x2 mm", sku: "FSSW-0052", uom: "Nos", qty: 1 }, { name: "SS304 Plate Washer 50x32x2 mm", sku: "FSSW-0055", uom: "Nos", qty: 1 }, { name: "Nord-Lock Zn Coated Steel Washer M8", sku: "FSSW-0048", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0072", aliases: ["KIT-72", "KITS-0072", "PURLIN TO RAFTER JOINTING"], name: "KIT-0072: SS304 M10x30 Nut-Bolt Set for Purlin to Rafter Jointing", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 1 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x20x4.0 mm", sku: "FHDG-0050", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x28x4.0 mm", sku: "FHDG-0051", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0073", aliases: ["KIT-73", "KITS-0073", "RAFTER TO COLUMN JOINTING"], name: "KIT-0073: Rafter to Column Jointing Set", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 4 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 4 }, { name: "HDG Plate Washer 74x68x4.0 mm", sku: "FHDG-0041", uom: "Nos", qty: 1 }] },
+            { id: "KIT-0074", aliases: ["KIT-74", "KITS-0074", "BRACING JOINTING KIT"], name: "KIT-0074: SS304 M10x30 Nut-Bolt Set for Bracing", components: [{ name: "SS304 Spring Washer M10", sku: "FSSW-0011", uom: "Nos", qty: 1 }, { name: "SS304 Plain Washer M10 Large OD", sku: "FSSW-0001", uom: "Nos", qty: 1 }, { name: "SS304 Hex Nut M10", sku: "FSSN-0006", uom: "Nos", qty: 1 }, { name: "SS304 Hex Bolt M10x35", sku: "FSSB-0049", uom: "Nos", qty: 1 }, { name: "HDG Plate Washer 45x20x4.0 mm", sku: "FHDG-0050", uom: "Nos", qty: 1 }] }
         ];
 
         let currentActiveKit = null;
@@ -351,23 +356,16 @@
         let isFullscreenMode = false;
         let searchInput = document.getElementById('searchQuery');
 
-        // --- UNIVERSAL SMART PREFIX & SHORTCUT RESOLVER ---
         function resolveItemCode(category, rawVal) {
             let clean = rawVal.trim().toUpperCase();
             if (!clean) return '';
-            
-            // 1. Check Purline shortcuts
             if (category === 'Purline' && purlineShortcuts[clean]) {
                 return purlineShortcuts[clean];
             }
-            
             const prefix = tablePrefixes[category] || '';
-            
-            // 2. Agar user ne prefix pehle se nahi lagaya hai, toh automatically prefix jod do
             if (prefix && !clean.startsWith(prefix)) {
                 return prefix + clean;
             }
-            
             return clean;
         }
 
@@ -449,7 +447,7 @@
             resetOldViews();
             let msgBox = document.getElementById('msgBox');
             msgBox.style.display = 'block';
-            msgBox.innerHTML = 'Select a category and enter an item code to view details.';
+            msgBox.innerHTML = 'Select a category and enter an item code or shortcut to view specifications.';
             closeAllLists();
             searchInput.focus();
         }
@@ -469,7 +467,9 @@
                 let valLower = (val || '').trim().toLowerCase();
                 let matches = kittingDatabase.filter(kit => {
                     if (!valLower) return true;
-                    return kit.id.toLowerCase().includes(valLower) || kit.name.toLowerCase().includes(valLower);
+                    return kit.id.toLowerCase().includes(valLower) || 
+                           kit.name.toLowerCase().includes(valLower) ||
+                           kit.aliases.some(a => a.toLowerCase().includes(valLower));
                 });
                 matches.forEach(kit => {
                     let itemDiv = document.createElement('div');
@@ -487,7 +487,8 @@
                 let matches = codeList.filter(item => !valLower || item.toLowerCase().includes(valLower));
                 matches.forEach(match => {
                     let itemDiv = document.createElement('div');
-                    itemDiv.innerHTML = "<strong>" + match + "</strong>";
+                    let resolvedDisplay = resolveItemCode(cat, match);
+                    itemDiv.innerHTML = "<strong>" + match + "</strong>" + (match !== resolvedDisplay ? " <span style='color:#64748B; font-size:11px;'>(" + resolvedDisplay + ")</span>" : "");
                     itemDiv.addEventListener('click', function() {
                         searchInput.value = match;
                         closeAllLists();
@@ -536,14 +537,14 @@
 
         document.addEventListener('click', function (e) { closeAllLists(e.target); });
 
-        // --- DIRECT SUPABASE SEARCH WITH AUTO-PREFIX ---
+        // --- DIRECT SUPABASE SEARCH WITH SMART PREFIX RESOLUTION ---
         async function runSearch() {
             let category = document.getElementById('sheetSelect').value;
             let rawQuery = searchInput.value.trim();
             let msgBox = document.getElementById('msgBox');
             
             if(!rawQuery) {
-                alert('Please enter a search code or name!');
+                alert('Please enter an item code or shortcut!');
                 searchInput.focus();
                 return;
             }
@@ -553,7 +554,11 @@
 
             if (category === "Kitting") {
                 let qLower = rawQuery.toLowerCase();
-                let foundKit = kittingDatabase.find(kit => kit.id.toLowerCase() === qLower || kit.name.toLowerCase().includes(qLower));
+                let foundKit = kittingDatabase.find(kit => 
+                    kit.id.toLowerCase() === qLower || 
+                    kit.aliases.some(a => a.toLowerCase() === qLower) ||
+                    kit.name.toLowerCase().includes(qLower)
+                );
                 if (foundKit) {
                     msgBox.style.display = 'none';
                     document.getElementById('kittingView').style.display = 'block';
@@ -564,10 +569,9 @@
                     recalculateKitComponents();
                 } else {
                     msgBox.style.display = 'block';
-                    msgBox.innerHTML = '<span class="error">⚠️ Kit "' + rawQuery + '" not found!</span>';
+                    msgBox.innerHTML = '<span class="error">⚠️ Kit "' + rawQuery + '" not found in Kitting Master!</span>';
                 }
             } else {
-                // Smart Prefix Resolution (Jaise '1620' ban jayega 'COLU-1620')
                 let query = resolveItemCode(category, rawQuery);
                 msgBox.style.display = 'block';
                 msgBox.innerHTML = '⚡ Fetching data for <b>' + query + '</b> from Supabase...';
@@ -587,7 +591,7 @@
                     }
 
                     if (!data || data.length === 0) {
-                        msgBox.innerHTML = '<span class="error">⚠️ Item "' + rawQuery + '" (Searched as: ' + query + ') not found in ' + category + '!</span>';
+                        msgBox.innerHTML = '<span class="error">⚠️ Item "' + rawQuery + '" (Resolved: ' + query + ') not found in ' + category + '!</span>';
                         searchInput.focus();
                         searchInput.select();
                         return;
