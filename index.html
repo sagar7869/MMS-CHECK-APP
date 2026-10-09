@@ -1,33 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SolarSquare Structure Design Portal</title>
+    <title>Rafter, Column & Kitting Master Data Portal</title>
     
     <!-- PWA MOBILE APP HEADERS -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0F172A">
+    <meta name="theme-color" content="#1565C0">
+    
+    <!-- ICON & MANIFEST LINKS -->
     <link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/png" href="./icon-192.png">
-<link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="icon" type="image/png" href="./icon-192.png">
+    <link rel="apple-touch-icon" href="./icon-192.png">
     
     <!-- SUPABASE OFFICIAL JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         :root {
-            --primary: #0F172A;
-            --primary-light: #1E293B;
-            --bg-body: #F8FAFC;
+            --primary: #1565C0;
+            --primary-dark: #0D47A1;
+            --bg-body: #F4F6F9;
             --card-bg: #FFFFFF;
-            --text-main: #0F172A;
-            --text-muted: #64748B;
-            --border: #E2E8F0;
-            --accent: #0284C7; /* Professional Slate Blue */
-            --success: #16A34A;
+            --text-main: #212121;
+            --text-muted: #616161;
+            --border: #E0E0E0;
+            --accent: #1E88E5;
+            --success: #2E7D32;
         }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -37,137 +39,147 @@
             background-color: var(--bg-body); 
             color: var(--text-main); 
             margin: 0; 
-            padding: 16px; 
+            padding: 8px; 
         }
         
-        .container { max-width: 1280px; margin: 0 auto; padding-bottom: 40px; }
+        .container { max-width: 1200px; margin: 0 auto; padding-bottom: 20px; }
         
-        /* MODERN HEADER DESIGN */
+        /* ANDROID NATIVE HEADER CARD */
         .header-card { 
-            background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); 
+            background: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%); 
             color: white; 
-            padding: 22px 24px; 
-            border-radius: 16px; 
+            padding: 14px 16px; 
+            border-radius: 12px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2); 
-            margin-bottom: 16px; 
+            box-shadow: 0 4px 10px rgba(21, 101, 192, 0.25); 
+            margin-bottom: 10px; 
         }
-        .header-card h2 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
-        .header-card p { margin: 6px 0 0 0; opacity: 0.85; font-size: 13px; font-weight: 500; }
+        .header-card h2 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: 0.3px; }
+        .header-card p { margin: 2px 0 0 0; opacity: 0.9; font-size: 11px; }
 
-        /* SEARCH & FILTER GLASS CARD */
+        /* ANDROID MATERIAL INPUT CARD */
         .search-card { 
             background: var(--card-bg); 
-            padding: 20px; 
-            border-radius: 16px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
-            margin-bottom: 16px; 
+            padding: 12px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06); 
+            margin-bottom: 10px; 
             border: 1px solid var(--border); 
         }
-        .search-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-        .search-group { flex: 1; min-width: 180px; position: relative; }
-        label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+        .search-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+        .search-group { flex: 1; min-width: 140px; position: relative; }
+        label { display: block; font-weight: 700; margin-bottom: 4px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         select, input { 
             width: 100%; 
-            padding: 12px 16px; 
+            padding: 10px 12px; 
             border: 1.5px solid var(--border); 
-            border-radius: 12px; 
-            font-size: 14px; 
-            background: #F8FAFC; 
+            border-radius: 8px; 
+            font-size: 13px; 
+            background: #fff; 
             font-weight: 600; 
             color: var(--text-main); 
-            transition: all 0.2s ease;
-        }
-        select:focus, input:focus { border-color: var(--accent); background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1); }
-        
-        button { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 12px 22px; 
-            border-radius: 12px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            font-size: 14px; 
-            height: 48px; 
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
             transition: all 0.2s;
         }
-        button:hover { background: #334155; transform: translateY(-1px); }
-        button:active { transform: scale(0.98); }
-        .btn-clear { background: #64748B; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.15); }
-        .btn-clear:hover { background: #475569; }
+        select:focus, input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15); }
+        
+        button { 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 10px 14px; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            font-size: 13px; 
+            height: 40px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:active { transform: scale(0.97); }
+        .btn-clear { background: #757575; }
 
         /* AUTOCOMPLETE DROPDOWN */
-        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 999; top: 108%; left: 0; right: 0; background: #fff; border-radius: 12px; max-height: 320px; overflow-y: auto; box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
-        .autocomplete-items div { padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #F1F5F9; color: #334155; transition: background 0.15s; }
-        /* Light Professional Hover Style */
-        .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #F1F5F9; color: var(--primary); border-left: 3px solid var(--accent); }
+        .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 999; top: 100%; left: 0; right: 0; background: #fff; border-radius: 0 0 8px 8px; max-height: 280px; overflow-y: auto; box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
+        .autocomplete-items div { padding: 10px 12px; cursor: pointer; font-size: 12px; font-weight: 600; border-bottom: 1px solid #f1f5f9; line-height: 1.4; color: #333; }
+        .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #E3F2FD; color: var(--primary); }
 
-        /* LIGHT PROFESSIONAL TAB NAVIGATION */
-        .tab-bar { display: flex; background: #F1F5F9; border-radius: 14px; padding: 5px; margin-bottom: 16px; gap: 8px; border: 1px solid var(--border); }
-        .tab-btn { flex: 1; padding: 12px; background: transparent; color: var(--text-muted); border: none; font-weight: 700; font-size: 13px; border-radius: 10px; cursor: pointer; text-align: center; height: auto; box-shadow: none; transition: all 0.2s; }
-        .tab-btn.active { background: #ffffff; color: var(--primary); border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        /* TAB NAVIGATION STYLES */
+        .tab-bar { display: flex; background: #E0E0E0; border-radius: 10px; padding: 3px; margin-bottom: 10px; gap: 4px; }
+        .tab-btn { flex: 1; padding: 8px; background: transparent; color: var(--text-muted); border: none; font-weight: 700; font-size: 12px; border-radius: 8px; cursor: pointer; text-align: center; height: auto; box-shadow: none; }
+        .tab-btn.active { background: #ffffff; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .panel-card { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.02); overflow: hidden; margin-bottom: 16px; }
-        .panel-header { background: #F8FAFC; padding: 14px 20px; font-weight: 800; font-size: 13px; color: #334155; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.6px; }
-        .panel-body { padding: 20px; }
+        .panel-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 10px; }
+        .panel-header { background: #FAFAFA; padding: 10px 12px; font-weight: 700; font-size: 12px; color: #424242; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+        .panel-body { padding: 12px; }
 
-        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .spec-box { background: #F8FAFC; padding: 12px 16px; border-radius: 12px; border: 1px solid #E2E8F0; }
-        .spec-label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .spec-val { font-size: 14px; color: var(--text-main); font-weight: 800; margin-top: 4px; }
+        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .spec-box { background: #F5F5F5; padding: 8px 10px; border-radius: 8px; border: 1px solid #EEEEEE; }
+        .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        .expand-section { margin-top: 14px; }
-        .expand-btn { background: #F1F5F9; color: #475569; border: 1px solid var(--border); width: 100%; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; box-shadow: none; transition: background 0.2s; }
-        .expand-btn:hover { background: #E2E8F0; }
-        .all-specs-box { display: none; margin-top: 12px; max-height: 300px; overflow-y: auto; background: #F8FAFC; padding: 12px; border-radius: 12px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .expand-section { margin-top: 10px; }
+        .expand-btn { background: #EEEEEE; color: #424242; border: 1px solid var(--border); width: 100%; padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; text-align: center; font-size: 11px; box-shadow: none; }
+        .all-specs-box { display: none; margin-top: 8px; max-height: 200px; overflow-y: auto; background: #F5F5F5; padding: 8px; border-radius: 8px; border: 1px solid var(--border); grid-template-columns: repeat(2, 1fr); gap: 6px; }
 
-        /* FULL DISPLAY PDF & ZOOM CONTROLS */
-        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 260px); min-height: 500px; background: #1E293B; border-radius: 12px; overflow: hidden; }
+        /* FULL DISPLAY PDF & ZOOM CONTROLS WITH NATIVE FULLSCREEN OPTION */
+        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 220px); min-height: 420px; background: #424242; border-radius: 8px; overflow: hidden; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         .pdf-toolbar {
-            position: absolute; top: 0; left: 0; right: 0; z-index: 20;
-            display: flex; gap: 8px; justify-content: flex-end; align-items: center;
-            background: rgba(15, 23, 42, 0.95); padding: 10px 16px; min-height: 54px; border-radius: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.82);
+            padding: 6px 8px;
+            min-height: 46px;
+            border-radius: 0;
         }
-        .zoom-btn { background: var(--primary-light); color: #ffffff; border: 1px solid rgba(255,255,255,0.15); height: 36px; padding: 0 12px; border-radius: 9px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; }
-        .zoom-btn:hover { background: #334155; }
+        .zoom-btn { background: var(--accent); color: #ffffff; border: none; height: 32px; padding: 0 8px; border-radius: 6px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; }
 
         .pdf-viewport {
-            width: 100%; height: calc(100% - 54px); margin-top: 54px;
-            overflow: auto; display: flex; justify-content: center; align-items: flex-start;
+            width: 100%;
+            height: calc(100% - 46px);
+            margin-top: 46px;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
             -webkit-overflow-scrolling: touch;
         }
         .pdf-container-zoom { width: 100%; height: 100%; transform-origin: top center; transition: transform 0.2s ease-out; }
         iframe { width: 100%; height: 100%; border: none; display: block; }
 
-        /* KITTING VIEW */
-        .kit-title-card { background: #F1F5F9; border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
-        .kit-title-card h3 { margin: 0 0 4px 0; color: var(--primary); font-size: 17px; font-weight: 800; }
-        .kit-title-card p { margin: 0; font-size: 13px; color: var(--text-muted); font-weight: 700; }
+        /* MOBILE APP NATIVE CARD LOOK FOR KITTING */
+        .kit-title-card { background: #E3F2FD; border: 1px solid #BBDEFB; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+        .kit-title-card h3 { margin: 0 0 2px 0; color: #0D47A1; font-size: 14px; font-weight: 800; }
+        .kit-title-card p { margin: 0; font-size: 11px; color: #1E88E5; font-weight: 700; }
         
-        .calculator-box { background: #F8FAFC; border: 1px solid var(--border); padding: 16px 20px; border-radius: 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-        .calculator-box label { margin-bottom: 0; color: var(--primary); font-size: 13px; font-weight: 800; }
-        .calculator-box input { width: 110px; border-color: var(--border); text-align: center; font-size: 18px; color: var(--primary); font-weight: 800; padding: 10px; background: #fff; }
+        .calculator-box { background: #E8F5E9; border: 1px solid #C8E6C9; padding: 10px 12px; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .calculator-box label { margin-bottom: 0; color: #1B5E20; font-size: 11px; font-weight: 800; }
+        .calculator-box input { width: 85px; border-color: #81C784; text-align: center; font-size: 15px; color: #1B5E20; font-weight: 800; padding: 6px; }
 
         .table-container { width: 100%; overflow-x: hidden; }
-        .kit-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12px; }
-        .kit-table th { background: #F8FAFC; text-align: left; padding: 12px 8px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); font-weight: 800; }
-        .kit-table td { padding: 12px 8px; border-bottom: 1px solid var(--border); font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; color: #334155; }
+        .kit-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10.5px; }
+        .kit-table th { background: #F5F5F5; text-align: left; padding: 8px 3px; font-size: 8.5px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); font-weight: 800; }
+        .kit-table td { padding: 8px 3px; border-bottom: 1px solid var(--border); font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; }
         
-        .badge-code { background: #F1F5F9; color: var(--primary); padding: 4px 8px; border-radius: 8px; font-size: 11px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; border: 1px solid var(--border); }
-        .qty-badge { background: #F1F5F9; color: var(--primary); font-weight: 800; text-align: center; border-radius: 8px; padding: 6px 8px; display: block; width: 100%; white-space: nowrap; font-size: 12px; border: 1px solid var(--border); }
+        .badge-code { background: #EDE7F6; color: #4527A0; padding: 2px 3px; border-radius: 4px; font-size: 9.5px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+        .qty-badge { background: #C8E6C9; color: #1B5E20; font-weight: 800; text-align: center; border-radius: 4px; padding: 3px 2px; display: block; width: 100%; white-space: nowrap; font-size: 10px; }
 
-        .msg-box { background: var(--card-bg); padding: 30px; border-radius: 16px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); font-size: 14px; }
-        .error { color: #DC2626; font-weight: 700; }
+        .msg-box { background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); }
+        .error { color: #D32F2F; font-weight: 700; }
 
-        .footer { text-align: center; margin-top: 25px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 16px; font-weight: 600; }
+        .footer { text-align: center; margin-top: 15px; font-size: 10px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 10px; }
         .footer strong { color: var(--primary); }
     </style>
 </head>
@@ -176,8 +188,8 @@
         <!-- HEADER -->
         <div class="header-card">
             <div>
-                <h2>SolarSquare Structure Design Portal</h2>
-                <p>Master Specifications, Engineering Drawings & Kit Calculator</p>
+                <h2>Rafter, Column & Kitting Portal</h2>
+                <p>Instant Specification, Full Drawing & Kit Calculator</p>
             </div>
         </div>
 
@@ -192,10 +204,10 @@
                 </div>
                 <div class="search-group" style="flex: 1.6;">
                     <label>Item / Kit Code</label>
-                    <input type="text" id="searchQuery" placeholder="Type code, prefix or shortcut (e.g. P2L, P2H)..." autocomplete="off">
+                    <input type="text" id="searchQuery" placeholder="Type code, prefix or shortcut..." autocomplete="off">
                     <div id="autocompleteList" class="autocomplete-items"></div>
                 </div>
-                <div style="display: flex; gap: 8px;">
+                <div style="display: flex; gap: 6px;">
                     <button id="searchBtn" onclick="runSearch()">Search</button>
                     <button class="btn-clear" onclick="clearSearch()">Clear</button>
                 </div>
@@ -208,7 +220,7 @@
         <div id="dashboardView" style="display: none;">
             <div class="tab-bar">
                 <button class="tab-btn active" onclick="switchTab('specsTab', this)">📋 Specifications</button>
-                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Engineering Drawing (PDF)</button>
+                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Full Drawing (PDF)</button>
             </div>
 
             <!-- TAB 1: SPECIFICATIONS -->
@@ -232,9 +244,9 @@
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
-                            <button class="zoom-btn" onclick="adjustZoom(0.25)">＋ Zoom In</button>
-                            <button class="zoom-btn" onclick="adjustZoom(-0.25)">－ Zoom Out</button>
-                            <button class="zoom-btn" onclick="resetZoom()">↺ Reset</button>
+                            <button class="zoom-btn" onclick="adjustZoom(0.25)">＋</button>
+                            <button class="zoom-btn" onclick="adjustZoom(-0.25)">－</button>
+                            <button class="zoom-btn" onclick="resetZoom()">↺</button>
                         </div>
                         <div class="pdf-viewport">
                             <div id="pdfZoomContainer" class="pdf-container-zoom">
@@ -256,7 +268,7 @@
             <div class="calculator-box">
                 <div>
                     <label>🔢 Kit Multiplier Sets</label>
-                    <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; margin-top: 2px;">Enter total quantity to auto-calculate components</div>
+                    <div style="font-size: 10px; color: #2E7D32; font-weight: 600; margin-top: 1px;">Enter qty to auto-calculate</div>
                 </div>
                 <div>
                     <input type="number" id="kitCountInput" value="1" min="1" oninput="recalculateKitComponents()">
@@ -270,12 +282,12 @@
                         <table class="kit-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 6%; text-align: center;">#</th>
-                                    <th style="width: 40%;">Component Name</th>
-                                    <th style="width: 24%;">SKU Code</th>
-                                    <th style="width: 10%; text-align: center;">Unit</th>
-                                    <th style="width: 8%; text-align: center;">Set</th>
-                                    <th style="width: 12%; text-align: center;">Total</th>
+                                    <th style="width: 5%; text-align: center;">#</th>
+                                    <th style="width: 39%;">Component</th>
+                                    <th style="width: 25%;">SKU Code</th>
+                                    <th style="width: 9%; text-align: center;">Unit</th>
+                                    <th style="width: 7%; text-align: center;">Set</th>
+                                    <th style="width: 15%; text-align: center;">Total</th>
                                 </tr>
                             </thead>
                             <tbody id="kitComponentsTableBody"></tbody>
@@ -286,22 +298,20 @@
         </div>
 
         <div class="footer">
-            SolarSquare Structure Design Portal &bull; Developed by <strong>Sagar Herole</strong> (2026)
+            Developed by <strong>Sagar Herole</strong> (2026)
         </div>
     </div>
 
     <script>
         window.addEventListener('DOMContentLoaded', async () => {
-    // Service Worker Registration
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker Registered!', reg))
-            .catch(err => console.log('Service Worker Failed', err));
-    }
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker Registered!', reg))
+                    .catch(err => console.log('Service Worker Failed', err));
+            }
+            await loadDynamicTables();
+        });
 
-    await loadDynamicTables();
-});
-        // --- SUPABASE CONFIGURATION ---
         const SUPABASE_URL = "https://ncwufmoahvvqumdudhzm.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
         
@@ -363,7 +373,6 @@
         let isFullscreenMode = false;
         let searchInput = document.getElementById('searchQuery');
 
-        // Automatically load all tables from Supabase public schema
         async function loadDynamicTables() {
             let selectDropdown = document.getElementById('sheetSelect');
             let msgBox = document.getElementById('msgBox');
@@ -382,7 +391,6 @@
 
                 data.forEach(row => {
                     let tableName = row.table_name;
-                    // Skip system tables if any
                     if (tableName === 'spatial_ref_sys' || tableName.startsWith('_')) return;
 
                     let displayName = tableName.charAt(0).toUpperCase() + tableName.slice(1);
@@ -394,7 +402,6 @@
                     selectDropdown.appendChild(option);
                 });
 
-                // Always append Kitting
                 let kitOption = document.createElement('option');
                 kitOption.value = 'Kitting';
                 kitOption.textContent = 'Kitting Sets';
@@ -402,8 +409,6 @@
 
                 msgBox.innerHTML = 'Select a category and type any code, prefix or shortcut to view specifications.';
             } catch (err) {
-                console.warn('Fallback to static table mapping due to RLS/Schema restriction:', err);
-                // Fallback static mapping if information_schema is restricted
                 tableMapping = {
                     'Rafter': 'rafter',
                     'Columns': 'columns',
@@ -426,10 +431,6 @@
                 msgBox.innerHTML = 'Select a category and type any code, prefix or shortcut to view specifications.';
             }
         }
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            await loadDynamicTables();
-        });
 
         function resolveItemCode(category, rawVal) {
             let clean = rawVal.trim().toUpperCase();
@@ -580,7 +581,7 @@
                 
                 if (matches.length === 0) {
                     let noMatchDiv = document.createElement('div');
-                    noMatchDiv.style.color = '#DC2626';
+                    noMatchDiv.style.color = '#D32F2F';
                     noMatchDiv.innerHTML = "❌ No matching code found (Press Enter to search directly)";
                     listContainer.appendChild(noMatchDiv);
                 } else {
