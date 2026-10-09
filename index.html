@@ -23,7 +23,7 @@
             --text-main: #0F172A;
             --text-muted: #64748B;
             --border: #E2E8F0;
-            --accent: #2563EB;
+            --accent: #0284C7; /* Professional Slate Blue */
             --success: #16A34A;
         }
         
@@ -77,10 +77,10 @@
             color: var(--text-main); 
             transition: all 0.2s ease;
         }
-        select:focus, input:focus { border-color: var(--accent); background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        select:focus, input:focus { border-color: var(--accent); background: #fff; outline: none; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1); }
         
         button { 
-            background: var(--accent); 
+            background: var(--primary); 
             color: white; 
             border: none; 
             padding: 12px 22px; 
@@ -89,23 +89,24 @@
             cursor: pointer; 
             font-size: 14px; 
             height: 48px; 
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
             transition: all 0.2s;
         }
-        button:hover { background: #1D4ED8; transform: translateY(-1px); }
+        button:hover { background: #334155; transform: translateY(-1px); }
         button:active { transform: scale(0.98); }
-        .btn-clear { background: #64748B; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2); }
+        .btn-clear { background: #64748B; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.15); }
         .btn-clear:hover { background: #475569; }
 
         /* AUTOCOMPLETE DROPDOWN */
         .autocomplete-items { position: absolute; border: 1px solid var(--border); z-index: 999; top: 108%; left: 0; right: 0; background: #fff; border-radius: 12px; max-height: 320px; overflow-y: auto; box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
         .autocomplete-items div { padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #F1F5F9; color: #334155; transition: background 0.15s; }
-        .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #EFF6FF; color: var(--accent); }
+        /* Light Professional Hover Style */
+        .autocomplete-items div:hover, .autocomplete-items .autocomplete-active { background: #F1F5F9; color: var(--primary); border-left: 3px solid var(--accent); }
 
-        /* TAB NAVIGATION STYLES */
-        .tab-bar { display: flex; background: #E2E8F0; border-radius: 14px; padding: 5px; margin-bottom: 16px; gap: 8px; }
+        /* LIGHT PROFESSIONAL TAB NAVIGATION */
+        .tab-bar { display: flex; background: #F1F5F9; border-radius: 14px; padding: 5px; margin-bottom: 16px; gap: 8px; border: 1px solid var(--border); }
         .tab-btn { flex: 1; padding: 12px; background: transparent; color: var(--text-muted); border: none; font-weight: 700; font-size: 13px; border-radius: 10px; cursor: pointer; text-align: center; height: auto; box-shadow: none; transition: all 0.2s; }
-        .tab-btn.active { background: #ffffff; color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .tab-btn.active { background: #ffffff; color: var(--primary); border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -132,7 +133,8 @@
             display: flex; gap: 8px; justify-content: flex-end; align-items: center;
             background: rgba(15, 23, 42, 0.95); padding: 10px 16px; min-height: 54px; border-radius: 0;
         }
-        .zoom-btn { background: var(--accent); color: #ffffff; border: none; height: 36px; padding: 0 12px; border-radius: 9px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; }
+        .zoom-btn { background: var(--primary-light); color: #ffffff; border: 1px solid rgba(255,255,255,0.15); height: 36px; padding: 0 12px; border-radius: 9px; font-weight: bold; font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; }
+        .zoom-btn:hover { background: #334155; }
 
         .pdf-viewport {
             width: 100%; height: calc(100% - 54px); margin-top: 54px;
@@ -143,21 +145,21 @@
         iframe { width: 100%; height: 100%; border: none; display: block; }
 
         /* KITTING VIEW */
-        .kit-title-card { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 16px; padding: 18px; margin-bottom: 16px; }
-        .kit-title-card h3 { margin: 0 0 4px 0; color: #1E40AF; font-size: 17px; font-weight: 800; }
-        .kit-title-card p { margin: 0; font-size: 13px; color: #2563EB; font-weight: 700; }
+        .kit-title-card { background: #F1F5F9; border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
+        .kit-title-card h3 { margin: 0 0 4px 0; color: var(--primary); font-size: 17px; font-weight: 800; }
+        .kit-title-card p { margin: 0; font-size: 13px; color: var(--text-muted); font-weight: 700; }
         
-        .calculator-box { background: #F0FDF4; border: 1px solid #BBF7D0; padding: 16px 20px; border-radius: 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-        .calculator-box label { margin-bottom: 0; color: #166534; font-size: 13px; font-weight: 800; }
-        .calculator-box input { width: 110px; border-color: #86EFAC; text-align: center; font-size: 18px; color: #166534; font-weight: 800; padding: 10px; background: #fff; }
+        .calculator-box { background: #F8FAFC; border: 1px solid var(--border); padding: 16px 20px; border-radius: 16px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .calculator-box label { margin-bottom: 0; color: var(--primary); font-size: 13px; font-weight: 800; }
+        .calculator-box input { width: 110px; border-color: var(--border); text-align: center; font-size: 18px; color: var(--primary); font-weight: 800; padding: 10px; background: #fff; }
 
         .table-container { width: 100%; overflow-x: hidden; }
         .kit-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12px; }
         .kit-table th { background: #F8FAFC; text-align: left; padding: 12px 8px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid var(--border); font-weight: 800; }
         .kit-table td { padding: 12px 8px; border-bottom: 1px solid var(--border); font-weight: 600; word-wrap: break-word; overflow-wrap: break-word; color: #334155; }
         
-        .badge-code { background: #F3E8FF; color: #6B21A8; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-        .qty-badge { background: #DCFCE7; color: #166534; font-weight: 800; text-align: center; border-radius: 8px; padding: 6px 8px; display: block; width: 100%; white-space: nowrap; font-size: 12px; }
+        .badge-code { background: #F1F5F9; color: var(--primary); padding: 4px 8px; border-radius: 8px; font-size: 11px; font-family: monospace; font-weight: 700; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; border: 1px solid var(--border); }
+        .qty-badge { background: #F1F5F9; color: var(--primary); font-weight: 800; text-align: center; border-radius: 8px; padding: 6px 8px; display: block; width: 100%; white-space: nowrap; font-size: 12px; border: 1px solid var(--border); }
 
         .msg-box { background: var(--card-bg); padding: 30px; border-radius: 16px; text-align: center; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border); font-size: 14px; }
         .error { color: #DC2626; font-weight: 700; }
@@ -192,7 +194,7 @@
                 </div>
                 <div class="search-group" style="flex: 1.6;">
                     <label>Item / Kit Code</label>
-                    <input type="text" id="searchQuery" placeholder="Type RAFT, COLU, PURL, P2L, KIT-0021..." autocomplete="off">
+                    <input type="text" id="searchQuery" placeholder="Type RAFT, COLU, PURL, P2L, P2H, KIT-0021..." autocomplete="off">
                     <div id="autocompleteList" class="autocomplete-items"></div>
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -202,7 +204,7 @@
             </div>
         </div>
 
-        <div id="msgBox" class="msg-box">Select a category and type any code, prefix or keyword to view specifications.</div>
+        <div id="msgBox" class="msg-box">Select a category and type any code, prefix or shortcut to view specifications.</div>
 
         <!-- MAIN DATA DISPLAY -->
         <div id="dashboardView" style="display: none;">
@@ -256,7 +258,7 @@
             <div class="calculator-box">
                 <div>
                     <label>🔢 Kit Multiplier Sets</label>
-                    <div style="font-size: 11px; color: #166534; font-weight: 600; margin-top: 2px;">Enter total quantity to auto-calculate components</div>
+                    <div style="font-size: 11px; color: var(--text-muted); font-weight: 600; margin-top: 2px;">Enter total quantity to auto-calculate components</div>
                 </div>
                 <div>
                     <input type="number" id="kitCountInput" value="1" min="1" oninput="recalculateKitComponents()">
@@ -451,7 +453,7 @@
             resetOldViews();
             let msgBox = document.getElementById('msgBox');
             msgBox.style.display = 'block';
-            msgBox.innerHTML = 'Select a category and type any code, prefix or keyword to view specifications.';
+            msgBox.innerHTML = 'Select a category and type any code, prefix or shortcut to view specifications.';
             closeAllLists();
             searchInput.focus();
         }
