@@ -123,15 +123,12 @@
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        /* FULL DISPLAY PDF & TOUCH GESTURE ZOOM/PAN */
-        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 200px); min-height: 480px; background: #262626; border-radius: 8px; overflow: hidden; }
+        /* FULL DISPLAY PDF & TOUCH GESTURE ZOOM/PAN - FIXED CROP ISSUE */
+        .pdf-wrapper { position: relative; width: 100%; height: 75vh; min-height: 550px; background: #262626; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         
         .pdf-toolbar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            position: relative;
             z-index: 30;
             display: flex;
             gap: 6px;
@@ -142,14 +139,15 @@
             min-height: 50px;
             border-radius: 0;
             backdrop-filter: blur(4px);
+            flex-shrink: 0;
         }
         .zoom-btn { background: var(--accent); color: #ffffff; border: none; height: 32px; padding: 0 10px; border-radius: 6px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; text-decoration: none; }
         .zoom-btn:hover { background: #1565C0; }
 
         .pdf-viewport {
+            position: relative;
             width: 100%;
-            height: 100%;
-            padding-top: 50px; /* Leave exact space so toolbar doesn't overlap drawing */
+            flex: 1;
             overflow: auto;
             display: flex;
             justify-content: center;
@@ -158,7 +156,7 @@
             touch-action: pan-x pan-y pinch-zoom;
         }
         .pdf-container-zoom { width: 100%; height: 100%; transform-origin: center center; transition: transform 0.1s ease-out; display: flex; justify-content: center; align-items: center; }
-        iframe { width: 100%; height: 100%; border: none; display: block; background: #fff; }
+        iframe { width: 100%; height: 100%; border: none; display: block; background: #fff; min-height: 100%; }
 
         /* MOBILE APP NATIVE CARD LOOK FOR KITTING */
         .kit-title-card { background: #E3F2FD; border: 1px solid #BBDEFB; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
