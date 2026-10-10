@@ -123,7 +123,7 @@
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        /* FULL DISPLAY PDF & TOUCH GESTURE ZOOM/PAN - FIXED CROP ISSUE */
+        /* FULL DISPLAY PDF & TOUCH GESTURE ZOOM/PAN */
         .pdf-wrapper { position: relative; width: 100%; height: 75vh; min-height: 550px; background: #262626; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         
@@ -246,7 +246,7 @@
                         </div>
                         <div class="pdf-viewport">
                             <div id="pdfZoomContainer" class="pdf-container-zoom">
-                                <object id="pdfFrame" data="" type="application/pdf" style="width: 100%; height: 100%; border: none; background: #fff;">     <embed id="pdfEmbed" src="" type="application/pdf" width="100%" height="100%" /> </object>
+                                <iframe id="pdfFrame" src=""></iframe>
                             </div>
                         </div>
                     </div>
@@ -718,7 +718,6 @@
                     }
 
                     let orderedEntries = [];
-                    // First push priority items in exact desired order
                     priorityKeywords.forEach(pk => {
                         for (let k in entriesMap) {
                             if (k.indexOf(pk) !== -1) {
@@ -728,12 +727,10 @@
                         }
                     });
 
-                    // Push remaining valid items next
                     for (let k in entriesMap) {
                         orderedEntries.push(entriesMap[k]);
                     }
 
-                    // Render ordered specs
                     orderedEntries.forEach(item => {
                         specsHtml += '<div class="spec-box"><div class="spec-label">' + item.label + '</div><div class="spec-val">' + item.val + '</div></div>';
                     });
@@ -750,7 +747,7 @@
                         if (embedUrl.indexOf('drive.google.com') !== -1) {
                             embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view?usp=drive_link', '/preview').replace('/view', '/preview');
                         }
-                        let pdfObj = document.getElementById('pdfFrame'); pdfObj.data = embedUrl; let embedChild = document.getElementById('pdfEmbed'); if(embedChild) embedChild.src = embedUrl;
+                        pdfFrame.src = embedUrl;
                     }
                     
                     searchInput.focus();
@@ -768,6 +765,7 @@
             let multiplier = parseInt(document.getElementById('kitCountInput').value) || 1;
             let tbody = document.getElementById('kitComponentsTableBody');
             let html = '';
+            currentActiveKit.components.components?.forEach?.(...) // fallback loop
             currentActiveKit.components.forEach((comp, idx) => {
                 let totalQty = comp.qty * multiplier;
                 html += '<tr><td style="text-align: center;">' + (idx + 1) + '</td><td>' + comp.name + '</td><td><span class="badge-code">' + comp.sku + '</span></td><td style="text-align: center;">' + comp.uom + '</td><td style="text-align: center;">' + comp.qty + '</td><td style="text-align: center;"><span class="qty-badge">' + totalQty + '</span></td></tr>';
