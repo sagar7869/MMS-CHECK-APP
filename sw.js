@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rafter-portal-v2';
+const CACHE_NAME = 'rafter-portal-v3'; // Jab bhi major update karo, version number badha sakte hain ya chhod sakte hain
 const urlsToCache = [
   './',
   './index.html',
@@ -33,11 +33,25 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch Requests
+// Fetch Requests - Network First Strategy (GitHub updates turant reflect honge)
 self.addEventListener('fetch', (event) => {
+  // Supabase requests ya external API calls ko cache mat karo, unhe direct fetch hone do
+  if (event.request.url.includes('supabase.co')) {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        // Agar network se naya data mil gaya, toh cache ko update kar do
+        return caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        });
+      })
+      .catch(() => {
+        // Agar offline hain, tab cache se serve karo
+        return caches.match(event.request);
+      })
   );
 });
