@@ -2,8 +2,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rafter, Column & Kitting Master Data Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+    <title>SolarSquare Structure Design Portal</title>
     
     <!-- PWA MOBILE APP HEADERS -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -117,44 +117,48 @@
         .panel-header { background: #FAFAFA; padding: 10px 12px; font-weight: 700; font-size: 12px; color: #424242; border-bottom: 1px solid var(--border); text-transform: uppercase; }
         .panel-body { padding: 12px; }
 
-        /* SPECIFICATION GRID WITHOUT SCROLL */
+        /* SPECIFICATION GRID */
         .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .spec-box { background: #F5F5F5; padding: 8px 10px; border-radius: 8px; border: 1px solid #EEEEEE; }
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        /* FULL DISPLAY PDF & ZOOM CONTROLS WITH NATIVE FULLSCREEN OPTION */
-        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 220px); min-height: 420px; background: #424242; border-radius: 8px; overflow: hidden; }
+        /* FULL DISPLAY PDF & TOUCH GESTURE ZOOM/PAN */
+        .pdf-wrapper { position: relative; width: 100%; height: calc(100vh - 200px); min-height: 480px; background: #262626; border-radius: 8px; overflow: hidden; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
+        
         .pdf-toolbar {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            z-index: 20;
+            z-index: 30;
             display: flex;
             gap: 6px;
             justify-content: flex-end;
             align-items: center;
-            background: rgba(0, 0, 0, 0.82);
-            padding: 6px 8px;
-            min-height: 46px;
+            background: rgba(0, 0, 0, 0.88);
+            padding: 8px 12px;
+            min-height: 50px;
             border-radius: 0;
+            backdrop-filter: blur(4px);
         }
-        .zoom-btn { background: var(--accent); color: #ffffff; border: none; height: 32px; padding: 0 8px; border-radius: 6px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; }
+        .zoom-btn { background: var(--accent); color: #ffffff; border: none; height: 32px; padding: 0 10px; border-radius: 6px; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: none; white-space: nowrap; text-decoration: none; }
+        .zoom-btn:hover { background: #1565C0; }
 
         .pdf-viewport {
             width: 100%;
-            height: calc(100% - 46px);
-            margin-top: 46px;
+            height: 100%;
+            padding-top: 50px; /* Leave exact space so toolbar doesn't overlap drawing */
             overflow: auto;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             -webkit-overflow-scrolling: touch;
+            touch-action: pan-x pan-y pinch-zoom;
         }
-        .pdf-container-zoom { width: 100%; height: 100%; transform-origin: top center; transition: transform 0.2s ease-out; }
-        iframe { width: 100%; height: 100%; border: none; display: block; }
+        .pdf-container-zoom { width: 100%; height: 100%; transform-origin: center center; transition: transform 0.1s ease-out; display: flex; justify-content: center; align-items: center; }
+        iframe { width: 100%; height: 100%; border: none; display: block; background: #fff; }
 
         /* MOBILE APP NATIVE CARD LOOK FOR KITTING */
         .kit-title-card { background: #E3F2FD; border: 1px solid #BBDEFB; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
@@ -185,8 +189,8 @@
         <!-- HEADER -->
         <div class="header-card">
             <div>
-                <h2>Rafter, Column & Kitting Portal</h2>
-                <p>Instant Specification, Full Drawing & Kit Calculator</p>
+                <h2>SolarSquare Structure Design Portal</h2>
+                <p>Master Specifications, Engineering Drawings & Kit Calculator</p>
             </div>
         </div>
 
@@ -217,7 +221,7 @@
         <div id="dashboardView" style="display: none;">
             <div class="tab-bar">
                 <button class="tab-btn active" onclick="switchTab('specsTab', this)">📋 Specifications</button>
-                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Full Drawing (PDF)</button>
+                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Engineering Drawing (PDF)</button>
             </div>
 
             <!-- TAB 1: SPECIFICATIONS -->
@@ -230,12 +234,13 @@
                 </div>
             </div>
 
-            <!-- TAB 2: FULL DISPLAY PDF WITH FULLSCREEN & ZOOM -->
+            <!-- TAB 2: FULL DISPLAY PDF WITH FULLSCREEN & ZOOM & OPEN EXTERNALLY -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
                     <div class="panel-header">📄 Engineering Drawing Viewer</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
+                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open PDF</a>
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
                             <button class="zoom-btn" onclick="adjustZoom(0.25)">＋</button>
                             <button class="zoom-btn" onclick="adjustZoom(-0.25)">－</button>
@@ -291,7 +296,7 @@
         </div>
 
         <div class="footer">
-            Developed by <strong>Sagar Herole</strong> (2026)
+            SolarSquare Structure Design Portal &bull; Developed by <strong>Sagar Herole</strong> (2026)
         </div>
     </div>
 
@@ -497,6 +502,7 @@
             document.getElementById('dashboardView').style.display = 'none';
             document.getElementById('kittingView').style.display = 'none';
             document.getElementById('pdfFrame').src = '';
+            document.getElementById('externalPdfLink').href = '';
             document.getElementById('specsGrid').innerHTML = '';
             document.getElementById('kitComponentsTableBody').innerHTML = '';
             resetZoom();
@@ -690,8 +696,16 @@
                     let specsHtml = '';
                     let pdfUrlFound = null;
 
-                    // Collect fields with available valid data
-                    let validEntries = [];
+                    // Preferred ordering priority keywords
+                    const priorityKeywords = [
+                        'item_code', 'item code', 'title', 'total_length', 'length', 
+                        'thickness', 'plate_thickness', 'rib_thickness', 
+                        'top_cee', 'top cee', 'bottom_cee', 'bottom cee', 
+                        'base_plate_size', 'base plate size', 'hole_to_hole', 'pitch', 'hole pitch', 
+                        'rib_size', 'rib size', 'hole_size', 'hole size', 'extra_hole'
+                    ];
+
+                    let entriesMap = {};
                     for (let key in rowData) {
                         let h = key;
                         let v = rowData[key];
@@ -702,11 +716,27 @@
                         if (h.toLowerCase() === 'id' || h.toLowerCase() === 'created_at') continue;
                         if (v === null || v === undefined || String(v).trim() === '' || String(v).trim() === '-' || String(v).trim().toLowerCase() === 'nan') continue;
 
-                        validEntries.push({ label: h.replace(/_/g, ' '), val: v });
+                        entriesMap[key.toLowerCase()] = { label: h.replace(/_/g, ' '), val: v };
                     }
 
-                    // Render fields directly without scroll/expand button
-                    validEntries.forEach(item => {
+                    let orderedEntries = [];
+                    // First push priority items in exact desired order
+                    priorityKeywords.forEach(pk => {
+                        for (let k in entriesMap) {
+                            if (k.indexOf(pk) !== -1) {
+                                orderedEntries.push(entriesMap[k]);
+                                delete entriesMap[k];
+                            }
+                        }
+                    });
+
+                    // Push remaining valid items next
+                    for (let k in entriesMap) {
+                        orderedEntries.push(entriesMap[k]);
+                    }
+
+                    // Render ordered specs
+                    orderedEntries.forEach(item => {
                         specsHtml += '<div class="spec-box"><div class="spec-label">' + item.label + '</div><div class="spec-val">' + item.val + '</div></div>';
                     });
 
@@ -714,7 +744,11 @@
 
                     if (pdfUrlFound) {
                         let pdfFrame = document.getElementById('pdfFrame');
+                        let externalLink = document.getElementById('externalPdfLink');
                         let embedUrl = pdfUrlFound;
+                        
+                        externalLink.href = embedUrl;
+
                         if (embedUrl.indexOf('drive.google.com') !== -1) {
                             embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view?usp=drive_link', '/preview').replace('/view', '/preview');
                         }
@@ -741,10 +775,6 @@
                 html += '<tr><td style="text-align: center;">' + (idx + 1) + '</td><td>' + comp.name + '</td><td><span class="badge-code">' + comp.sku + '</span></td><td style="text-align: center;">' + comp.uom + '</td><td style="text-align: center;">' + comp.qty + '</td><td style="text-align: center;"><span class="qty-badge">' + totalQty + '</span></td></tr>';
             });
             tbody.innerHTML = html;
-        }
-
-        function toggleAllSpecs() {
-            // Not used anymore as all parameters are directly displayed cleanly without scroll/expand.
         }
     </script>
 </body>
