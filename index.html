@@ -429,16 +429,22 @@
         }
 
         function resolveItemCode(category, rawVal) {
-            let clean = rawVal.trim().toUpperCase();
+            let clean = rawVal.trim();
             if (!clean) return '';
-            if (category === 'Purline' && purlineShortcuts[clean]) {
-                return purlineShortcuts[clean];
+            let upperClean = clean.toUpperCase();
+            
+            if (category === 'Purline' && purlineShortcuts[upperClean]) {
+                return purlineShortcuts[upperClean];
             }
+            
             let tableName = tableMapping[category] || category.toLowerCase();
             const prefix = tablePrefixes[tableName] || '';
-            if (prefix && !clean.startsWith(prefix)) {
-                return prefix + clean;
+            
+            // Agar prefix defined hai, aur user ne code mein prefix nahi lagaya hai, tabhi jodo
+            if (prefix && !upperClean.startsWith(prefix)) {
+                return prefix + upperClean;
             }
+            // Agar LA category hai ya prefix khali hai, toh exact clean value pass karega (jaise Bracing-001)
             return clean;
         }
 
