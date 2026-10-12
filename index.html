@@ -429,18 +429,23 @@
         }
 
         function resolveItemCode(category, rawVal) {
-            let clean = rawVal.trim().toUpperCase();
-            if (!clean) return '';
-            if (category === 'Purline' && purlineShortcuts[clean]) {
-                return purlineShortcuts[clean];
-            }
-            let tableName = tableMapping[category] || category.toLowerCase();
-            const prefix = tablePrefixes[tableName] || '';
-            if (prefix && !clean.startsWith(prefix)) {
-                return prefix + clean;
-            }
-            return clean;
-        }
+    let clean = rawVal.trim();
+    if (!clean) return '';
+    let upperClean = clean.toUpperCase();
+    
+    if (category === 'Purline' && purlineShortcuts[upperClean]) {
+        return purlineShortcuts[upperClean];
+    }
+    
+    let tableName = tableMapping[category] || category.toLowerCase();
+    const prefix = tablePrefixes[tableName] || '';
+    
+    // Agar user ne item code mein already prefix daal rakha hai ya table 'la' hai, toh dobara mat jodo
+    if (prefix && !upperClean.startsWith(prefix)) {
+        return prefix + upperClean;
+    }
+    return clean; // Exact search chalne dega bina zabardasti prefix jode
+}
 
         function switchTab(tabId, btnElement) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
