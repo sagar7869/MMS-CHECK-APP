@@ -155,7 +155,7 @@
             overflow: hidden;
             background: #fff;
         }
-        iframe { width: 100%; height: 100%; border: none; display: block; }
+        iframe { width: 100%; height: 100%; border: none; display: block; background: #fff; }
 
         /* KITTING VIEW */
         .kit-title-card { background: #E3F2FD; border: 1px solid #BBDEFB; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
@@ -229,13 +229,13 @@
                 </div>
             </div>
 
-            <!-- TAB 2: PDF VIEWER WITH OFFICIAL MOZILLA PDF.JS VIEWER -->
+            <!-- TAB 2: PDF VIEWER WITH GOOGLE DOCS VIEWER FALLBACK -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
                     <div class="panel-header">📄 Engineering Drawing HD Viewer</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
-                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open Full File</a>
+                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open Original File</a>
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
                         </div>
                         <div class="pdf-viewport">
@@ -344,7 +344,6 @@
         let currentFocus = -1;
         let isFullscreenMode = false;
         let searchInput = document.getElementById('searchQuery');
-        let currentPdfUrl = '';
 
         async function loadDynamicTables() {
             let selectDropdown = document.getElementById('sheetSelect');
@@ -435,21 +434,18 @@
         }
 
         function loadPdfViewer(pdfUrl) {
-            currentPdfUrl = pdfUrl;
             let frame = document.getElementById('pdfFrame');
             let externalLink = document.getElementById('externalPdfLink');
             externalLink.href = pdfUrl;
 
-            // Using Mozilla PDF.js web viewer hosted URL for native smooth zoom & pan controls
+            // Using Google Docs Viewer wrapper which bypasses strict iframe CORS blocks securely
             let fileIdMatch = pdfUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || pdfUrl.match(/id=([a-zA-Z0-9_-]+)/);
-            let downloadUrl = pdfUrl;
+            let directDownload = pdfUrl;
             if (fileIdMatch && fileIdMatch[1]) {
-                downloadUrl = "https://drive.google.com/uc?export=download&id=" + fileIdMatch[1];
+                directDownload = "https://drive.google.com/uc?export=download&id=" + fileIdMatch[1];
             }
             
-            // Mozilla PDF.js viewer embed format
-            let viewerUrl = "https://mozilla.github.io/pdf.js/web/viewer.html?file=" + encodeURIComponent(downloadUrl);
-            frame.src = viewerUrl;
+            frame.src = "https://docs.google.com/gview?url=" + encodeURIComponent(directDownload) + "&embedded=true";
         }
 
         function resetOldViews() {
