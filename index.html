@@ -236,14 +236,14 @@
                 </div>
             </div>
 
-            <!-- TAB 2: PDF VIEWER WITH SCROLLABLE ZOOM -->
+            <!-- TAB 2: PDF VIEWER WITH DEEP ZOOM -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
                     <div class="panel-header">📄 Engineering Drawing HD Viewer</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
-                            <button class="zoom-btn" onclick="zoomPdf(25)" title="Zoom In">➕ Zoom In</button>
-                            <button class="zoom-btn" onclick="zoomPdf(-25)" title="Zoom Out">➖ Zoom Out</button>
+                            <button class="zoom-btn" onclick="zoomPdf(50)" title="Zoom In">➕ Zoom In</button>
+                            <button class="zoom-btn" onclick="zoomPdf(-50)" title="Zoom Out">➖ Zoom Out</button>
                             <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom" style="background: #424242;">🔄 Reset</button>
                             <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">📥 Download PDF</a>
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
@@ -475,7 +475,7 @@
         function zoomPdf(amount) {
             currentWidthPercent += amount;
             if (currentWidthPercent < 100) currentWidthPercent = 100;
-            if (currentWidthPercent > 350) currentWidthPercent = 350;
+            if (currentWidthPercent > 600) currentWidthPercent = 600; // Deep zoom up to 600%
             
             let frame = document.getElementById('pdfFrame');
             frame.style.width = currentWidthPercent + '%';
@@ -750,7 +750,7 @@
             let multiplier = parseInt(document.getElementById('kitCountInput').value) || 1;
             let tbody = document.getElementById('kitComponentsTableBody');
             let html = '';
-            currentActiveKit.components.forEach((comp, idx) => {
+            currentActiveKit.components.components.forEach((comp, idx) => {
                 let totalQty = comp.qty * multiplier;
                 html += '<tr><td style="text-align: center;">' + (idx + 1) + '</td><td>' + comp.name + '</td><td><span class="badge-code">' + comp.sku + '</span></td><td style="text-align: center;">' + comp.uom + '</td><td style="text-align: center;">' + comp.qty + '</td><td style="text-align: center;"><span class="qty-badge">' + totalQty + '</span></td></tr>';
             });
