@@ -127,7 +127,7 @@
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        /* FULL DISPLAY PDF & TOUCH GESTURE ZOOM/PAN - FIXED CROP ISSUE */
+        /* FULL DISPLAY PDF & HD VIEWER STYLES */
         .pdf-wrapper { position: relative; width: 100%; height: 75vh; min-height: 550px; background: #262626; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         
@@ -230,19 +230,17 @@
             <div id="specsTab" class="tab-content active">
                 <div class="panel-card">
                     <div class="panel-header">📌 Specifications</div>
-                    <div class="panel-body" id="structuredSpecsContainer">
-                        <!-- Grouped Structured Specifications render here -->
-                    </div>
+                    <div class="panel-body" id="structuredSpecsContainer"></div>
                 </div>
             </div>
 
-            <!-- TAB 2: FULL DISPLAY PDF WITH FULLSCREEN & ZOOM & OPEN EXTERNALLY -->
+            <!-- TAB 2: HD PDF VIEWER -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
-                    <div class="panel-header">📄 Engineering Drawing Viewer</div>
+                    <div class="panel-header">📄 Engineering Drawing Viewer (HD Quality)</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
-                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open PDF</a>
+                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open Original HD</a>
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
                             <button class="zoom-btn" onclick="adjustZoom(0.25)">＋</button>
                             <button class="zoom-btn" onclick="adjustZoom(-0.25)">－</button>
@@ -482,7 +480,7 @@
         function adjustZoom(amount) {
             currentZoomLevel += amount;
             if (currentZoomLevel < 0.5) currentZoomLevel = 0.5;
-            if (currentZoomLevel > 3.0) currentZoomLevel = 3.0;
+            if (currentZoomLevel > 4.0) currentZoomLevel = 4.0;
             applyZoom();
         }
 
@@ -656,8 +654,6 @@
 
             closeAllLists();
             resetOldViews();
-            
-            // Auto close mobile keyboard after search
             searchInput.blur();
 
             if (category === "Kitting") {
@@ -709,7 +705,6 @@
                     let rowData = data[0]; 
                     let pdfUrlFound = null;
 
-                    // Grouped structured specification sections with headings (Thickness added to Basic)
                     let groups = {
                         "Basic Description & Length": [],
                         "Base Plate Details": [],
@@ -761,7 +756,14 @@
                         externalLink.href = embedUrl;
 
                         if (embedUrl.indexOf('drive.google.com') !== -1) {
-                            embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view?usp=drive_link', '/preview').replace('/view', '/preview');
+                            // Permanent fix: Using Mozilla's PDF.js viewer endpoint configured directly for Google Drive files to ensure vector clarity on zoom
+                            let fileIdMatch = embedUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || embedUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                            if (fileIdMatch && fileIdMatch[1]) {
+                                let directFileUrl = "https://drive.google.com/uc?export=download&id=" + fileIdMatch[1];
+                                embedUrl = "https://mozilla.github.io/pdf.js/web/viewer.html?file=" + encodeURIComponent(directFileUrl);
+                            } else {
+                                embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview?usp=sharing#view=FitH').replace('/view?usp=drive_link', '/preview?usp=sharing#view=FitH').replace('/view', '/preview?usp=sharing#view=FitH');
+                            }
                         }
                         pdfFrame.src = embedUrl;
                     }
