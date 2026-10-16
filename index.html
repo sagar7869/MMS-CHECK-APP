@@ -152,9 +152,8 @@
             position: relative;
             width: 100%;
             flex: 1;
-            overflow: auto;
-            background: #262626;
-            -webkit-overflow-scrolling: touch;
+            overflow: hidden;
+            background: #fff;
         }
         iframe { width: 100%; height: 100%; border: none; display: block; background: #fff; }
 
@@ -292,19 +291,26 @@
     </div>
 
     <script>
+        const SUPABASE_URL = "https://ncwufmoahvvqumdudhzm.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
+        
+        let supabaseClient = null;
+
         window.addEventListener('DOMContentLoaded', async () => {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js')
                     .then(reg => console.log('Service Worker Registered!', reg))
                     .catch(err => console.log('Service Worker Failed', err));
             }
+            
+            try {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch(e) {
+                console.error("Supabase init error:", e);
+            }
+            
             await loadDynamicTables();
         });
-
-        const SUPABASE_URL = "https://ncwufmoahvvqumdudhzm.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
-        
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let tableMapping = {};
         let tablePrefixes = { 'rafter': 'RAFT-', 'columns': 'COLU-', 'purline': 'PURL-', 'la': '', 'jointer': 'RAFT-' };
@@ -350,6 +356,9 @@
             let selectDropdown = document.getElementById('sheetSelect');
             let msgBox = document.getElementById('msgBox');
             try {
+                if (!supabaseClient) {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                }
                 const { data, error } = await supabaseClient
                     .from('information_schema.tables')
                     .select('table_name')
@@ -439,7 +448,6 @@
             let externalLink = document.getElementById('externalPdfLink');
             externalLink.href = pdfUrl;
 
-            // Direct Google Drive Preview embed link format without popup/download triggers
             let fileIdMatch = pdfUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || pdfUrl.match(/id=([a-zA-Z0-9_-]+)/);
             let embedUrl = pdfUrl;
             if (fileIdMatch && fileIdMatch[1]) {
@@ -474,6 +482,7 @@
             if (masterCache[category]) return masterCache[category];
             const tableName = tableMapping[category] || category.toLowerCase();
             try {
+                if (!supabaseClient) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 const { data, error } = await supabaseClient.from(tableName).select('item_code');
                 if (error || !data || data.length === 0) return fallbackMasterCodes[tableName] || [];
                 let codes = data.map(row => row.item_code).filter(Boolean);
@@ -625,6 +634,8 @@
                 const tableName = tableMapping[category] || category.toLowerCase();
 
                 try {
+                    if (!supabaseClient) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    
                     const { data, error } = await supabaseClient
                         .from(tableName)
                         .select('*')
