@@ -16,8 +16,9 @@
     <link rel="icon" type="image/png" href="./icon-192.png">
     <link rel="apple-touch-icon" href="./icon-192.png">
     
-    <!-- SUPABASE OFFICIAL JS SDK -->
+    <!-- SUPABASE OFFICIAL JS SDK & PDF.JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     
     <style>
         :root {
@@ -44,7 +45,7 @@
         
         .container { max-width: 1200px; margin: 0 auto; padding-bottom: 20px; }
         
-        /* ANDROID NATIVE HEADER CARD */
+        /* HEADER CARD */
         .header-card { 
             background: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%); 
             color: white; 
@@ -59,7 +60,7 @@
         .header-card h2 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: 0.3px; }
         .header-card p { margin: 2px 0 0 0; opacity: 0.9; font-size: 11px; }
 
-        /* ANDROID MATERIAL INPUT CARD */
+        /* SEARCH CARD */
         .search-card { 
             background: var(--card-bg); 
             padding: 12px; 
@@ -117,18 +118,17 @@
         .panel-header { background: #FAFAFA; padding: 10px 12px; font-weight: 700; font-size: 12px; color: #424242; border-bottom: 1px solid var(--border); text-transform: uppercase; }
         .panel-body { padding: 12px; }
 
-        /* SECTION HEADINGS FOR STRUCTURED SPECS */
+        /* SPECIFICATION GRID */
         .section-title { font-size: 11px; font-weight: 800; color: var(--primary); margin: 12px 0 6px 0; text-transform: uppercase; border-bottom: 2px solid #E3F2FD; padding-bottom: 3px; }
         .section-title:first-child { margin-top: 0; }
 
-        /* SPECIFICATION GRID */
         .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 8px; }
         .spec-box { background: #F5F5F5; padding: 8px 10px; border-radius: 8px; border: 1px solid #EEEEEE; }
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        /* FULL DISPLAY PDF & VECTOR CLARITY */
-        .pdf-wrapper { position: relative; width: 100%; height: 75vh; min-height: 550px; background: #262626; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+        /* CLEAN CANVAS PDF RENDERER */
+        .pdf-wrapper { position: relative; width: 100%; height: 75vh; min-height: 550px; background: #323639; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         
         .pdf-toolbar {
@@ -138,11 +138,10 @@
             gap: 6px;
             justify-content: flex-end;
             align-items: center;
-            background: rgba(0, 0, 0, 0.88);
+            background: #1e1e1e;
             padding: 8px 12px;
             min-height: 50px;
             border-radius: 0;
-            backdrop-filter: blur(4px);
             flex-shrink: 0;
             flex-wrap: wrap;
         }
@@ -156,14 +155,14 @@
             overflow: auto;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
+            background: #525659;
+            padding: 10px;
             -webkit-overflow-scrolling: touch;
-            touch-action: pan-x pan-y pinch-zoom;
         }
-        .pdf-container-zoom { width: 100%; height: 100%; transform-origin: center center; transition: transform 0.1s ease-out; display: flex; justify-content: center; align-items: center; }
-        iframe { width: 100%; height: 100%; border: none; display: block; background: #fff; min-height: 100%; }
+        canvas#pdfCanvas { display: block; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.3); margin: 0 auto; max-width: none; }
 
-        /* MOBILE APP NATIVE CARD LOOK FOR KITTING */
+        /* KITTING VIEW */
         .kit-title-card { background: #E3F2FD; border: 1px solid #BBDEFB; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
         .kit-title-card h3 { margin: 0 0 2px 0; color: #0D47A1; font-size: 14px; font-weight: 800; }
         .kit-title-card p { margin: 0; font-size: 11px; color: #1E88E5; font-weight: 700; }
@@ -224,7 +223,7 @@
         <div id="dashboardView" style="display: none;">
             <div class="tab-bar">
                 <button class="tab-btn active" onclick="switchTab('specsTab', this)">📋 Specifications</button>
-                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Engineering Drawing (Original HD)</button>
+                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Engineering Drawing (Clean HD)</button>
             </div>
 
             <!-- TAB 1: SPECIFICATIONS -->
@@ -235,22 +234,20 @@
                 </div>
             </div>
 
-            <!-- TAB 2: HD PDF VIEWER -->
+            <!-- TAB 2: CLEAN VECTOR PDF VIEWER -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
-                    <div class="panel-header">📄 Engineering Drawing Viewer (Original Vector HD)</div>
+                    <div class="panel-header">📄 Engineering Drawing Viewer (Clean Native HD)</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
-                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open Full HD View</a>
+                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open Original File</a>
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
-                            <button class="zoom-btn" onclick="adjustZoom(0.25)">＋</button>
-                            <button class="zoom-btn" onclick="adjustZoom(-0.25)">－</button>
-                            <button class="zoom-btn" onclick="resetZoom()">↺</button>
+                            <button class="zoom-btn" onclick="changePdfScale(0.25)">＋ Zoom In</button>
+                            <button class="zoom-btn" onclick="changePdfScale(-0.25)">－ Zoom Out</button>
+                            <button class="zoom-btn" onclick="resetPdfScale()">↺ Reset</button>
                         </div>
-                        <div class="pdf-viewport">
-                            <div id="pdfZoomContainer" class="pdf-container-zoom">
-                                <iframe id="pdfFrame" src=""></iframe>
-                            </div>
+                        <div class="pdf-viewport" id="pdfViewport">
+                            <canvas id="pdfCanvas"></canvas>
                         </div>
                     </div>
                 </div>
@@ -302,6 +299,8 @@
     </div>
 
     <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
         window.addEventListener('DOMContentLoaded', async () => {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js')
@@ -317,22 +316,8 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let tableMapping = {};
-        let tablePrefixes = {
-            'rafter': 'RAFT-',
-            'columns': 'COLU-',
-            'purline': 'PURL-',
-            'la': '',
-            'jointer': 'RAFT-'
-        };
-
-        const purlineShortcuts = {
-            'P2L': 'PURL-0012',
-            'P2M': 'PURL-0011',
-            'P2H': 'PURL-0042',
-            'P3L': 'PURL-0024',
-            'P3M': 'PURL-0023',
-            'P3H': 'PURL-0022'
-        };
+        let tablePrefixes = { 'rafter': 'RAFT-', 'columns': 'COLU-', 'purline': 'PURL-', 'la': '', 'jointer': 'RAFT-' };
+        const purlineShortcuts = { 'P2L': 'PURL-0012', 'P2M': 'PURL-0011', 'P2H': 'PURL-0042', 'P3L': 'PURL-0024', 'P3M': 'PURL-0023', 'P3H': 'PURL-0022' };
 
         const fallbackMasterCodes = {
             'rafter': ["RAFT-0101", "RAFT-0102", "RAFT-0103", "RAFT-0201", "RAFT-0202", "RAFT-0203", "RAFT-0311", "RAFT-0312", "RAFT-0313", "RAFT-0321", "RAFT-0322", "RAFT-0323", "RAFT-1202", "RAFT-1203", "RAFT-1204", "RAFT-1312", "RAFT-1313", "RAFT-1322", "RAFT-1323"],
@@ -343,7 +328,6 @@
         };
 
         let masterCache = {};
-
         const kittingDatabase = [
             { id: "KIT-0001", aliases: ["KIT-1", "KITS-0001", "CABLE & WIRE CONSUMABLES KIT"], name: "KITS - 0001 Cable & Wire Consumables Kit", components: [{ name: "UV Protected Black Nylon Cable Tie 4.8mmx368mm", sku: "CNYC-0011", uom: "Pkt", qty: 2 }, { name: "UV Protected Black Nylon Cable Tie 3.6mmx200mm", sku: "CNYC-0009", uom: "Pkt", qty: 2 }, { name: "Ball Lock Type SS Cable Tie 4.6mmx360mm", sku: "CSSC-0002", uom: "Nos", qty: 30 }, { name: "PVC Electrical Insulation Tape 1.8cmx6.5m - Black", sku: "CINT-0001", uom: "Nos", qty: 2 }, { name: "Corrugated Box 5 ply", sku: "CBOX-0004", uom: "Nos", qty: 1 }] },
             { id: "KIT-0002", aliases: ["KIT-2", "KITS-0002", "EARTHING & LA ACCESSORIES KIT 1"], name: "KITS - 0002 Earthing & LA Accessories Kit - 1", components: [{ name: "Copper Bonded Earthing Rod - 14.2mm Dia - 1 Mtr", sku: "EARO-0001", uom: "Nos", qty: 2 }, { name: "Single Spike SS316 Conventional LA - 8mm Dia", sku: "EALA-0031", uom: "Nos", qty: 1 }, { name: "SS304 M6x30 Nut-Bolt Set for Earthing Rod", sku: "LAKITS-0007", uom: "Nos", qty: 4 }, { name: "SS304 Hex Bolt M8x30", sku: "FSSB-0082", uom: "Nos", qty: 4 }, { name: "SS304 Hex Nut M8", sku: "FSSN-0010", uom: "Nos", qty: 4 }, { name: "SS304 Plain Washer M8 Large OD", sku: "FSSW-0009", uom: "Nos", qty: 8 }] },
@@ -368,9 +352,13 @@
 
         let currentActiveKit = null;
         let currentFocus = -1;
-        let currentZoomLevel = 1.0;
         let isFullscreenMode = false;
         let searchInput = document.getElementById('searchQuery');
+
+        // PDF.js State Variables
+        let pdfDoc = null;
+        let pdfScale = 1.5;
+        let pageNum = 1;
 
         async function loadDynamicTables() {
             let selectDropdown = document.getElementById('sheetSelect');
@@ -381,9 +369,7 @@
                     .select('table_name')
                     .eq('table_schema', 'public');
 
-                if (error || !data || data.length === 0) {
-                    throw new Error("Could not fetch tables schema");
-                }
+                if (error || !data || data.length === 0) throw new Error("Schema error");
 
                 selectDropdown.innerHTML = '<option value="" disabled selected>Select Item</option>';
                 tableMapping = {};
@@ -391,10 +377,8 @@
                 data.forEach(row => {
                     let tableName = row.table_name;
                     if (tableName === 'spatial_ref_sys' || tableName.startsWith('_')) return;
-
                     let displayName = tableName.charAt(0).toUpperCase() + tableName.slice(1);
                     tableMapping[displayName] = tableName;
-
                     let option = document.createElement('option');
                     option.value = displayName;
                     option.textContent = displayName;
@@ -408,13 +392,7 @@
 
                 msgBox.innerHTML = 'Select a category and type any code, prefix or shortcut to view specifications.';
             } catch (err) {
-                tableMapping = {
-                    'Rafter': 'rafter',
-                    'Columns': 'columns',
-                    'Purline': 'purline',
-                    'LA': 'la',
-                    'Jointer': 'jointer'
-                };
+                tableMapping = { 'Rafter': 'rafter', 'Columns': 'columns', 'Purline': 'purline', 'LA': 'la', 'Jointer': 'jointer' };
                 selectDropdown.innerHTML = '<option value="" disabled selected>Select Item</option>';
                 for (let key in tableMapping) {
                     let opt = document.createElement('option');
@@ -426,7 +404,6 @@
                 kitOpt.value = 'Kitting';
                 kitOpt.textContent = 'Kitting Sets';
                 selectDropdown.appendChild(kitOpt);
-
                 msgBox.innerHTML = 'Select a category and type any code, prefix or shortcut to view specifications.';
             }
         }
@@ -435,17 +412,10 @@
             let clean = rawVal.trim();
             if (!clean) return '';
             let upperClean = clean.toUpperCase();
-            
-            if (category === 'Purline' && purlineShortcuts[upperClean]) {
-                return purlineShortcuts[upperClean];
-            }
-            
+            if (category === 'Purline' && purlineShortcuts[upperClean]) return purlineShortcuts[upperClean];
             let tableName = tableMapping[category] || category.toLowerCase();
             const prefix = tablePrefixes[tableName] || '';
-            
-            if (prefix && !upperClean.startsWith(prefix)) {
-                return prefix + upperClean;
-            }
+            if (prefix && !upperClean.startsWith(prefix)) return prefix + upperClean;
             return clean;
         }
 
@@ -478,44 +448,79 @@
             }
         }
 
-        function adjustZoom(amount) {
-            currentZoomLevel += amount;
-            if (currentZoomLevel < 0.5) currentZoomLevel = 0.5;
-            if (currentZoomLevel > 4.0) currentZoomLevel = 4.0;
-            applyZoom();
-        }
-
-        function resetZoom() {
-            currentZoomLevel = 1.0;
-            applyZoom();
-        }
-
-        function applyZoom() {
-            let container = document.getElementById('pdfZoomContainer');
-            container.style.transform = "scale(" + currentZoomLevel + ")";
-            if (currentZoomLevel > 1) {
-                container.style.width = (100 / currentZoomLevel) + "%";
-                container.style.height = (100 / currentZoomLevel) + "%";
-            } else {
-                container.style.width = "100%";
-                container.style.height = "100%";
+        /* PDF.JS RENDER LOGIC FOR CRISP VECTOR DRAWING */
+        async function loadPdfWithPdfJS(pdfUrl) {
+            try {
+                let directUrl = pdfUrl;
+                if (pdfUrl.includes('drive.google.com')) {
+                    let fileIdMatch = pdfUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || pdfUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (fileIdMatch && fileIdMatch[1]) {
+                        directUrl = "https://drive.google.com/uc?export=download&id=" + fileIdMatch[1];
+                    }
+                }
+                
+                pdfDoc = await pdfjsLib.getDocument(directUrl).promise;
+                pdfScale = 1.5;
+                renderPage(1);
+            } catch (err) {
+                console.log('Direct Canvas Render failed, fallback to direct preview: ', err);
+                // Fallback to standard view if CORS blocks raw binary stream
+                let pdfCanvas = document.getElementById('pdfCanvas');
+                let viewport = document.getElementById('pdfViewport');
+                viewport.innerHTML = '<iframe src="' + pdfUrl.replace('/view', '/preview') + '" style="width:100%; height:100%; border:none; background:#fff;"></iframe>';
             }
+        }
+
+        async function renderPage(num) {
+            if (!pdfDoc) return;
+            let page = await pdfDoc.getPage(num);
+            let canvas = document.getElementById('pdfCanvas');
+            if (!canvas) return;
+            
+            let ctx = canvas.getContext('2d');
+            let viewport = page.getViewport({ scale: pdfScale });
+
+            // Scale for high DPI screens to make numbers super sharp
+            let outputScale = window.devicePixelRatio || 1;
+            canvas.width = Math.floor(viewport.width * outputScale);
+            canvas.height = Math.floor(viewport.height * outputScale);
+            canvas.style.width = Math.floor(viewport.width) + "px";
+            canvas.style.height = Math.floor(viewport.height) + "px";
+
+            let transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+            let renderContext = {
+                canvasContext: ctx,
+                transform: transform,
+                viewport: viewport
+            };
+
+            await page.render(renderContext).promise;
+        }
+
+        function changePdfScale(delta) {
+            pdfScale += delta;
+            if (pdfScale < 0.5) pdfScale = 0.5;
+            if (pdfScale > 5.0) pdfScale = 5.0;
+            renderPage(pageNum);
+        }
+
+        function resetPdfScale() {
+            pdfScale = 1.5;
+            renderPage(pageNum);
         }
 
         function resetOldViews() {
             if (isFullscreenMode) toggleFullscreen();
             document.getElementById('dashboardView').style.display = 'none';
             document.getElementById('kittingView').style.display = 'none';
-            document.getElementById('pdfFrame').src = '';
             document.getElementById('externalPdfLink').href = '';
             document.getElementById('structuredSpecsContainer').innerHTML = '';
             document.getElementById('kitComponentsTableBody').innerHTML = '';
-            resetZoom();
+            pdfDoc = null;
         }
 
-        function onCategoryChange() {
-            clearSearch();
-        }
+        function onCategoryChange() { clearSearch(); }
 
         function clearSearch() {
             searchInput.value = '';
@@ -532,9 +537,7 @@
             const tableName = tableMapping[category] || category.toLowerCase();
             try {
                 const { data, error } = await supabaseClient.from(tableName).select('item_code');
-                if (error || !data || data.length === 0) {
-                    return fallbackMasterCodes[tableName] || [];
-                }
+                if (error || !data || data.length === 0) return fallbackMasterCodes[tableName] || [];
                 let codes = data.map(row => row.item_code).filter(Boolean);
                 masterCache[category] = codes;
                 return codes;
@@ -750,26 +753,9 @@
                     document.getElementById('structuredSpecsContainer').innerHTML = finalHtml;
 
                     if (pdfUrlFound) {
-                        let pdfFrame = document.getElementById('pdfFrame');
                         let externalLink = document.getElementById('externalPdfLink');
-                        let embedUrl = pdfUrlFound;
-                        
-                        // Clean original view URL for external opening
-                        if (embedUrl.indexOf('drive.google.com') !== -1) {
-                            externalLink.href = embedUrl.replace('/preview', '/view').replace('/embed', '/view');
-                            
-                            // High-definition embed configuration using Google Drive's native embed viewer with zoom support enabled
-                            let fileIdMatch = embedUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || embedUrl.match(/id=([a-zA-Z0-9_-]+)/);
-                            if (fileIdMatch && fileIdMatch[1]) {
-                                embedUrl = "https://drive.google.com/file/d/" + fileIdMatch[1] + "/preview?usp=sharing";
-                            } else {
-                                embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view?usp=drive_link', '/preview').replace('/view', '/preview');
-                            }
-                        } else {
-                            externalLink.href = embedUrl;
-                        }
-                        
-                        pdfFrame.src = embedUrl;
+                        externalLink.href = pdfUrlFound;
+                        loadPdfWithPdfJS(pdfUrlFound);
                     }
 
                 } catch (err) {
