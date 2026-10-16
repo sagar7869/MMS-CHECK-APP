@@ -757,13 +757,7 @@
                         externalLink.href = embedUrl;
 
                         if (embedUrl.indexOf('drive.google.com') !== -1) {
-                            let fileIdMatch = embedUrl.match(/\/d\/([a-zA-Z0-9_-]+/) || embedUrl.match(/id=([a-zA-Z0-9_-]+)/);
-                            if (fileIdMatch && fileIdMatch[1]) {
-                                let rawDownloadUrl = "https://drive.google.com/uc?export=download&id=" + fileIdMatch[1];
-                                embedUrl = "https://docs.google.com/viewer?url=" + encodeURIComponent(rawDownloadUrl) + "&embedded=true";
-                            } else {
-                                embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view?usp=drive_link', '/preview').replace('/view', '/preview');
-                            }
+                            embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view?usp=drive_link', '/preview').replace('/view', '/preview');
                         }
                         pdfFrame.src = embedUrl;
                     }
