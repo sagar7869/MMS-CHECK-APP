@@ -152,10 +152,21 @@
             position: relative;
             width: 100%;
             flex: 1;
-            overflow: hidden;
-            background: #fff;
+            overflow: auto;
+            background: #262626;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
-        iframe { width: 100%; height: 100%; border: none; display: block; background: #fff; }
+        iframe { 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            display: block; 
+            background: #fff; 
+            transform-origin: top center;
+            transition: transform 0.2s ease;
+        }
 
         /* KITTING VIEW */
         .kit-title-card { background: #E3F2FD; border: 1px solid #BBDEFB; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
@@ -229,16 +240,19 @@
                 </div>
             </div>
 
-            <!-- TAB 2: PDF VIEWER -->
+            <!-- TAB 2: PDF VIEWER WITH ZOOM CONTROLS -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
                     <div class="panel-header">📄 Engineering Drawing HD Viewer</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
-                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open Original File</a>
+                            <button class="zoom-btn" onclick="zoomPdf(0.2)" title="Zoom In">➕ Zoom In</button>
+                            <button class="zoom-btn" onclick="zoomPdf(-0.2)" title="Zoom Out">➖ Zoom Out</button>
+                            <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom" style="background: #424242;">🔄 Reset</button>
+                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">📥 Download PDF</a>
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
                         </div>
-                        <div class="pdf-viewport">
+                        <div class="pdf-viewport" id="pdfViewport">
                             <iframe id="pdfFrame" src=""></iframe>
                         </div>
                     </div>
@@ -295,6 +309,7 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
         
         let supabaseClient = null;
+        let currentZoomLevel = 1.0;
 
         window.addEventListener('DOMContentLoaded', async () => {
             if ('serviceWorker' in navigator) {
@@ -446,14 +461,43 @@
         function loadPdfViewer(pdfUrl) {
             let frame = document.getElementById('pdfFrame');
             let externalLink = document.getElementById('externalPdfLink');
-            externalLink.href = pdfUrl;
-
+            
+            // Direct download link for download button
             let fileIdMatch = pdfUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || pdfUrl.match(/id=([a-zA-Z0-9_-]+)/);
+            let downloadUrl = pdfUrl;
             let embedUrl = pdfUrl;
+            
             if (fileIdMatch && fileIdMatch[1]) {
+                downloadUrl = "https://drive.google.com/uc?export=download&id=" + fileIdMatch[1];
                 embedUrl = "https://drive.google.com/file/d/" + fileIdMatch[1] + "/preview";
             }
+            
+            externalLink.href = downloadUrl;
+            resetZoom();
             frame.src = embedUrl;
+        }
+
+        function zoomPdf(delta) {
+            currentZoomLevel += delta;
+            if (currentZoomLevel < 0.6) currentZoomLevel = 0.6;
+            if (currentZoomLevel > 3.0) currentZoomLevel = 3.0;
+            let frame = document.getElementById('pdfFrame');
+            frame.style.transform = `scale(${currentZoomLevel})`;
+            if (currentZoomLevel > 1.0) {
+                frame.style.width = (100 * currentZoomLevel) + '%';
+                frame.style.height = (100 * currentZoomLevel) + '%';
+            } else {
+                frame.style.width = '100%';
+                frame.style.height = '100%';
+            }
+        }
+
+        function resetZoom() {
+            currentZoomLevel = 1.0;
+            let frame = document.getElementById('pdfFrame');
+            frame.style.transform = 'scale(1)';
+            frame.style.width = '100%';
+            frame.style.height = '100%';
         }
 
         function resetOldViews() {
@@ -464,6 +508,7 @@
             document.getElementById('externalPdfLink').href = '';
             document.getElementById('structuredSpecsContainer').innerHTML = '';
             document.getElementById('kitComponentsTableBody').innerHTML = '';
+            resetZoom();
         }
 
         function onCategoryChange() { clearSearch(); }
