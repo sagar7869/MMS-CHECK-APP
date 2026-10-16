@@ -709,7 +709,7 @@
                     let rowData = data[0]; 
                     let pdfUrlFound = null;
 
-                    // Grouped structured specification sections with headings
+                    // Grouped structured specification sections with headings (Thickness added to Basic)
                     let groups = {
                         "Basic Description & Length": [],
                         "Base Plate Details": [],
@@ -733,9 +733,9 @@
 
                         if (lLower.includes('base') || lLower.includes('plate') || lLower.includes('pitch') || lLower.includes('hole_to_hole')) {
                             groups["Base Plate Details"].push(itemHtml);
-                        } else if (lLower.includes('rib') || lLower.includes('hole') || lLower.includes('extra') || lLower.includes('thickness')) {
+                        } else if (lLower.includes('rib') || (lLower.includes('hole') && !lLower.includes('thickness')) || lLower.includes('extra')) {
                             groups["Rib & Hole Details"].push(itemHtml);
-                        } else if (lLower.includes('item') || lLower.includes('title') || lLower.includes('length') || lLower.includes('cee')) {
+                        } else if (lLower.includes('item') || lLower.includes('title') || lLower.includes('length') || lLower.includes('cee') || lLower.includes('thickness')) {
                             groups["Basic Description & Length"].push(itemHtml);
                         } else {
                             groups["Other Data"].push(itemHtml);
