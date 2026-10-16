@@ -42,8 +42,39 @@
             padding: 8px; 
         }
         
-        .container { max-width: 1200px; margin: 0 auto; padding-bottom: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; padding-bottom: 20px; position: relative; }
         
+        /* LIVE ONLINE USERS BADGE (CORNER) */
+        .online-badge {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(21, 101, 192, 0.9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(4px);
+        }
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
         /* HEADER CARD */
         .header-card { 
             background: linear-gradient(135deg, #1565C0 0%, #1E88E5 100%); 
@@ -189,6 +220,12 @@
     </style>
 </head>
 <body>
+    <!-- LIVE ONLINE USERS CORNER BADGE -->
+    <div class="online-badge" id="onlineBadge">
+        <div class="online-dot"></div>
+        <span id="onlineCountText">Online: 1</span>
+    </div>
+
     <div class="container">
         <!-- HEADER -->
         <div class="header-card">
@@ -301,6 +338,17 @@
     </div>
 
     <script>
+        // --- SECURITY: BLOCK INSPECT ELEMENT & SHORTCUTS ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode == 123 || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || 
+                (e.ctrlKey && e.keyCode == 85)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
         const SUPABASE_URL = "https://ncwufmoahvvqumdudhzm.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
         
@@ -316,12 +364,34 @@
             
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                setupRealtimePresence();
             } catch(e) {
                 console.error("Supabase init error:", e);
             }
             
             await loadDynamicTables();
         });
+
+        // --- REALTIME ONLINE USERS COUNTER SETUP ---
+        function setupRealtimePresence() {
+            if (!supabaseClient) return;
+            const roomId = 'solarsquare-portal-active-users';
+            const channel = supabaseClient.channel(roomId, {
+                config: { presence: { key: 'user_' + Math.random().toString(36).substring(2, 9) } }
+            });
+
+            channel.on('presence', { event: 'sync' }, () => {
+                const state = channel.presenceState();
+                const totalOnline = Object.keys(state).length;
+                document.getElementById('onlineCountText').innerText = "Online: " + (totalOnline > 0 ? totalOnline : 1);
+            });
+
+            channel.subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await channel.track({ online_at: new Date().toISOString() });
+                }
+            });
+        }
 
         let tableMapping = {};
         let tablePrefixes = { 'rafter': 'RAFT-', 'columns': 'COLU-', 'purline': 'PURL-', 'la': '', 'jointer': 'RAFT-' };
