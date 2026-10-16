@@ -126,7 +126,7 @@
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        /* PDF VIEWER WRAPPER */
+        /* PDF VIEWER WRAPPER - SCROLLABLE CONTAINER FIX */
         .pdf-wrapper { position: relative; width: 100%; height: 75vh; min-height: 550px; background: #262626; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         
@@ -154,19 +154,25 @@
             flex: 1;
             overflow: auto;
             background: #262626;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             -webkit-overflow-scrolling: touch;
         }
+        
+        .pdf-container-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-width: 100%;
+            min-height: 100%;
+            transform-origin: top left;
+            transition: width 0.15s ease-out, height 0.15s ease-out;
+        }
+
         iframe { 
             width: 100%; 
             height: 100%; 
             border: none; 
             display: block; 
             background: #fff; 
-            transform-origin: center center;
-            transition: transform 0.15s ease-out;
         }
 
         /* KITTING VIEW */
@@ -241,20 +247,22 @@
                 </div>
             </div>
 
-            <!-- TAB 2: PDF VIEWER WITH CENTERED SMOOTH ZOOM -->
+            <!-- TAB 2: PDF VIEWER WITH SCROLLABLE CANVAS ZOOM -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
                     <div class="panel-header">📄 Engineering Drawing HD Viewer</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
-                            <button class="zoom-btn" onclick="zoomPdf(0.15)" title="Zoom In">➕ Zoom In</button>
-                            <button class="zoom-btn" onclick="zoomPdf(-0.15)" title="Zoom Out">➖ Zoom Out</button>
+                            <button class="zoom-btn" onclick="zoomPdf(20)" title="Zoom In">➕ Zoom In</button>
+                            <button class="zoom-btn" onclick="zoomPdf(-20)" title="Zoom Out">➖ Zoom Out</button>
                             <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom" style="background: #424242;">🔄 Reset</button>
                             <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">📥 Download PDF</a>
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
                         </div>
                         <div class="pdf-viewport" id="pdfViewport">
-                            <iframe id="pdfFrame" src=""></iframe>
+                            <div class="pdf-container-inner" id="pdfContainerInner">
+                                <iframe id="pdfFrame" src=""></iframe>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -310,7 +318,7 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
         
         let supabaseClient = null;
-        let currentScale = 1.0;
+        let currentZoomPercent = 100;
 
         window.addEventListener('DOMContentLoaded', async () => {
             if ('serviceWorker' in navigator) {
@@ -477,19 +485,24 @@
             frame.src = embedUrl;
         }
 
-        function zoomPdf(delta) {
-            currentScale += delta;
-            if (currentScale < 1.0) currentScale = 1.0;
-            if (currentScale > 6.0) currentScale = 6.0; // Up to 600% smooth zoom
+        function zoomPdf(amount) {
+            currentZoomPercent += amount;
+            if (currentZoomPercent < 100) currentZoomPercent = 100;
+            if (currentZoomPercent > 500) currentZoomPercent = 500;
             
-            let frame = document.getElementById('pdfFrame');
-            frame.style.transform = `scale(${currentScale})`;
+            let innerContainer = document.getElementById('pdfContainerInner');
+            innerContainer.style.width = currentZoomPercent + '%';
+            innerContainer.style.height = currentZoomPercent + '%';
         }
 
         function resetZoom() {
-            currentScale = 1.0;
-            let frame = document.getElementById('pdfFrame');
-            frame.style.transform = 'scale(1)';
+            currentZoomPercent = 100;
+            let innerContainer = document.getElementById('pdfContainerInner');
+            innerContainer.style.width = '100%';
+            innerContainer.style.height = '100%';
+            let viewport = document.getElementById('pdfViewport');
+            viewport.scrollTop = 0;
+            viewport.scrollLeft = 0;
         }
 
         function resetOldViews() {
