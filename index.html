@@ -126,7 +126,7 @@
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        /* PDF VIEWER WRAPPER (NATIVE EMBED FOR SMOOTH LAPTOP SCROLL) */
+        /* PDF VIEWER WRAPPER */
         .pdf-wrapper { position: relative; width: 100%; height: 75vh; min-height: 550px; background: #262626; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         
@@ -152,11 +152,11 @@
             position: relative;
             width: 100%;
             flex: 1;
-            overflow: auto; /* Ensures smooth native trackpad scrolling */
+            overflow: auto;
             background: #262626;
             -webkit-overflow-scrolling: touch;
         }
-        embed { width: 100%; height: 100%; border: none; display: block; }
+        iframe { width: 100%; height: 100%; border: none; display: block; background: #fff; }
 
         /* KITTING VIEW */
         .kit-title-card { background: #E3F2FD; border: 1px solid #BBDEFB; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
@@ -230,7 +230,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: PDF VIEWER (CLEAN NATIVE EMBED) -->
+            <!-- TAB 2: PDF VIEWER -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
                     <div class="panel-header">📄 Engineering Drawing HD Viewer</div>
@@ -240,7 +240,7 @@
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
                         </div>
                         <div class="pdf-viewport">
-                            <embed id="pdfEmbed" src="" type="application/pdf">
+                            <iframe id="pdfFrame" src=""></iframe>
                         </div>
                     </div>
                 </div>
@@ -302,7 +302,7 @@
         });
 
         const SUPABASE_URL = "https://ncwufmoahvvqumdudhzm.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
         
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -435,25 +435,24 @@
         }
 
         function loadPdfViewer(pdfUrl) {
-            let embedTag = document.getElementById('pdfEmbed');
+            let frame = document.getElementById('pdfFrame');
             let externalLink = document.getElementById('externalPdfLink');
             externalLink.href = pdfUrl;
 
-            // Direct Google Drive Download link format so native embed displays it cleanly without overlays
+            // Direct Google Drive Preview embed link format without popup/download triggers
             let fileIdMatch = pdfUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || pdfUrl.match(/id=([a-zA-Z0-9_-]+)/);
-            let directDownload = pdfUrl;
+            let embedUrl = pdfUrl;
             if (fileIdMatch && fileIdMatch[1]) {
-                directDownload = "https://drive.google.com/uc?export=download&id=" + fileIdMatch[1];
+                embedUrl = "https://drive.google.com/file/d/" + fileIdMatch[1] + "/preview";
             }
-            
-            embedTag.src = directDownload;
+            frame.src = embedUrl;
         }
 
         function resetOldViews() {
             if (isFullscreenMode) toggleFullscreen();
             document.getElementById('dashboardView').style.display = 'none';
             document.getElementById('kittingView').style.display = 'none';
-            document.getElementById('pdfEmbed').src = '';
+            document.getElementById('pdfFrame').src = '';
             document.getElementById('externalPdfLink').href = '';
             document.getElementById('structuredSpecsContainer').innerHTML = '';
             document.getElementById('kitComponentsTableBody').innerHTML = '';
@@ -706,7 +705,7 @@
             let multiplier = parseInt(document.getElementById('kitCountInput').value) || 1;
             let tbody = document.getElementById('kitComponentsTableBody');
             let html = '';
-            currentActiveKit.components.components?.forEach?.(comp => {}) || currentActiveKit.components.forEach((comp, idx) => {
+            currentActiveKit.components.forEach((comp, idx) => {
                 let totalQty = comp.qty * multiplier;
                 html += '<tr><td style="text-align: center;">' + (idx + 1) + '</td><td>' + comp.name + '</td><td><span class="badge-code">' + comp.sku + '</span></td><td style="text-align: center;">' + comp.uom + '</td><td style="text-align: center;">' + comp.qty + '</td><td style="text-align: center;"><span class="qty-badge">' + totalQty + '</span></td></tr>';
             });
