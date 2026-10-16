@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
     <title>SolarSquare Structure Design Portal</title>
     
     <!-- PWA MOBILE APP HEADERS -->
@@ -126,7 +126,7 @@
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        /* NATIVE SCROLLABLE PDF VIEWER WRAPPER */
+        /* PDF VIEWER WRAPPER */
         .pdf-wrapper { position: relative; width: 100%; height: 75vh; min-height: 550px; background: #262626; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         
@@ -155,13 +155,8 @@
             overflow: auto;
             background: #262626;
             -webkit-overflow-scrolling: touch;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
-
-        /* EMBED ELEMENT TO ALLOW NATIVE PANNING & SCROLLING */
-        embed, iframe { 
+        iframe { 
             width: 100%; 
             height: 100%; 
             border: none; 
@@ -241,17 +236,20 @@
                 </div>
             </div>
 
-            <!-- TAB 2: PDF VIEWER WITH NATIVE SCROLL AND PINCH ZOOM -->
+            <!-- TAB 2: PDF VIEWER WITH SCROLLABLE ZOOM -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
                     <div class="panel-header">📄 Engineering Drawing HD Viewer</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
+                            <button class="zoom-btn" onclick="zoomPdf(25)" title="Zoom In">➕ Zoom In</button>
+                            <button class="zoom-btn" onclick="zoomPdf(-25)" title="Zoom Out">➖ Zoom Out</button>
+                            <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom" style="background: #424242;">🔄 Reset</button>
                             <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">📥 Download PDF</a>
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
                         </div>
                         <div class="pdf-viewport" id="pdfViewport">
-                            <div id="pdfContainer" style="width: 100%; height: 100%;"></div>
+                            <iframe id="pdfFrame" src=""></iframe>
                         </div>
                     </div>
                 </div>
@@ -307,6 +305,7 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
         
         let supabaseClient = null;
+        let currentWidthPercent = 100;
 
         window.addEventListener('DOMContentLoaded', async () => {
             if ('serviceWorker' in navigator) {
@@ -456,7 +455,7 @@
         }
 
         function loadPdfViewer(pdfUrl) {
-            let container = document.getElementById('pdfContainer');
+            let frame = document.getElementById('pdfFrame');
             let externalLink = document.getElementById('externalPdfLink');
             
             let fileIdMatch = pdfUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || pdfUrl.match(/id=([a-zA-Z0-9_-]+)/);
@@ -465,25 +464,40 @@
             
             if (fileIdMatch && fileIdMatch[1]) {
                 downloadUrl = "https://drive.google.com/uc?export=download&id=" + fileIdMatch[1];
-                // Using embedded view link directly which allows native pinch-zoom and scrolling
                 embedUrl = "https://drive.google.com/file/d/" + fileIdMatch[1] + "/preview";
             }
             
             externalLink.href = downloadUrl;
+            resetZoom();
+            frame.src = embedUrl;
+        }
+
+        function zoomPdf(amount) {
+            currentWidthPercent += amount;
+            if (currentWidthPercent < 100) currentWidthPercent = 100;
+            if (currentWidthPercent > 350) currentWidthPercent = 350;
             
-            // Using <embed> tag for foolproof native mobile pinch-zoom & panning support
-            container.innerHTML = `<embed src="${embedUrl}" type="application/pdf" width="100%" height="100%" />`;
+            let frame = document.getElementById('pdfFrame');
+            frame.style.width = currentWidthPercent + '%';
+            frame.style.height = currentWidthPercent + '%';
+        }
+
+        function resetZoom() {
+            currentWidthPercent = 100;
+            let frame = document.getElementById('pdfFrame');
+            frame.style.width = '100%';
+            frame.style.height = '100%';
         }
 
         function resetOldViews() {
             if (isFullscreenMode) toggleFullscreen();
             document.getElementById('dashboardView').style.display = 'none';
             document.getElementById('kittingView').style.display = 'none';
-            document.getElementById('pdfContainer').innerHTML = '';
+            document.getElementById('pdfFrame').src = '';
             document.getElementById('externalPdfLink').href = '';
-            let viewport = document.getElementById('pdfViewport');
-            viewport.scrollTop = 0;
-            viewport.scrollLeft = 0;
+            document.getElementById('structuredSpecsContainer').innerHTML = '';
+            document.getElementById('kitComponentsTableBody').innerHTML = '';
+            resetZoom();
         }
 
         function onCategoryChange() { clearSearch(); }
