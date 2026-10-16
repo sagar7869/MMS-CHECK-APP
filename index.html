@@ -117,8 +117,12 @@
         .panel-header { background: #FAFAFA; padding: 10px 12px; font-weight: 700; font-size: 12px; color: #424242; border-bottom: 1px solid var(--border); text-transform: uppercase; }
         .panel-body { padding: 12px; }
 
+        /* SECTION HEADINGS FOR STRUCTURED SPECS */
+        .section-title { font-size: 11px; font-weight: 800; color: var(--primary); margin: 12px 0 6px 0; text-transform: uppercase; border-bottom: 2px solid #E3F2FD; padding-bottom: 3px; }
+        .section-title:first-child { margin-top: 0; }
+
         /* SPECIFICATION GRID */
-        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .specs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 8px; }
         .spec-box { background: #F5F5F5; padding: 8px 10px; border-radius: 8px; border: 1px solid #EEEEEE; }
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
@@ -198,7 +202,7 @@
                 <div class="search-group" style="flex: 0.9;">
                     <label>Category</label>
                     <select id="sheetSelect" onchange="onCategoryChange()">
-                        <option value="Rafter" selected>Rafter</option>
+                        <option value="" disabled selected>Select Item</option>
                     </select>
                 </div>
                 <div class="search-group" style="flex: 1.6;">
@@ -226,8 +230,8 @@
             <div id="specsTab" class="tab-content active">
                 <div class="panel-card">
                     <div class="panel-header">📌 Specifications</div>
-                    <div class="panel-body">
-                        <div id="specsGrid" class="specs-grid"></div>
+                    <div class="panel-body" id="structuredSpecsContainer">
+                        <!-- Grouped Structured Specifications render here -->
                     </div>
                 </div>
             </div>
@@ -382,7 +386,7 @@
                     throw new Error("Could not fetch tables schema");
                 }
 
-                selectDropdown.innerHTML = '';
+                selectDropdown.innerHTML = '<option value="" disabled selected>Select Item</option>';
                 tableMapping = {};
 
                 data.forEach(row => {
@@ -412,7 +416,7 @@
                     'LA': 'la',
                     'Jointer': 'jointer'
                 };
-                selectDropdown.innerHTML = '';
+                selectDropdown.innerHTML = '<option value="" disabled selected>Select Item</option>';
                 for (let key in tableMapping) {
                     let opt = document.createElement('option');
                     opt.value = key;
@@ -440,11 +444,9 @@
             let tableName = tableMapping[category] || category.toLowerCase();
             const prefix = tablePrefixes[tableName] || '';
             
-            // Agar prefix defined hai, aur user ne code mein prefix nahi lagaya hai, tabhi jodo
             if (prefix && !upperClean.startsWith(prefix)) {
                 return prefix + upperClean;
             }
-            // Agar LA category hai ya prefix khali hai, toh exact clean value pass karega (jaise Bracing-001)
             return clean;
         }
 
@@ -507,7 +509,7 @@
             document.getElementById('kittingView').style.display = 'none';
             document.getElementById('pdfFrame').src = '';
             document.getElementById('externalPdfLink').href = '';
-            document.getElementById('specsGrid').innerHTML = '';
+            document.getElementById('structuredSpecsContainer').innerHTML = '';
             document.getElementById('kitComponentsTableBody').innerHTML = '';
             resetZoom();
         }
@@ -523,7 +525,7 @@
             msgBox.style.display = 'block';
             msgBox.innerHTML = 'Select a category and type any code, prefix or shortcut to view specifications.';
             closeAllLists();
-            searchInput.focus();
+            searchInput.blur();
         }
 
         async function fetchMasterCodesForCategory(category) {
@@ -547,6 +549,7 @@
 
         async function showSuggestions(val) {
             let cat = document.getElementById('sheetSelect').value;
+            if (!cat) return;
             closeAllLists();
             currentFocus = -1;
             
@@ -639,6 +642,12 @@
             let rawQuery = searchInput.value.trim();
             let msgBox = document.getElementById('msgBox');
             
+            if(!category) {
+                alert('Please select a category first!');
+                document.getElementById('sheetSelect').focus();
+                return;
+            }
+
             if(!rawQuery) {
                 alert('Please enter an item code or keyword!');
                 searchInput.focus();
@@ -647,6 +656,9 @@
 
             closeAllLists();
             resetOldViews();
+            
+            // Auto close mobile keyboard after search
+            searchInput.blur();
 
             if (category === "Kitting") {
                 let qLower = rawQuery.toLowerCase();
@@ -687,8 +699,6 @@
 
                     if (!data || data.length === 0) {
                         msgBox.innerHTML = '<span class="error">⚠️ Item "' + rawQuery + '" (Resolved: ' + query + ') not found in ' + category + '!</span>';
-                        searchInput.focus();
-                        searchInput.select();
                         return;
                     }
 
@@ -697,19 +707,16 @@
                     switchTab('specsTab', document.querySelectorAll('.tab-btn')[0]);
 
                     let rowData = data[0]; 
-                    let specsHtml = '';
                     let pdfUrlFound = null;
 
-                    // Preferred ordering priority keywords
-                    const priorityKeywords = [
-                        'item_code', 'item code', 'title', 'total_length', 'length', 
-                        'thickness', 'plate_thickness', 'rib_thickness', 
-                        'top_cee', 'top cee', 'bottom_cee', 'bottom cee', 
-                        'base_plate_size', 'base plate size', 'hole_to_hole', 'pitch', 'hole pitch', 
-                        'rib_size', 'rib size', 'hole_size', 'hole size', 'extra_hole'
-                    ];
+                    // Grouped structured specification sections with headings
+                    let groups = {
+                        "Basic Description & Length": [],
+                        "Base Plate Details": [],
+                        "Rib & Hole Details": [],
+                        "Other Data": []
+                    };
 
-                    let entriesMap = {};
                     for (let key in rowData) {
                         let h = key;
                         let v = rowData[key];
@@ -720,31 +727,31 @@
                         if (h.toLowerCase() === 'id' || h.toLowerCase() === 'created_at') continue;
                         if (v === null || v === undefined || String(v).trim() === '' || String(v).trim() === '-' || String(v).trim().toLowerCase() === 'nan') continue;
 
-                        entriesMap[key.toLowerCase()] = { label: h.replace(/_/g, ' '), val: v };
-                    }
+                        let label = h.replace(/_/g, ' ');
+                        let lLower = h.toLowerCase();
+                        let itemHtml = '<div class="spec-box"><div class="spec-label">' + label + '</div><div class="spec-val">' + v + '</div></div>';
 
-                    let orderedEntries = [];
-                    // First push priority items in exact desired order
-                    priorityKeywords.forEach(pk => {
-                        for (let k in entriesMap) {
-                            if (k.indexOf(pk) !== -1) {
-                                orderedEntries.push(entriesMap[k]);
-                                delete entriesMap[k];
-                            }
+                        if (lLower.includes('base') || lLower.includes('plate') || lLower.includes('pitch') || lLower.includes('hole_to_hole')) {
+                            groups["Base Plate Details"].push(itemHtml);
+                        } else if (lLower.includes('rib') || lLower.includes('hole') || lLower.includes('extra') || lLower.includes('thickness')) {
+                            groups["Rib & Hole Details"].push(itemHtml);
+                        } else if (lLower.includes('item') || lLower.includes('title') || lLower.includes('length') || lLower.includes('cee')) {
+                            groups["Basic Description & Length"].push(itemHtml);
+                        } else {
+                            groups["Other Data"].push(itemHtml);
                         }
-                    });
-
-                    // Push remaining valid items next
-                    for (let k in entriesMap) {
-                        orderedEntries.push(entriesMap[k]);
                     }
 
-                    // Render ordered specs
-                    orderedEntries.forEach(item => {
-                        specsHtml += '<div class="spec-box"><div class="spec-label">' + item.label + '</div><div class="spec-val">' + item.val + '</div></div>';
-                    });
+                    let finalHtml = '';
+                    for (let gName in groups) {
+                        if (groups[gName].length > 0) {
+                            finalHtml += '<div class="section-title">🔹 ' + gName + '</div><div class="specs-grid">';
+                            finalHtml += groups[gName].join('');
+                            finalHtml += '</div>';
+                        }
+                    }
 
-                    document.getElementById('specsGrid').innerHTML = specsHtml;
+                    document.getElementById('structuredSpecsContainer').innerHTML = finalHtml;
 
                     if (pdfUrlFound) {
                         let pdfFrame = document.getElementById('pdfFrame');
@@ -758,13 +765,9 @@
                         }
                         pdfFrame.src = embedUrl;
                     }
-                    
-                    searchInput.focus();
-                    searchInput.select();
 
                 } catch (err) {
                     msgBox.innerHTML = '<span class="error">Unexpected Error: ' + err.message + '</span>';
-                    searchInput.focus();
                 }
             }
         }
