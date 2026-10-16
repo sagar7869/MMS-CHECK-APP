@@ -154,9 +154,7 @@
             flex: 1;
             overflow: auto;
             background: #262626;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            -webkit-overflow-scrolling: touch;
         }
         iframe { 
             width: 100%; 
@@ -164,8 +162,6 @@
             border: none; 
             display: block; 
             background: #fff; 
-            transform-origin: top center;
-            transition: transform 0.2s ease;
         }
 
         /* KITTING VIEW */
@@ -240,14 +236,14 @@
                 </div>
             </div>
 
-            <!-- TAB 2: PDF VIEWER WITH ZOOM CONTROLS -->
+            <!-- TAB 2: PDF VIEWER WITH SCROLLABLE ZOOM -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
                     <div class="panel-header">📄 Engineering Drawing HD Viewer</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
-                            <button class="zoom-btn" onclick="zoomPdf(0.2)" title="Zoom In">➕ Zoom In</button>
-                            <button class="zoom-btn" onclick="zoomPdf(-0.2)" title="Zoom Out">➖ Zoom Out</button>
+                            <button class="zoom-btn" onclick="zoomPdf(25)" title="Zoom In">➕ Zoom In</button>
+                            <button class="zoom-btn" onclick="zoomPdf(-25)" title="Zoom Out">➖ Zoom Out</button>
                             <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom" style="background: #424242;">🔄 Reset</button>
                             <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">📥 Download PDF</a>
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
@@ -309,7 +305,7 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jd3VmbW9haHZ2cXVtZHVkaHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NTYwNzUsImV4cCI6MjEwNzEzMjA3NX0.JMICFOjB-gFecoa8cZq5rSqZfdW2Es8T0wvM4PuZ8Z0";
         
         let supabaseClient = null;
-        let currentZoomLevel = 1.0;
+        let currentWidthPercent = 100;
 
         window.addEventListener('DOMContentLoaded', async () => {
             if ('serviceWorker' in navigator) {
@@ -462,7 +458,6 @@
             let frame = document.getElementById('pdfFrame');
             let externalLink = document.getElementById('externalPdfLink');
             
-            // Direct download link for download button
             let fileIdMatch = pdfUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || pdfUrl.match(/id=([a-zA-Z0-9_-]+)/);
             let downloadUrl = pdfUrl;
             let embedUrl = pdfUrl;
@@ -477,25 +472,19 @@
             frame.src = embedUrl;
         }
 
-        function zoomPdf(delta) {
-            currentZoomLevel += delta;
-            if (currentZoomLevel < 0.6) currentZoomLevel = 0.6;
-            if (currentZoomLevel > 3.0) currentZoomLevel = 3.0;
+        function zoomPdf(amount) {
+            currentWidthPercent += amount;
+            if (currentWidthPercent < 100) currentWidthPercent = 100;
+            if (currentWidthPercent > 350) currentWidthPercent = 350;
+            
             let frame = document.getElementById('pdfFrame');
-            frame.style.transform = `scale(${currentZoomLevel})`;
-            if (currentZoomLevel > 1.0) {
-                frame.style.width = (100 * currentZoomLevel) + '%';
-                frame.style.height = (100 * currentZoomLevel) + '%';
-            } else {
-                frame.style.width = '100%';
-                frame.style.height = '100%';
-            }
+            frame.style.width = currentWidthPercent + '%';
+            frame.style.height = currentWidthPercent + '%';
         }
 
         function resetZoom() {
-            currentZoomLevel = 1.0;
+            currentWidthPercent = 100;
             let frame = document.getElementById('pdfFrame');
-            frame.style.transform = 'scale(1)';
             frame.style.width = '100%';
             frame.style.height = '100%';
         }
