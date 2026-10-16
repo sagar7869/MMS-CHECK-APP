@@ -16,9 +16,8 @@
     <link rel="icon" type="image/png" href="./icon-192.png">
     <link rel="apple-touch-icon" href="./icon-192.png">
     
-    <!-- SUPABASE OFFICIAL JS SDK & PDF.JS SDK -->
+    <!-- SUPABASE OFFICIAL JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     
     <style>
         :root {
@@ -127,8 +126,8 @@
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        /* INTERACTIVE CANVAS CONTAINER */
-        .pdf-wrapper { position: relative; width: 100%; height: 75vh; min-height: 550px; background: #323639; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+        /* PDF VIEWER WRAPPER */
+        .pdf-wrapper { position: relative; width: 100%; height: 75vh; min-height: 550px; background: #262626; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         
         .pdf-toolbar {
@@ -138,10 +137,11 @@
             gap: 6px;
             justify-content: flex-end;
             align-items: center;
-            background: #1e1e1e;
+            background: rgba(0, 0, 0, 0.88);
             padding: 8px 12px;
             min-height: 50px;
             border-radius: 0;
+            backdrop-filter: blur(4px);
             flex-shrink: 0;
             flex-wrap: wrap;
         }
@@ -153,22 +153,9 @@
             width: 100%;
             flex: 1;
             overflow: hidden;
-            background: #525659;
-            cursor: grab;
-            touch-action: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #fff;
         }
-        .pdf-viewport:active { cursor: grabbing; }
-        
-        canvas#pdfCanvas { 
-            display: block; 
-            background: #fff; 
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4); 
-            transform-origin: 0 0;
-            position: absolute;
-        }
+        iframe { width: 100%; height: 100%; border: none; display: block; }
 
         /* KITTING VIEW */
         .kit-title-card { background: #E3F2FD; border: 1px solid #BBDEFB; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
@@ -231,7 +218,7 @@
         <div id="dashboardView" style="display: none;">
             <div class="tab-bar">
                 <button class="tab-btn active" onclick="switchTab('specsTab', this)">📋 Specifications</button>
-                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Engineering Drawing (HD Interactive)</button>
+                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Engineering Drawing Viewer</button>
             </div>
 
             <!-- TAB 1: SPECIFICATIONS -->
@@ -242,20 +229,17 @@
                 </div>
             </div>
 
-            <!-- TAB 2: INTERACTIVE CANVAS PDF VIEWER -->
+            <!-- TAB 2: PDF VIEWER WITH OFFICIAL MOZILLA PDF.JS VIEWER -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
-                    <div class="panel-header">📄 Engineering Drawing Viewer (Pinch Zoom & Drag Pan Enabled)</div>
+                    <div class="panel-header">📄 Engineering Drawing HD Viewer</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
-                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open Original File</a>
+                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open Full File</a>
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
-                            <button class="zoom-btn" onclick="zoomIn()">＋ Zoom In</button>
-                            <button class="zoom-btn" onclick="zoomOut()">－ Zoom Out</button>
-                            <button class="zoom-btn" onclick="resetZoomPan()">↺ Reset</button>
                         </div>
-                        <div class="pdf-viewport" id="pdfViewport">
-                            <canvas id="pdfCanvas"></canvas>
+                        <div class="pdf-viewport">
+                            <iframe id="pdfFrame" src=""></iframe>
                         </div>
                     </div>
                 </div>
@@ -307,8 +291,6 @@
     </div>
 
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
         window.addEventListener('DOMContentLoaded', async () => {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js')
@@ -316,7 +298,6 @@
                     .catch(err => console.log('Service Worker Failed', err));
             }
             await loadDynamicTables();
-            initInteractiveCanvas();
         });
 
         const SUPABASE_URL = "https://ncwufmoahvvqumdudhzm.supabase.co";
@@ -363,19 +344,7 @@
         let currentFocus = -1;
         let isFullscreenMode = false;
         let searchInput = document.getElementById('searchQuery');
-
-        // Canvas Zoom & Pan Engine State
-        let pdfDoc = null;
-        let pageNum = 1;
-        let scale = 1.2;
-        let panX = 0;
-        let panY = 0;
-        let isDragging = false;
-        let startX = 0;
-        let startY = 0;
-        let pointers = new Map();
-        let initialPinchDistance = null;
-        let initialScale = 1.2;
+        let currentPdfUrl = '';
 
         async function loadDynamicTables() {
             let selectDropdown = document.getElementById('sheetSelect');
@@ -441,9 +410,6 @@
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             if(btnElement) btnElement.classList.add('active');
-            if(tabId === 'pdfTab' && pdfDoc) {
-                setTimeout(renderPage, 50);
-            }
         }
 
         async function toggleFullscreen() {
@@ -466,147 +432,34 @@
                 wrapper.classList.toggle('is-fullscreen', isFullscreenMode);
                 btn.innerHTML = isFullscreenMode ? "❌ Exit Full Screen" : "⛶ Full Screen";
             }
-            setTimeout(renderPage, 100);
         }
 
-        /* ROBUST INTERACTIVE CANVAS PAN & ZOOM ENGINE */
-        function initInteractiveCanvas() {
-            const viewport = document.getElementById('pdfViewport');
-            const canvas = document.getElementById('pdfCanvas');
+        function loadPdfViewer(pdfUrl) {
+            currentPdfUrl = pdfUrl;
+            let frame = document.getElementById('pdfFrame');
+            let externalLink = document.getElementById('externalPdfLink');
+            externalLink.href = pdfUrl;
 
-            viewport.addEventListener('pointerdown', (e) => {
-                pointers.set(e.pointerId, e);
-                if (pointers.size === 1) {
-                    isDragging = true;
-                    startX = e.clientX - panX;
-                    startY = e.clientY - panY;
-                    viewport.setPointerCapture(e.pointerId);
-                } else if (pointers.size === 2) {
-                    isDragging = false;
-                    let pts = Array.from(pointers.values());
-                    initialPinchDistance = Math.hypot(pts[0].clientX - pts[1].clientX, pts[0].clientY - pts[1].clientY);
-                    initialScale = scale;
-                }
-            });
-
-            viewport.addEventListener('pointermove', (e) => {
-                if (!pointers.has(e.pointerId)) return;
-                pointers.set(e.pointerId, e);
-
-                if (pointers.size === 2 && initialPinchDistance) {
-                    let pts = Array.from(pointers.values());
-                    let currentDist = Math.hypot(pts[0].clientX - pts[1].clientX, pts[0].clientY - pts[1].clientY);
-                    let factor = currentDist / initialPinchDistance;
-                    scale = Math.min(Math.max(initialScale * factor, 0.5), 5.0);
-                    renderPage();
-                } else if (isDragging && pointers.size === 1) {
-                    panX = e.clientX - startX;
-                    panY = e.clientY - startY;
-                    updateCanvasTransform();
-                }
-            });
-
-            const handlePointerUp = (e) => {
-                pointers.delete(e.pointerId);
-                if (pointers.size < 2) initialPinchDistance = null;
-                if (pointers.size === 0) isDragging = false;
-            };
-
-            viewport.addEventListener('pointerup', handlePointerUp);
-            viewport.addEventListener('pointercancel', handlePointerUp);
-
-            // Laptop Trackpad Wheel Zoom / Scroll support
-            viewport.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                let zoomFactor = e.deltaY < 0 ? 1.15 : 0.87;
-                scale = Math.min(Math.max(scale * zoomFactor, 0.5), 5.0);
-                renderPage();
-            }, { passive: false });
-        }
-
-        async function loadPdfWithPdfJS(pdfUrl) {
-            try {
-                let directUrl = pdfUrl;
-                if (pdfUrl.includes('drive.google.com')) {
-                    let fileIdMatch = pdfUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || pdfUrl.match(/id=([a-zA-Z0-9_-]+)/);
-                    if (fileIdMatch && fileIdMatch[1]) {
-                        directUrl = "https://drive.google.com/uc?export=download&id=" + fileIdMatch[1];
-                    }
-                }
-                
-                pdfDoc = await pdfjsLib.getDocument(directUrl).promise;
-                scale = 1.2;
-                panX = 0;
-                panY = 0;
-                await renderPage();
-            } catch (err) {
-                console.log('Canvas load failed, fallback: ', err);
-                let viewport = document.getElementById('pdfViewport');
-                viewport.innerHTML = '<iframe src="' + pdfUrl.replace('/view', '/preview') + '" style="width:100%; height:100%; border:none; background:#fff;"></iframe>';
+            // Using Mozilla PDF.js web viewer hosted URL for native smooth zoom & pan controls
+            let fileIdMatch = pdfUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || pdfUrl.match(/id=([a-zA-Z0-9_-]+)/);
+            let downloadUrl = pdfUrl;
+            if (fileIdMatch && fileIdMatch[1]) {
+                downloadUrl = "https://drive.google.com/uc?export=download&id=" + fileIdMatch[1];
             }
-        }
-
-        async function renderPage() {
-            if (!pdfDoc) return;
-            let page = await pdfDoc.getPage(pageNum);
-            let canvas = document.getElementById('pdfCanvas');
-            if (!canvas) return;
-            let ctx = canvas.getContext('2d');
             
-            let viewport = page.getViewport({ scale: scale });
-            let outputScale = window.devicePixelRatio || 1;
-
-            canvas.width = Math.floor(viewport.width * outputScale);
-            canvas.height = Math.floor(viewport.height * outputScale);
-            canvas.style.width = Math.floor(viewport.width) + "px";
-            canvas.style.height = Math.floor(viewport.height) + "px";
-
-            let transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
-            await page.render({ canvasContext: ctx, transform: transform, viewport: viewport }).promise;
-            
-            // Center initially if first load
-            if (panX === 0 && panY === 0) {
-                let vpEl = document.getElementById('pdfViewport');
-                panX = (vpEl.clientWidth - viewport.width) / 2;
-                panY = (vpEl.clientHeight - viewport.height) / 2;
-                if (panX < 10) panX = 10;
-                if (panY < 10) panY = 10;
-            }
-            updateCanvasTransform();
-        }
-
-        function updateCanvasTransform() {
-            let canvas = document.getElementById('pdfCanvas');
-            if (canvas) {
-                canvas.style.transform = `translate(${panX}px, ${panY}px)`;
-            }
-        }
-
-        function zoomIn() {
-            scale = Math.min(scale * 1.25, 5.0);
-            renderPage();
-        }
-
-        function zoomOut() {
-            scale = Math.max(scale * 0.8, 0.5);
-            renderPage();
-        }
-
-        function resetZoomPan() {
-            scale = 1.2;
-            panX = 0;
-            panY = 0;
-            renderPage();
+            // Mozilla PDF.js viewer embed format
+            let viewerUrl = "https://mozilla.github.io/pdf.js/web/viewer.html?file=" + encodeURIComponent(downloadUrl);
+            frame.src = viewerUrl;
         }
 
         function resetOldViews() {
             if (isFullscreenMode) toggleFullscreen();
             document.getElementById('dashboardView').style.display = 'none';
             document.getElementById('kittingView').style.display = 'none';
+            document.getElementById('pdfFrame').src = '';
             document.getElementById('externalPdfLink').href = '';
             document.getElementById('structuredSpecsContainer').innerHTML = '';
             document.getElementById('kitComponentsTableBody').innerHTML = '';
-            pdfDoc = null;
         }
 
         function onCategoryChange() { clearSearch(); }
@@ -842,9 +695,7 @@
                     document.getElementById('structuredSpecsContainer').innerHTML = finalHtml;
 
                     if (pdfUrlFound) {
-                        let externalLink = document.getElementById('externalPdfLink');
-                        externalLink.href = pdfUrlFound;
-                        loadPdfWithPdfJS(pdfUrlFound);
+                        loadPdfViewer(pdfUrlFound);
                     }
 
                 } catch (err) {
