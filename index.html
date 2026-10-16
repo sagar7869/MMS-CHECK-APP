@@ -127,7 +127,7 @@
         .spec-label { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .spec-val { font-size: 12px; color: var(--text-main); font-weight: 800; margin-top: 2px; }
 
-        /* FULL DISPLAY PDF & TOUCH GESTURE ZOOM/PAN */
+        /* FULL DISPLAY PDF & VECTOR CLARITY */
         .pdf-wrapper { position: relative; width: 100%; height: 75vh; min-height: 550px; background: #262626; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
         .pdf-wrapper.is-fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; border-radius: 0; }
         
@@ -224,7 +224,7 @@
         <div id="dashboardView" style="display: none;">
             <div class="tab-bar">
                 <button class="tab-btn active" onclick="switchTab('specsTab', this)">📋 Specifications</button>
-                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Engineering Drawing (HD)</button>
+                <button class="tab-btn" onclick="switchTab('pdfTab', this)">📄 Engineering Drawing (Original HD)</button>
             </div>
 
             <!-- TAB 1: SPECIFICATIONS -->
@@ -238,10 +238,10 @@
             <!-- TAB 2: HD PDF VIEWER -->
             <div id="pdfTab" class="tab-content">
                 <div class="panel-card">
-                    <div class="panel-header">📄 Engineering Drawing Viewer (HD)</div>
+                    <div class="panel-header">📄 Engineering Drawing Viewer (Original Vector HD)</div>
                     <div class="pdf-wrapper" id="pdfWrapper">
                         <div class="pdf-toolbar">
-                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open Original HD</a>
+                            <a id="externalPdfLink" href="" target="_blank" class="zoom-btn" style="background: #2E7D32;">🔗 Open Full HD View</a>
                             <button class="zoom-btn" onclick="toggleFullscreen()" id="fsToggleBtn">⛶ Full Screen</button>
                             <button class="zoom-btn" onclick="adjustZoom(0.25)">＋</button>
                             <button class="zoom-btn" onclick="adjustZoom(-0.25)">－</button>
@@ -267,7 +267,7 @@
             <div class="calculator-box">
                 <div>
                     <label>🔢 Kit Multiplier Sets</label>
-                    <div style="font-size: 10px; color: #2E7D32; font-weight: 600; margin-top: 1px;">Enter qty to auto-calculate</div>
+                    <div style="font-size: 10px; color: #1B5E20; font-weight: 600; margin-top: 1px;">Enter qty to auto-calculate</div>
                 </div>
                 <div>
                     <input type="number" id="kitCountInput" value="1" min="1" oninput="recalculateKitComponents()">
@@ -754,11 +754,21 @@
                         let externalLink = document.getElementById('externalPdfLink');
                         let embedUrl = pdfUrlFound;
                         
-                        externalLink.href = embedUrl;
-
+                        // Clean original view URL for external opening
                         if (embedUrl.indexOf('drive.google.com') !== -1) {
-                            embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view?usp=drive_link', '/preview').replace('/view', '/preview');
+                            externalLink.href = embedUrl.replace('/preview', '/view').replace('/embed', '/view');
+                            
+                            // High-definition embed configuration using Google Drive's native embed viewer with zoom support enabled
+                            let fileIdMatch = embedUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || embedUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                            if (fileIdMatch && fileIdMatch[1]) {
+                                embedUrl = "https://drive.google.com/file/d/" + fileIdMatch[1] + "/preview?usp=sharing";
+                            } else {
+                                embedUrl = embedUrl.replace('/view?usp=drivesdk', '/preview').replace('/view?usp=drive_link', '/preview').replace('/view', '/preview');
+                            }
+                        } else {
+                            externalLink.href = embedUrl;
                         }
+                        
                         pdfFrame.src = embedUrl;
                     }
 
